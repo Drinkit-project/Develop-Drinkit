@@ -19,12 +19,10 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       entities: [Product],
       logging: this.configService.get<boolean>('DATABASE_LOGGING'),
       synchronize: this.configService.get<boolean>('DATABASE_SYNCHRONIZE'),
-      ssl: {
-        ca: fs.readFileSync('global-bundle.pem'),
-      },
-      extra: {
-        ssl: { rejectUnauthorized: false },
-      },
+      // ssl: false,
+      // extra: {
+      //   ssl: { rejectUnauthorized: false },
+      // },
       //   autoLoadEntities: this.configService.get<boolean>('DATABASE_SYNCHRONIZE'),
     };
   }
