@@ -1,0 +1,36 @@
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { PickType } from '@nestjs/swagger';
+
+import { User } from './user.entity';
+import { CommonEntity } from './common.entity';
+
+@Entity({ schema: '', name: 'profile' })
+export class Profile extends PickType(CommonEntity, [
+  'createdAt',
+  'updatedAt',
+]) {
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'userId' })
+  userId: boolean;
+
+  @Column('jsonb', { array: true })
+  address: Array<object>;
+
+  @Column('varchar')
+  phoneNumber: string;
+
+  @Column('varchar')
+  nickname: string;
+
+  @Column('varchar')
+  name: string;
+
+  @OneToOne(() => User, (user) => user.profile)
+  @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
+  user: User;
+}
