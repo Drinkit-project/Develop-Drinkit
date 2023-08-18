@@ -5,9 +5,13 @@ import { User } from './user.entity';
 import { PaymentDetail } from './paymentDetail.entity';
 
 enum PaymentStatus {
-  READY = '준비 중',
-  DELIVERY = '배송 중',
-  COMPLETE = '배송 완료',
+  ORDER_PENDING = '주문확인중',
+  READY = '상품준비중',
+  READY_COMPLETE = '상품준비완료',
+  DELIVERY = '배송중',
+  PICKUP = '픽업중',
+  COMPLETE = '완료',
+  CANCELLED = '취소',
 }
 
 @Entity({ schema: '', name: 'paymentLog' })
