@@ -3,6 +3,7 @@ import {
   BadRequestException,
   HttpException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
 
@@ -12,6 +13,16 @@ export class ProductsService {
 
   async getProducts() {
     const products = await this.productsRepository.find();
+    return products;
+  }
+
+  async getProductsById(id) {
+    const products = await this.productsRepository.getById(id);
+
+    if (!products) {
+      throw new NotFoundException('해당 상품을 조회할 수 없습니다.');
+    }
+
     return products;
   }
 

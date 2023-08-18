@@ -7,4 +7,21 @@ export class ProductsRepository extends Repository<Product> {
   constructor(private datasource: DataSource) {
     super(Product, datasource.createEntityManager());
   }
+
+  async getById(id) {
+    const product = await this.createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .select([
+        'product.id',
+        'product.productName',
+        'category.name',
+        'product.discription',
+        'product.imgUrl',
+        'product.price',
+      ])
+      .where('product.id = :id', { id })
+      .getOne();
+
+    return product;
+  }
 }
