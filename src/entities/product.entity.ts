@@ -44,6 +44,15 @@ export class Product extends CommonEntity {
   @Column('bigint')
   categoryId: number;
 
+  @IsNumber()
+  @ApiProperty({
+    example: '2',
+    description: 'categoryId',
+    required: true,
+  })
+  @Column('bigint')
+  totalStock: number;
+
   @IsString()
   @ApiProperty({
     example: '이거는 술이야 술술 들어가는 술이야',
@@ -51,7 +60,7 @@ export class Product extends CommonEntity {
     required: true,
   })
   @Column('varchar')
-  discription: string;
+  description: string;
 
   @IsString()
   @ApiProperty({
