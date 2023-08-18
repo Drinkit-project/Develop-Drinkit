@@ -12,21 +12,53 @@ import { CommonEntity } from './common.entity';
 import { Category } from './category.entity';
 import { Review } from './review.entity';
 import { Discount } from './discout.entity';
+import { IsNumber, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ schema: '', name: 'product' })
 export class Product extends CommonEntity {
+  @IsNumber()
+  @ApiProperty({
+    example: '30000',
+    description: '상품 가격',
+    required: true,
+  })
   @Column('bigint')
   price: number;
 
+  @IsString()
+  @ApiProperty({
+    example: '두혁위스키',
+    description: '상품 이름',
+    required: true,
+  })
   @Column('varchar')
   productName: string;
 
+  @IsNumber()
+  @ApiProperty({
+    example: '2',
+    description: 'categoryId',
+    required: true,
+  })
   @Column('bigint')
   categoryId: number;
 
+  @IsString()
+  @ApiProperty({
+    example: '이거는 술이야 술술 들어가는 술이야',
+    description: '상품 설명',
+    required: true,
+  })
   @Column('varchar')
   discription: string;
 
+  @IsString()
+  @ApiProperty({
+    example: 'url',
+    description: '상품 이미지',
+    required: true,
+  })
   @Column('varchar')
   imgUrl: string;
 
