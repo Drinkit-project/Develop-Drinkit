@@ -1,8 +1,18 @@
 import { ProductsService } from './products.service';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiParam } from '@nestjs/swagger';
-import { CreateProductsRequestDto } from './dto/products.request.dto';
-import { IsNumber } from 'class-validator';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
+import {
+  CreateProductsRequestDto,
+  UpdateProductsRequestDto,
+} from './dto/products.request.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -31,5 +41,28 @@ export class ProductsController {
     if (!newProduct) {
     }
     return '상품 등록 완료!';
+  }
+
+  @ApiOperation({ summary: '상품 수정' })
+  @Put('/:productId')
+  async updateProducts(@Param() param, @Body() body: UpdateProductsRequestDto) {
+    const { productId } = param;
+
+    const newProduct = await this.productsService.updateProducts(
+      productId,
+      body,
+    );
+
+    return '상품 수정 완료!';
+  }
+
+  @ApiOperation({ summary: '상품 수정' })
+  @Delete('/:productId')
+  async removeProducts(@Param() param) {
+    const { productId } = param;
+
+    const removedProduct = await this.productsService.removeProducts(productId);
+
+    return '상품 삭제 완료!';
   }
 }

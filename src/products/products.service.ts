@@ -42,4 +42,21 @@ export class ProductsService {
       throw new BadGatewayException(`서버에러 messege: ${error}`);
     }
   }
+
+  async updateProducts(productId, newProduct) {
+    const updatedProduct = await this.productsRepository.updateProducts(
+      productId,
+      newProduct,
+    );
+
+    return updatedProduct;
+  }
+
+  async removeProducts(productId) {
+    const removedProduct = await this.productsRepository.removeProducts(
+      productId,
+    );
+
+    return removedProduct;
+  }
 }

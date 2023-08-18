@@ -24,4 +24,31 @@ export class ProductsRepository extends Repository<Product> {
 
     return product;
   }
+
+  async updateProducts(productId, newProduct) {
+    const { categoryId, productName, price, discription, imgUrl } = newProduct;
+
+    const updatedProduct = await this.createQueryBuilder('product')
+      .update()
+      .set({
+        productName,
+        price,
+        discription,
+        categoryId,
+        imgUrl,
+      })
+      .where('id = :productId', { productId })
+      .execute();
+
+    return updatedProduct;
+  }
+
+  async removeProducts(productId) {
+    const updatedProduct = await this.createQueryBuilder('product')
+      .delete()
+      .where('id = :productId', { productId })
+      .execute();
+
+    return updatedProduct;
+  }
 }
