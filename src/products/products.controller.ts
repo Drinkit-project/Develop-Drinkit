@@ -38,8 +38,6 @@ export class ProductsController {
   async createProducts(@Body() body: CreateProductsRequestDto) {
     const newProduct = await this.productsService.createProducts(body);
 
-    if (!newProduct) {
-    }
     return '상품 등록 완료!';
   }
 
