@@ -10,7 +10,9 @@ export class SubscribesController {
   @ApiOperation({ summary: '구독 하기' })
   @Post()
   async postSubscribe(@Body() dto: SubscribesReqDto) {
+    const userId = 1; //Todo: (인증 부분 확인 후 추가)
     const postSubscribeData = await this.subscribesService.postSubscribe(
+      userId,
       dto.isPaid,
     );
 
@@ -18,8 +20,8 @@ export class SubscribesController {
   }
 
   @ApiOperation({ summary: '구독 취소' })
-  @Delete()
-  async deleteSubscribe(@Param('subscribeId') subscribeId: number) {
+  @Delete(':subscribesId')
+  async deleteSubscribe(@Param('subscribesId') subscribeId: number) {
     const deleteSubscribeData = await this.subscribesService.deleteSubscribe(
       subscribeId,
     );

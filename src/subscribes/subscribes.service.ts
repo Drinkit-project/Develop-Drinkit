@@ -1,20 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { SubscribesRepository } from './subscribes.repository';
-
+import { Subscribe } from 'src/entities/subscribe.entity';
 @Injectable()
 export class SubscribesService {
   constructor(private subscribesRepository: SubscribesRepository) {}
-  async postSubscribe(isPaid: boolean) {
-    await this.subscribesRepository.insert({
-      isPaid,
-    });
 
-    return '구독이 완료되었습니다.';
+  async postSubscribe(userId: number, isPaid: boolean) {
+    const postSubscribeData = await this.subscribesRepository.postSubscribe(
+      userId,
+      isPaid,
+    );
+
+    return postSubscribeData;
   }
 
   async deleteSubscribe(subscribeId: number) {
-    await this.subscribesRepository.delete(subscribeId);
+    const deletesubscribeData = await this.subscribesRepository.deleteSubscribe(
+      subscribeId,
+    );
 
-    return '구독이 취소되었습니다.';
+    return deletesubscribeData;
   }
 }

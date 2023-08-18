@@ -25,6 +25,9 @@ export class PaymentLog extends CommonEntity {
   @Column('bigint')
   totalPrice: number;
 
+  @Column('bigint')
+  storeId?: number;
+
   @ManyToOne(() => User, (user) => user.paymentLog)
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
