@@ -14,7 +14,7 @@ export class Discount extends CommonEntity {
     required: false,
   })
   @Column('bigint')
-  discountPirce: number;
+  discountPrice: number;
 
   @IsNumber()
   @ApiProperty({
