@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentLog } from 'src/entities/paymentLog.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
+import { PaymentStatus } from 'src/entities/paymentLog.entity';
 
 @Injectable()
 export class PaymentLogRepository extends Repository<PaymentLog> {
@@ -15,11 +16,48 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
     return getOrdersData;
   }
 
-  async postPaymentLog(userId: number, totalPrice: number, storeId: number) {
-    const postPaymentLogData = await this.createQueryBuilder()
+  async getPaymentLog(paymentLogId: number) {
+    const getPaymentLogData = await this.createQueryBuilder()
+      .where('id = :paymentLogId', { paymentLogId })
+      .getOne();
+
+    return getPaymentLogData;
+  }
+
+  async getStoreOrders(storeId: number) {
+    const getStoreOrdersData = await this.createQueryBuilder()
+      .where('storeId = :storeId', { storeId })
+      .getMany();
+    return getStoreOrdersData;
+  }
+
+  async updateOrdersStatus(paymentLogId: number, status: string) {
+    const updateOrdersStatusData = await this.createQueryBuilder()
+      .update(PaymentLog)
+      .set({ status })
+      .where('id = :paymentLogId', { paymentLogId })
+      .execute();
+    return updateOrdersStatusData;
+  }
+
+  async postPaymentLog(
+    userId: number,
+    totalPrice: number,
+    storeId: number,
+    paidPoint: number,
+    manager: EntityManager,
+  ) {
+    const postPaymentLogData = await manager
+      .createQueryBuilder()
       .insert()
-      // .into(PaymentLog)
-      .values({ userId, status: '주문확인중', totalPrice, storeId })
+      .into(PaymentLog)
+      .values({
+        userId,
+        status: PaymentStatus.ORDER_PENDING,
+        totalPrice,
+        storeId,
+        paidPoint,
+      })
       .execute();
 
     return postPaymentLogData;

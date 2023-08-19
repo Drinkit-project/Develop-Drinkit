@@ -1,8 +1,9 @@
 import { Controller, Post, Delete, Body, Param } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SubscribesService } from './subscribes.service';
 import { SubscribesReqDto } from './dto/subscribes.request.dto';
 
+@ApiTags('subscribes')
 @Controller('subscribes')
 export class SubscribesController {
   constructor(private subscribesService: SubscribesService) {}

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { SubscribesRepository } from './subscribes.repository';
-import { Subscribe } from 'src/entities/subscribe.entity';
 @Injectable()
 export class SubscribesService {
   constructor(private subscribesRepository: SubscribesRepository) {}

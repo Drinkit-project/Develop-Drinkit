@@ -9,5 +9,5 @@ export class OrderReqDto {
   readonly usePoint: boolean;
 
   @IsNumber()
-  readonly storeId?: number;
+  readonly storeId?: number | null;
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentDetail } from 'src/entities/paymentDetail.entity';
 import { Product } from 'src/entities/product.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class PaymentDetailRepository extends Repository<PaymentDetail> {
@@ -17,19 +17,32 @@ export class PaymentDetailRepository extends Repository<PaymentDetail> {
         'product.id = paymentDetail.productId',
       )
       .where('paymentLogId = :paymentLogId', { paymentLogId })
-      .getRawOne();
+      .getRawMany();
     return getOrdersDetailData;
   }
 
   async postPaymentDetail(
-    paymentDetailArray: Array<{ productId: number; paymentLogId: number }>,
+    paymentDetailArray: Array<{
+      productId: number;
+      paymentLogId: number;
+      count: number;
+    }>,
+    manager: EntityManager,
   ) {
-    const postPaymentDetailData = await this.createQueryBuilder()
+    const postPaymentDetailData = await manager
+      .createQueryBuilder()
       .insert()
-      // .into(PaymentDetail)
+      .into(PaymentDetail)
       .values(paymentDetailArray)
       .execute();
 
     return postPaymentDetailData;
+  }
+
+  async getOrderDetail(paymentLogId: number) {
+    const getOrderDetailData = await this.createQueryBuilder()
+      .where('paymentLogId = :paymentLogId', { paymentLogId })
+      .getMany();
+    return getOrderDetailData;
   }
 }

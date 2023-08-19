@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, OneToOne, ManyToOne, JoinColumn } from 'typeorm';
 
 import { CommonEntity } from './common.entity';
 import { Product } from './product.entity';
@@ -12,11 +12,14 @@ export class PaymentDetail extends CommonEntity {
   @Column('bigint')
   paymentLogId: number;
 
+  @Column('bigint')
+  count: number;
+
   @OneToOne(() => Product, (product) => product.paymentDetail)
   @JoinColumn([{ name: 'productId', referencedColumnName: 'id' }])
   product: Product;
 
-  @OneToOne(() => PaymentLog, (paymentLog) => paymentLog.paymentDetail)
+  @ManyToOne(() => PaymentLog, (paymentLog) => paymentLog.paymentDetail)
   @JoinColumn([{ name: 'paymentLogId', referencedColumnName: 'id' }])
   paymentLog: PaymentLog;
 }

@@ -9,7 +9,7 @@ export class PostOrderReqDto {
   readonly orderList: Array<{ productId: number; count: number }>;
 
   @IsNumber()
-  readonly point: number;
+  readonly paidPoint: number;
 
   @IsNumber()
   readonly storeId?: number;
