@@ -15,7 +15,7 @@ export class ProductsRepository extends Repository<Product> {
         'product.id',
         'product.productName',
         'category.name',
-        'product.discription',
+        'product.description',
         'product.imgUrl',
         'product.price',
       ])
@@ -26,14 +26,14 @@ export class ProductsRepository extends Repository<Product> {
   }
 
   async updateProducts(productId, newProduct) {
-    const { categoryId, productName, price, discription, imgUrl } = newProduct;
+    const { categoryId, productName, price, description, imgUrl } = newProduct;
 
     const updatedProduct = await this.createQueryBuilder('product')
       .update()
       .set({
         productName,
         price,
-        discription,
+        description,
         categoryId,
         imgUrl,
       })
