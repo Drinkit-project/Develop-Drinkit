@@ -8,7 +8,23 @@ export class DiscountsRepository extends Repository<Discount> {
     super(Discount, datasource.createEntityManager());
   }
 
-  async createDiscount(productId, newDiscount) {
-    const createdDiscount = await this.createQueryBuilder();
+  async createDiscount(
+    productId,
+    discountPrice,
+    discountRating,
+    startDate,
+    endDate,
+  ) {
+    const createdDiscount = await this.createQueryBuilder()
+      .insert()
+      .into(Discount)
+      .values({
+        productId,
+        discountPrice,
+        discountRating,
+        startDate,
+        endDate,
+      })
+      .execute();
   }
 }
