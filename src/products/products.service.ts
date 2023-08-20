@@ -12,7 +12,7 @@ export class ProductsService {
   constructor(private productsRepository: ProductsRepository) {}
 
   async getProducts() {
-    const products = await this.productsRepository.find();
+    const products = await this.productsRepository.getAll();
     return products;
   }
 
@@ -27,14 +27,16 @@ export class ProductsService {
   }
 
   async createProducts(newProduct) {
-    const { categoryId, productName, price, discription, imgUrl } = newProduct;
+    const { categoryId, productName, price, description, imgUrl, totalStock } =
+      newProduct;
     try {
       const createdProduct = await this.productsRepository.insert({
         categoryId: parseInt(categoryId),
         productName,
         price,
-        discription,
+        description,
         imgUrl,
+        totalStock,
       });
 
       return createdProduct;

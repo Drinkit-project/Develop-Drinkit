@@ -19,8 +19,12 @@ export class DiscountsService {
 
     const createdDiscount = await this.discountsRepository.createDiscount(
       productId,
-      newDiscount,
+      discountPrice,
+      discountRating,
+      startDate,
+      endDate,
     );
+
     return createdDiscount;
   }
 }
