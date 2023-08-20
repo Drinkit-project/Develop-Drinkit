@@ -5,7 +5,7 @@ import { Product } from 'src/entities/product.entity';
 export class CreateProductsRequestDto extends PickType(Product, [
   'price',
   'productName',
-  'discription',
+  'description',
   'categoryId',
   'imgUrl',
 ]) {}
@@ -13,7 +13,7 @@ export class CreateProductsRequestDto extends PickType(Product, [
 export class UpdateProductsRequestDto extends OmitType(Product, [
   'price',
   'productName',
-  'discription',
+  'description',
   'categoryId',
   'imgUrl',
 ]) {}
