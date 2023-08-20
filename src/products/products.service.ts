@@ -27,7 +27,8 @@ export class ProductsService {
   }
 
   async createProducts(newProduct) {
-    const { categoryId, productName, price, description, imgUrl } = newProduct;
+    const { categoryId, productName, price, description, imgUrl, totalStock } =
+      newProduct;
     try {
       const createdProduct = await this.productsRepository.insert({
         categoryId: parseInt(categoryId),
@@ -35,6 +36,7 @@ export class ProductsService {
         price,
         description,
         imgUrl,
+        totalStock,
       });
 
       return createdProduct;

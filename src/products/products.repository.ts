@@ -18,6 +18,7 @@ export class ProductsRepository extends Repository<Product> {
         'product.description',
         'product.imgUrl',
         'product.price',
+        'product.totalStock',
       ])
       .where('product.id = :id', { id })
       .getOne();
@@ -26,7 +27,8 @@ export class ProductsRepository extends Repository<Product> {
   }
 
   async updateProducts(productId, newProduct) {
-    const { categoryId, productName, price, description, imgUrl } = newProduct;
+    const { categoryId, productName, price, description, imgUrl, totalStock } =
+      newProduct;
 
     const updatedProduct = await this.createQueryBuilder('product')
       .update()
@@ -36,6 +38,7 @@ export class ProductsRepository extends Repository<Product> {
         description,
         categoryId,
         imgUrl,
+        totalStock,
       })
       .where('id = :productId', { productId })
       .execute();

@@ -46,8 +46,8 @@ export class Product extends CommonEntity {
 
   @IsNumber()
   @ApiProperty({
-    example: '2',
-    description: 'categoryId',
+    example: '200',
+    description: '상품 재고',
     required: true,
   })
   @Column('bigint')
