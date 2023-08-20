@@ -23,6 +23,7 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
       useFactory: (configService: ConfigService) => ({
         store: redisStore,
         url: configService.get('REDIS_URL'),
+        ttl: 0, // expire - 만료 없는 상태 유지
       }),
     }),
     ConfigModule.forRoot({ isGlobal: true }),
