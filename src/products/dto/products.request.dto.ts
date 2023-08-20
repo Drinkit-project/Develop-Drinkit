@@ -8,6 +8,7 @@ export class CreateProductsRequestDto extends PickType(Product, [
   'description',
   'categoryId',
   'imgUrl',
+  'totalStock',
 ]) {}
 
 export class UpdateProductsRequestDto extends OmitType(Product, [
@@ -16,4 +17,5 @@ export class UpdateProductsRequestDto extends OmitType(Product, [
   'description',
   'categoryId',
   'imgUrl',
+  'totalStock',
 ]) {}
