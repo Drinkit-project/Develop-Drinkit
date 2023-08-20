@@ -13,7 +13,7 @@ export class Discount extends CommonEntity {
     description: '할인 할 가격',
     required: false,
   })
-  @Column('bigint')
+  @Column('bigint', { nullable: true })
   discountPrice: number;
 
   @IsNumber()
@@ -22,7 +22,7 @@ export class Discount extends CommonEntity {
     description: '할인 할 할인율',
     required: false,
   })
-  @Column('int')
+  @Column('int', { nullable: true })
   discountRating: number;
 
   @IsDate()
@@ -43,6 +43,7 @@ export class Discount extends CommonEntity {
   @Column('varchar')
   endDate: Date;
 
+  @Column('int', { unique: true })
   productId: number;
 
   @OneToOne(() => Product, (product) => product.discount)
