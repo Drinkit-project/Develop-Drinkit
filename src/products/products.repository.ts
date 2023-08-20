@@ -11,10 +11,15 @@ export class ProductsRepository extends Repository<Product> {
   async getById(id) {
     const product = await this.createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.discount', 'discount')
       .select([
         'product.id',
         'product.productName',
         'category.name',
+        'discount.discountPrice',
+        'discount.discountRating',
+        'discount.startDate',
+        'discount.endDate',
         'product.description',
         'product.imgUrl',
         'product.price',
@@ -22,6 +27,28 @@ export class ProductsRepository extends Repository<Product> {
       ])
       .where('product.id = :id', { id })
       .getOne();
+
+    return product;
+  }
+
+  async getAll() {
+    const product = await this.createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.discount', 'discount')
+      .select([
+        'product.id',
+        'product.productName',
+        'category.name',
+        'discount.discountPrice',
+        'discount.discountRating',
+        'discount.startDate',
+        'discount.endDate',
+        'product.description',
+        'product.imgUrl',
+        'product.price',
+        'product.totalStock',
+      ])
+      .getMany();
 
     return product;
   }

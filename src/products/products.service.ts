@@ -12,7 +12,7 @@ export class ProductsService {
   constructor(private productsRepository: ProductsRepository) {}
 
   async getProducts() {
-    const products = await this.productsRepository.find();
+    const products = await this.productsRepository.getAll();
     return products;
   }
 
