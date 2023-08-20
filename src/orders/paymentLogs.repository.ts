@@ -12,6 +12,7 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
   async getOrders(userId: number) {
     const getOrdersData = await this.createQueryBuilder()
       .where('userId = :userId', { userId })
+      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
       .getMany();
     return getOrdersData;
   }
@@ -19,6 +20,7 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
   async getPaymentLog(paymentLogId: number) {
     const getPaymentLogData = await this.createQueryBuilder()
       .where('id = :paymentLogId', { paymentLogId })
+      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
       .getOne();
 
     return getPaymentLogData;
@@ -27,8 +29,17 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
   async getStoreOrders(storeId: number) {
     const getStoreOrdersData = await this.createQueryBuilder()
       .where('storeId = :storeId', { storeId })
+      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
       .getMany();
     return getStoreOrdersData;
+  }
+
+  async getAdminOrders() {
+    const getAdminOrdersData = await this.createQueryBuilder()
+      .where('storeId = :storeId', { storeId: null || undefined })
+      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
+      .getMany();
+    return getAdminOrdersData;
   }
 
   async updateOrdersStatus(paymentLogId: number, status: string) {
@@ -66,8 +77,19 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
   async findPaymentLog(userId: number) {
     const findPaymentLogData = await this.createQueryBuilder()
       .where('userId = :userId', { userId })
+      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
       .getOne();
 
     return findPaymentLogData;
+  }
+
+  async deletePaymentLog(paymentLogId: number, manager: EntityManager) {
+    const deletePaymentLogData = await manager
+      .createQueryBuilder()
+      .softDelete()
+      .where('paymentLogId = :paymentLogId', { paymentLogId })
+      .execute();
+
+    return deletePaymentLogData;
   }
 }

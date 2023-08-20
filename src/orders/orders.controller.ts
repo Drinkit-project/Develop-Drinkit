@@ -37,6 +37,14 @@ export class OrdersController {
     return getStoreOrdersData;
   }
 
+  @ApiOperation({ summary: '쇼핑몰 관리자 주문 내역 조회' })
+  @Get('/Admin')
+  async getAdminOrders(@Query('storeId') storeId: number) {
+    const userId = 1; //Todo: (인증 부분 확인 후 추가)
+    const getAdminOrdersData = await this.ordersService.getAdminOrders(userId);
+    return getAdminOrdersData;
+  }
+
   @ApiOperation({ summary: '주문 내역 상세 조회' })
   @Get(':paymentLogId')
   async getOrdersDetail(@Param('paymentLogId') paymentLogId: number) {
@@ -55,7 +63,7 @@ export class OrdersController {
     return updateOrdersStatusByStoreData;
   }
 
-  @ApiOperation({ summary: '어드민 주문 상태 변경' })
+  @ApiOperation({ summary: '쇼핑몰 관리자 주문 상태 변경' })
   @Put(':paymentLogId')
   async updateOrdersStatusByAdmin(@Param('paymentLogId') paymentLogId: number) {
     const userId = 1; //Todo: (인증 부분 확인 후 추가)
@@ -113,5 +121,33 @@ export class OrdersController {
       await this.ordersService.cancelOrderByCustomer(userId, paymentLogId);
 
     return cancelOrderByCustomerData;
+  }
+
+  @ApiOperation({ summary: '가게 주문 취소' })
+  @Delete(':paymentLogId/store/:storeId')
+  async cancelOrderByStore(
+    @Param('paymentLogId') paymentLogId: number,
+    @Param('storeId') storeId: number,
+  ) {
+    const userId = 1; //Todo: (인증 부분 확인 후 추가)
+    const cancelOrderByStoreData = await this.ordersService.cancelOrderByStore(
+      userId,
+      paymentLogId,
+      storeId,
+    );
+
+    return cancelOrderByStoreData;
+  }
+
+  @ApiOperation({ summary: '쇼핑몰 관리자 주문 취소' })
+  @Delete(':paymentLogId/Admin')
+  async cancelOrderByAdmin(@Param('paymentLogId') paymentLogId: number) {
+    const userId = 1; //Todo: (인증 부분 확인 후 추가)
+    const cancelOrderByAdminData = await this.ordersService.cancelOrderByAdmin(
+      userId,
+      paymentLogId,
+    );
+
+    return cancelOrderByAdminData;
   }
 }

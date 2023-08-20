@@ -58,6 +58,22 @@ export class OrdersService {
     return getStoreOrdersData;
   }
 
+  async getAdminOrders(userId: number) {
+    const getUserData = await this.usersRepository
+      .createQueryBuilder()
+      .where('id = :userId', { userId })
+      .getOne();
+
+    if (!getUserData.isAdmin) {
+      return new PreconditionFailedException('권한이 없습니다.');
+    }
+
+    const getAdminOrdersData =
+      await this.paymentLogsRepository.getAdminOrders();
+
+    return getAdminOrdersData;
+  }
+
   async updateOrdersStatusByStore(userId: number, paymentLogId: number) {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
@@ -270,7 +286,7 @@ export class OrdersService {
     return requestCancelOrderData;
   }
 
-  // 고객 주문 취소
+  // 고객 주문 취소 승인
   async cancelOrderByCustomer(userId: number, paymentLogId: number) {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
@@ -281,14 +297,10 @@ export class OrdersService {
       .where('id = :userId', { userId })
       .getOne();
 
-    const getOrderDetailData =
+    const getOrdersDetailData =
       await this.paymentDetailsRepository.getOrdersDetail(paymentLogId);
 
-    if (getPaymentLogData.storeId == null) {
-      if (getUserData.isAdmin != true) {
-        return new PreconditionFailedException('권한이 없습니다.');
-      }
-    } else {
+    if (getPaymentLogData.storeId) {
       const getStoreData = this.storesRepository
         .createQueryBuilder()
         .where('userId = :userId', { userId })
@@ -296,12 +308,16 @@ export class OrdersService {
       if (getPaymentLogData.storeId != getStoreData.id) {
         return new PreconditionFailedException('권한이 없습니다.');
       }
+    } else {
+      if (getUserData.isAdmin != true) {
+        return new PreconditionFailedException('권한이 없습니다.');
+      }
     }
 
     let productIdList: Array<number>;
     let countList: Array<number>;
 
-    getOrderDetailData.forEach((v) => {
+    getOrdersDetailData.forEach((v) => {
       productIdList.push(v.productId);
       countList.push(v.count);
     });
@@ -338,7 +354,153 @@ export class OrdersService {
         .where('id = :id', { id: userId })
         .execute();
 
+      const deletePaymentDetailsData =
+        await this.paymentDetailsRepository.deletePaymentDetails(
+          paymentLogId,
+          manager,
+        );
+
+      const deletePaymentLogData =
+        await this.paymentLogsRepository.deletePaymentLog(
+          paymentLogId,
+          manager,
+        );
+
       return '환불 / 반품 요청이 완료되었습니다.';
     });
+  }
+
+  //스토어 주문 취소
+  async cancelOrderByStore(
+    userId: number,
+    paymentLogId: number,
+    storeId: number,
+  ) {
+    const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
+      paymentLogId,
+    );
+
+    if (getPaymentLogData.storeId != storeId) {
+      return new PreconditionFailedException('권한이 없습니다.');
+    }
+
+    const getStoreData = this.storesRepository
+      .createQueryBuilder()
+      .where('userId = :userId', { userId })
+      .getOne();
+
+    if (getStoreData.userId != userId) {
+      return new PreconditionFailedException('권한이 없습니다.');
+    }
+
+    const getOrdersDetailData =
+      await this.paymentDetailsRepository.getOrdersDetail(paymentLogId);
+
+    let productIdList: Array<number>;
+    let countList: Array<number>;
+
+    getOrdersDetailData.forEach((v) => {
+      productIdList.push(v.productId);
+      countList.push(v.count);
+    });
+
+    const addPoint =
+      getPaymentLogData.paidPoint - getPaymentLogData.totalPrice * 0.05;
+
+    await this.dataSource.transaction(async (manager) => {
+      const updateTotalStockByStoreProduct = await manager
+        .createQueryBuilder()
+        .update(Store_Product)
+        .set({ totalStock: () => `totalStock - ${countList}` })
+        .where('productId IN (:productId)', {
+          productId: productIdList,
+        })
+        .execute();
+
+      const updateUserPointData = await manager
+        .createQueryBuilder()
+        .update(User)
+        .set({ point: () => `point + ${addPoint}` })
+        .where('id = :id', { id: getPaymentLogData.userId })
+        .execute();
+
+      const deletePaymentDetailsData =
+        await this.paymentDetailsRepository.deletePaymentDetails(
+          paymentLogId,
+          manager,
+        );
+
+      const deletePaymentLogData =
+        await this.paymentLogsRepository.deletePaymentLog(
+          paymentLogId,
+          manager,
+        );
+
+      return '주문이 취소되었습니다.';
+    });
+  }
+
+  // 관리자 주문 취소
+  async cancelOrderByAdmin(userId: number, paymentLogId: number) {
+    const getUserData = await this.usersRepository
+      .createQueryBuilder()
+      .where('id = :userId', { userId })
+      .getOne();
+
+    if (!getUserData.isAdmin) {
+      return new PreconditionFailedException('권한이 없습니다.');
+    }
+
+    const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
+      paymentLogId,
+    );
+
+    const getOrdersDetailData =
+      await this.paymentDetailsRepository.getOrdersDetail(paymentLogId);
+
+    let productIdList: Array<number>;
+    let countList: Array<number>;
+
+    getOrdersDetailData.forEach((v) => {
+      productIdList.push(v.productId);
+      countList.push(v.count);
+    });
+
+    const addPoint =
+      getPaymentLogData.paidPoint - getPaymentLogData.totalPrice * 0.05;
+
+    await this.dataSource.transaction(async (manager) => {
+      const updateTotalStockByProduct = manager
+        .createQueryBuilder()
+        .update(Product)
+        .set({ totalStock: () => `totalStock - ${countList}` })
+        .where('id IN (:id)', {
+          id: productIdList,
+        })
+        .execute();
+
+      const updateUserPointData = await manager
+        .createQueryBuilder()
+        .update(User)
+        .set({ point: () => `point + ${addPoint}` })
+        .where('id = :id', { id: getPaymentLogData.userId })
+        .execute();
+
+      const deletePaymentDetailsData =
+        await this.paymentDetailsRepository.deletePaymentDetails(
+          paymentLogId,
+          manager,
+        );
+
+      const deletePaymentLogData =
+        await this.paymentLogsRepository.deletePaymentLog(
+          paymentLogId,
+          manager,
+        );
+
+      return '주문이 취소되었습니다.';
+    });
+
+    return;
   }
 }

@@ -17,6 +17,7 @@ export class PaymentDetailRepository extends Repository<PaymentDetail> {
         'product.id = paymentDetail.productId',
       )
       .where('paymentLogId = :paymentLogId', { paymentLogId })
+      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
       .getRawMany();
     return getOrdersDetailData;
   }
@@ -39,10 +40,12 @@ export class PaymentDetailRepository extends Repository<PaymentDetail> {
     return postPaymentDetailData;
   }
 
-  async getOrderDetail(paymentLogId: number) {
-    const getOrderDetailData = await this.createQueryBuilder()
+  async deletePaymentDetails(paymentLogId: number, manager: EntityManager) {
+    const deletePaymentDetailsData = await manager
+      .createQueryBuilder()
+      .softDelete()
       .where('paymentLogId = :paymentLogId', { paymentLogId })
-      .getMany();
-    return getOrderDetailData;
+      .execute();
+    return deletePaymentDetailsData;
   }
 }
