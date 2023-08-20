@@ -27,7 +27,7 @@ export class PaymentLog extends CommonEntity {
   totalPrice: number;
 
   @Column('bigint')
-  storeId?: number | null;
+  storeId: number;
 
   @Column('bigint')
   paidPoint: number;

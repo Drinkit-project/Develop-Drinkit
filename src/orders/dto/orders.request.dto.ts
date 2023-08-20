@@ -1,4 +1,10 @@
-import { IsArray, IsBoolean, IsNumber } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsNumber,
+  IsString,
+  IsJSON,
+} from 'class-validator';
 
 export class OrderReqDto {
   //orderList = [{productId:2, 수량:3}, ...]
@@ -9,5 +15,5 @@ export class OrderReqDto {
   readonly usePoint: boolean;
 
   @IsNumber()
-  readonly storeId?: number | null;
+  readonly storeId: number;
 }

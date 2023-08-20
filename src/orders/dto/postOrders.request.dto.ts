@@ -12,5 +12,5 @@ export class PostOrderReqDto {
   readonly paidPoint: number;
 
   @IsNumber()
-  readonly storeId?: number;
+  readonly storeId: number;
 }

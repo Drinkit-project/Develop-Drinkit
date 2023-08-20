@@ -15,7 +15,7 @@ export class PaymentDetail extends CommonEntity {
   @Column('bigint')
   count: number;
 
-  @OneToOne(() => Product, (product) => product.paymentDetail)
+  @ManyToOne(() => Product, (product) => product.paymentDetail)
   @JoinColumn([{ name: 'productId', referencedColumnName: 'id' }])
   product: Product;
 

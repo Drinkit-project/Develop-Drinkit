@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PaymentLogRepository } from './paymentLogs.repository';
 import { PaymentDetailRepository } from './paymentDetails.repository';
-import { Store_ProductsRepository } from 'src/products/store_products.repository';
+import { Store_ProductsRepository } from 'src/stores/stores_products.repository';
 import { UsersRepository } from 'src/users/users.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
 import { ProductsRepository } from 'src/products/products.repository';
@@ -39,17 +39,16 @@ export class OrdersService {
   }
   async getStore(storeId: number) {
     const getStoreData = await this.storesRepository
-      .createQueryBuilder()
-      .where('id = :storeId', { id: storeId })
+      .createQueryBuilder('store')
+      .where('store.id = :storeId', { storeId })
       .getOne();
     return getStoreData;
   }
 
   async getStoreOrders(userId: number, storeId: number) {
     const getStoreData = await this.getStore(storeId);
-
     if (getStoreData.userId != userId) {
-      return new PreconditionFailedException();
+      throw new PreconditionFailedException();
     }
     const getStoreOrdersData = await this.paymentLogsRepository.getStoreOrders(
       storeId,
@@ -60,12 +59,12 @@ export class OrdersService {
 
   async getAdminOrders(userId: number) {
     const getUserData = await this.usersRepository
-      .createQueryBuilder()
-      .where('id = :userId', { userId })
+      .createQueryBuilder('user')
+      .where('user.id = :userId', { userId })
       .getOne();
 
     if (!getUserData.isAdmin) {
-      return new PreconditionFailedException('권한이 없습니다.');
+      throw new PreconditionFailedException('권한이 없습니다.');
     }
 
     const getAdminOrdersData =
@@ -81,7 +80,7 @@ export class OrdersService {
     const getStoreData = await this.getStore(getPaymentLogData.storeId);
 
     if (getStoreData.userId != userId) {
-      return new PreconditionFailedException('권한이 없습니다.');
+      throw new PreconditionFailedException('권한이 없습니다.');
     }
 
     let status: PaymentStatus;
@@ -101,12 +100,21 @@ export class OrdersService {
   }
 
   async updateOrdersStatusByAdmin(userId: number, paymentLogId: number) {
+    const getUserData = await this.usersRepository
+      .createQueryBuilder('user')
+      .where('user.id = :userId', { userId })
+      .getOne();
+
+    if (!getUserData.isAdmin) {
+      throw new PreconditionFailedException('권한이 없습니다.');
+    }
+
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
 
-    if (getPaymentLogData.storeId) {
-      return new PreconditionFailedException('권한이 없습니다.');
+    if (getPaymentLogData.storeId != 1) {
+      throw new PreconditionFailedException('권한이 없습니다.');
     }
 
     let status: PaymentStatus;
@@ -129,48 +137,44 @@ export class OrdersService {
     orderList: Array<{ productId: number; count: number }>,
     userId: number,
     usePoint: boolean,
-    storeId: number | null,
+    storeId: number,
   ) {
-    let productIdList: Array<number>;
-    let countList: Array<number>;
+    const productIdList: Array<number> = [];
+    const countList: Array<number> = [];
 
     orderList.forEach((v) => {
       productIdList.push(v.productId);
       countList.push(v.count);
     });
 
-    if (storeId) {
+    if (storeId != 1) {
       const totalStockByStoreProductData = await this.store_ProductsRepository
         .createQueryBuilder('store_product')
-        .where('store_product.productId IN (:productId)', {
-          productId: productIdList,
-        })
+        .where('store_product.productId IN (:...ids)', { ids: productIdList })
         .getMany();
 
       totalStockByStoreProductData.forEach((v, i: number) => {
         if (countList[i] > v.totalStock) {
-          return new PreconditionFailedException();
+          throw new PreconditionFailedException();
         }
       });
     } else {
       const totalStockByProductData = await this.productsRepository
         .createQueryBuilder('product')
-        .where('product.id IN (:id)', {
-          id: productIdList,
-        })
+        .where('product.id IN (:...ids)', { ids: productIdList })
         .getMany();
 
       totalStockByProductData.forEach((v, i: number) => {
         if (countList[i] > v.totalStock) {
-          return new PreconditionFailedException();
+          throw new PreconditionFailedException();
         }
       });
     }
 
     if (usePoint) {
       const userPointData = await this.usersRepository
-        .createQueryBuilder()
-        .where('id = :userId', { userId })
+        .createQueryBuilder('user')
+        .where('user.id = :userId', { userId })
         .getOne();
       return userPointData.point;
     }
@@ -196,19 +200,14 @@ export class OrdersService {
           manager,
         );
 
-      //find도 manager로 해야하는지?
-      const findPaymentLogData =
-        await this.paymentLogsRepository.findPaymentLog(userId);
-
-      const paymentLogId = Number(findPaymentLogData.id);
-
-      let paymentDetailArray: Array<{
+      const paymentLogId = postPaymentLogData.identifiers[0].id;
+      const paymentDetailArray: Array<{
         productId: number;
         paymentLogId: number;
         count: number;
-      }>;
-      let productIdList: Array<number>;
-      let countList: Array<number>;
+      }> = [];
+      const productIdList: Array<number> = [];
+      const countList: Array<number> = [];
 
       orderList.forEach((v) => {
         paymentDetailArray.push({
@@ -237,31 +236,73 @@ export class OrdersService {
         .where('id = :id', { id: userId })
         .execute();
 
-      if (storeId) {
+      if (storeId != 1) {
         //store_product 재고 업데이트
-        const updateTotalStockByStoreProduct = await manager
-          .createQueryBuilder()
-          .update(Store_Product)
-          .set({ totalStock: () => `totalStock - ${countList}` })
-          .where('productId IN (:productId)', {
-            productId: productIdList,
-          })
-          .execute();
+        for (let i = 0; i < countList.length; i++) {
+          await manager
+            .createQueryBuilder()
+            .update(Store_Product)
+            .set({ totalStock: () => `totalStock - ${countList[i]}` })
+            .where('productId = :productId', { productId: productIdList[i] })
+            .execute();
+        }
+        // const updateTotalStockByStoreProduct = await manager
+        //   .createQueryBuilder()
+        //   .update(Store_Product)
+        //   .set({ totalStock: () => `totalStock - 1` })
+        //   // .set({
+        //   //   totalStock: () => {
+        //   //     for (let i = 0; i < countList.length; i++) {
+        //   //       `totalStock - ${countList}`;
+        //   //     }
+        //   //   },
+        //   // })
+        //   .where('productId IN (:...ids)', { ids: productIdList })
+        //   .execute();
       } else {
         //product 재고 업데이트
-        const updateTotalStockByProduct = manager
-          .createQueryBuilder()
-          .update(Product)
-          .set({ totalStock: () => `totalStock - ${countList}` })
-          .where('id IN (:id)', {
-            id: productIdList,
-          })
-          .execute();
+        // const updateTotalStockByProduct = await manager
+        //   .createQueryBuilder()
+        //   .update(Product)
+        //   .set({
+        //     totalStock: () => {
+        //       for (let i = 0; i < countList.length; i++) {
+        //         `totalStock - ${countList[i]}`;
+        //       }
+        //     },
+        //   })
+        //   .where('id IN (:...ids)', { ids: productIdList })
+        //   .execute();
+        for (let i = 0; i < countList.length; i++) {
+          await manager
+            .createQueryBuilder()
+            .update(Product)
+            .set({
+              totalStock: () => `totalStock - ${countList[i]}`,
+            })
+            .where('id = :productId', { productId: productIdList[i] })
+            .execute();
+        }
+        // const updateTotalStockByProduct = manager
+        //   .createQueryBuilder()
+        //   .update(Product)
+        //   .set({ totalStock: () => `totalStock - ${countList}` })
+        //   // .set({
+        //   //   totalStock: () => {
+        //   //     for (let i = 0; i < countList.length; i++) {
+        //   //       `totalStock - ${countList}`;
+        //   //     }
+        //   //   },
+        //   // })
+        //   .where('id IN (:...ids)', { ids: productIdList })
+        //   .execute();
       }
       //todo: 레디스 누적판매량갱신(추후)
       return '결제 완료';
     });
   }
+
+  //
 
   // 고객 주문 취소 요청
   async requestCancelOrder(userId: number, paymentLogId: number) {
@@ -270,11 +311,11 @@ export class OrdersService {
     );
 
     if (getPaymentLogData.userId != userId) {
-      return new PreconditionFailedException('권한이 없습니다.');
+      throw new PreconditionFailedException('권한이 없습니다.');
     }
 
     if (getPaymentLogData.status == PaymentStatus.WAIT_CANCELL) {
-      return new NotFoundException('이미 처리된 요청입니다.');
+      throw new NotFoundException('이미 처리된 요청입니다.');
     }
 
     const requestCancelOrderData =
@@ -293,24 +334,24 @@ export class OrdersService {
     );
 
     const getUserData = await this.usersRepository
-      .createQueryBuilder()
-      .where('id = :userId', { userId })
+      .createQueryBuilder('user')
+      .where('user.id = :userId', { userId })
       .getOne();
 
     const getOrdersDetailData =
       await this.paymentDetailsRepository.getOrdersDetail(paymentLogId);
 
     if (getPaymentLogData.storeId) {
-      const getStoreData = this.storesRepository
-        .createQueryBuilder()
-        .where('userId = :userId', { userId })
+      const getStoreData = await this.storesRepository
+        .createQueryBuilder('store')
+        .where('store.userId = :userId', { userId })
         .getOne();
-      if (getPaymentLogData.storeId != getStoreData.id) {
-        return new PreconditionFailedException('권한이 없습니다.');
+      if (getPaymentLogData.storeId != Number(getStoreData.id)) {
+        throw new PreconditionFailedException('권한이 없습니다.');
       }
     } else {
       if (getUserData.isAdmin != true) {
-        return new PreconditionFailedException('권한이 없습니다.');
+        throw new PreconditionFailedException('권한이 없습니다.');
       }
     }
 
@@ -381,16 +422,16 @@ export class OrdersService {
     );
 
     if (getPaymentLogData.storeId != storeId) {
-      return new PreconditionFailedException('권한이 없습니다.');
+      throw new PreconditionFailedException('권한이 없습니다.');
     }
 
-    const getStoreData = this.storesRepository
-      .createQueryBuilder()
-      .where('userId = :userId', { userId })
+    const getStoreData = await this.storesRepository
+      .createQueryBuilder('user')
+      .where('user.userId = :userId', { userId })
       .getOne();
 
     if (getStoreData.userId != userId) {
-      return new PreconditionFailedException('권한이 없습니다.');
+      throw new PreconditionFailedException('권한이 없습니다.');
     }
 
     const getOrdersDetailData =
@@ -443,12 +484,12 @@ export class OrdersService {
   // 관리자 주문 취소
   async cancelOrderByAdmin(userId: number, paymentLogId: number) {
     const getUserData = await this.usersRepository
-      .createQueryBuilder()
-      .where('id = :userId', { userId })
+      .createQueryBuilder('user')
+      .where('user.id = :userId', { userId })
       .getOne();
 
     if (!getUserData.isAdmin) {
-      return new PreconditionFailedException('권한이 없습니다.');
+      throw new PreconditionFailedException('권한이 없습니다.');
     }
 
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(

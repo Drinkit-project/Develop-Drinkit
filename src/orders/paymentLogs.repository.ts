@@ -10,34 +10,31 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
   }
 
   async getOrders(userId: number) {
-    const getOrdersData = await this.createQueryBuilder()
-      .where('userId = :userId', { userId })
-      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
+    const getOrdersData = await this.createQueryBuilder('paymentLog')
+      .where('paymentLog.userId = :userId', { userId })
       .getMany();
+
     return getOrdersData;
   }
 
   async getPaymentLog(paymentLogId: number) {
-    const getPaymentLogData = await this.createQueryBuilder()
-      .where('id = :paymentLogId', { paymentLogId })
-      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
+    const getPaymentLogData = await this.createQueryBuilder('paymentLog')
+      .where('paymentLog.id = :paymentLogId', { paymentLogId })
       .getOne();
 
     return getPaymentLogData;
   }
 
   async getStoreOrders(storeId: number) {
-    const getStoreOrdersData = await this.createQueryBuilder()
-      .where('storeId = :storeId', { storeId })
-      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
+    const getStoreOrdersData = await this.createQueryBuilder('paymentLog')
+      .where('paymentLog.storeId = :storeId', { storeId })
       .getMany();
     return getStoreOrdersData;
   }
 
   async getAdminOrders() {
-    const getAdminOrdersData = await this.createQueryBuilder()
-      .where('storeId = :storeId', { storeId: null || undefined })
-      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
+    const getAdminOrdersData = await this.createQueryBuilder('paymentLog')
+      .where('paymentLog.storeId = :storeId', { storeId: 1 })
       .getMany();
     return getAdminOrdersData;
   }
@@ -75,9 +72,9 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
   }
 
   async findPaymentLog(userId: number) {
-    const findPaymentLogData = await this.createQueryBuilder()
-      .where('userId = :userId', { userId })
-      .andWhere('deletedAt = :deletedAt', { deletedAt: null })
+    const findPaymentLogData = await this.createQueryBuilder('paymentLog')
+      .where('paymentLog.userId = :userId', { userId })
+      .orderBy('paymentLog.createdAt', 'DESC')
       .getOne();
 
     return findPaymentLogData;
@@ -86,8 +83,9 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
   async deletePaymentLog(paymentLogId: number, manager: EntityManager) {
     const deletePaymentLogData = await manager
       .createQueryBuilder()
-      .softDelete()
-      .where('paymentLogId = :paymentLogId', { paymentLogId })
+      .delete()
+      .from(PaymentLog)
+      .where('id = :paymentLogId', { paymentLogId })
       .execute();
 
     return deletePaymentLogData;
