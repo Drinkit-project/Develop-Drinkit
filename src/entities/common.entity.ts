@@ -6,7 +6,7 @@ import {
 
 export class CommonEntity {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @CreateDateColumn()
   createdAt: Date;
