@@ -10,15 +10,28 @@ import { UsersService } from './users.service';
 import { Payload } from './security/payload.interface';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { User } from 'src/entities/user.entity';
-import { ConfigService } from '@nestjs/config';
+import { JwtConfigService } from '../../config/jwt.config.service';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class AuthService {
+  //이메일 인증용
+  // private transporter: nodemailer.Transporter;
+
   constructor(
+    private jwtConfigService: JwtConfigService,
     private usersService: UsersService,
     private jwtService: JwtService,
-    private readonly configService: ConfigService,
-  ) {}
+  ) {
+    //이메일 인증용
+    // this.transporter = nodemailer.createTransport({
+    //   service: 'Gmail', // 이메일 서비스 제공자 설정
+    //   auth: {
+    //     user: process.env.NODEMAILER_EMAIL, // 발신자 이메일 주소
+    //     pass: process.env.NODEMAILER_EMAIL_PASSWORD, // 발신자 이메일 비밀번호 (보안에 주의)
+    //   },
+    // });
+  }
 
   //회원가입
   async signUp(data: UserDto) {
@@ -45,7 +58,9 @@ export class AuthService {
   }
 
   //로그인
-  async signIn(data: Partial<UserDto>): Promise<string | undefined> {
+  async signIn(
+    data: Partial<UserDto>,
+  ): Promise<{ accessToken: string; refreshToken: string } | undefined> {
     const { email, password } = data;
 
     const user = await this.usersService.findByFields({
@@ -65,9 +80,10 @@ export class AuthService {
       throw new UnauthorizedException('email 또는 password를 확인해주세요.');
     }
 
-    //액세스토큰 생성
-    const payload: Payload = { userId: user.id };
-    return await this.jwtService.signAsync(payload);
+    const accessToken = await this.generateAccessToken(user.id);
+    const refreshToken = await this.generateRefreshToken(user.id);
+
+    return { accessToken, refreshToken };
   }
 
   //비밀번호 변경
@@ -140,5 +156,69 @@ export class AuthService {
 
     if (isPasswordValidated) return true;
     else return false;
+  }
+
+  // 액세스 토큰 생성
+  async generateAccessToken(userId: number): Promise<string> {
+    const payload = { userId };
+    const accessToken = await this.jwtService.signAsync(payload);
+    return accessToken;
+  }
+
+  // 리프레시 토큰 생성
+  async generateRefreshToken(userId: number): Promise<string> {
+    const payload = { userId };
+    const refreshTokenOptions = this.jwtConfigService.createRefreshJwtOptions(); // 리프레시 토큰 설정을 가져옴
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: refreshTokenOptions.secret,
+      expiresIn: refreshTokenOptions.signOptions.expiresIn,
+    });
+    return refreshToken;
+  }
+
+  isRefreshTokenValid(refreshToken: string): boolean {
+    try {
+      const refreshJwtOptions = this.jwtConfigService.createRefreshJwtOptions();
+      const secret = refreshJwtOptions.secret;
+
+      // const redisRefreshToken = // 레디스에서 가져온 리프레시 토큰;
+
+      // // 사용자가 보낸 리프레시 토큰과 레디스에 저장된 리프레시 토큰을 비교합니다.
+      // if (refreshToken !== redisRefreshToken) {
+      //   return false;
+      // }
+
+      this.jwtService.verify(refreshToken, { secret });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // 액세스 토큰의 만료 여부 확인
+  isAccessTokenExpired(expiration: number): boolean {
+    const currentTime = Date.now() / 1000;
+    return expiration <= currentTime;
+  }
+
+  async isClientRefreshTokenExpired(
+    refreshToken: string,
+  ): Promise<boolean | Payload> {
+    try {
+      const refreshJwtOptions = this.jwtConfigService.createRefreshJwtOptions();
+      const secret = refreshJwtOptions.secret;
+
+      // 클라이언트가 보낸 리프레시 토큰의 만료 여부를 검증합니다.
+      const verifiedRefreshToken = await this.jwtService.verifyAsync(
+        refreshToken,
+        {
+          secret,
+        },
+      );
+
+      return verifiedRefreshToken; // 리프레시 토큰이 유효함
+    } catch (error) {
+      return false; // 검증 실패 또는 예외 발생으로 인한 만료 처리
+    }
   }
 }
