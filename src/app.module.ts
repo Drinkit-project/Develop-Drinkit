@@ -13,6 +13,7 @@ import { CartModule } from './cart/cart.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from 'config/typeorm.config.service';
+import { SubscribesModule } from './subscribes/subscribes.module';
 
 @Module({
   imports: [
@@ -22,9 +23,9 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         store: redisStore,
-        // host: configService.get('REDIS_HOST'),
-        // port: configService.get('REDIS_PORT'),
-        url: configService.get('REDIS_URL'),
+        host: configService.get('REDIS_HOST'),
+        port: configService.get('REDIS_PORT'),
+        // url: configService.get('REDIS_URL'),
         ttl: 0, // expire - 만료 없는 상태 유지
       }),
     }),
@@ -40,6 +41,7 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
     StoresModule,
     OrdersModule,
     CartModule,
+    SubscribesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

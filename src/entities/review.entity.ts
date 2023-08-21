@@ -1,10 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 import { CommonEntity } from './common.entity';
 import { User } from './user.entity';
 import { Product } from './product.entity';
 import { IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaymentDetail } from './paymentDetail.entity';
 
 enum ReviewRating {
   ONE = 1,
@@ -40,6 +41,9 @@ export class Review extends CommonEntity {
   @Column('bigint')
   userId: number;
 
+  @Column('bigint')
+  paymentDetailId: number;
+
   @ManyToOne(() => Product, (product) => product.review)
   @JoinColumn([{ name: 'productId', referencedColumnName: 'id' }])
   product: Product;
@@ -47,4 +51,8 @@ export class Review extends CommonEntity {
   @ManyToOne(() => User, (user) => user.review)
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
+
+  @OneToOne(() => PaymentDetail, (paymentDetail) => paymentDetail.review)
+  @JoinColumn([{ name: 'paymentDetailId', referencedColumnName: 'id' }])
+  paymentDetail: PaymentDetail;
 }
