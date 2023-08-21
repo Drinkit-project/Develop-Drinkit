@@ -13,9 +13,14 @@ import { CartModule } from './cart/cart.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from 'config/typeorm.config.service';
+import { UsersModule } from './user/users.module';
+import { ProfilesController } from './profiles/profiles.controller';
+import { ProfilesService } from './profiles/profiles.service';
+import { ProfilesModule } from './profiles/profiles.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync<RedisClientOptions>({
       isGlobal: true,
       imports: [ConfigModule],
@@ -28,7 +33,6 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
         ttl: 0, // expire - 만료 없는 상태 유지
       }),
     }),
-    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: TypeOrmConfigService,
@@ -40,8 +44,10 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
     StoresModule,
     OrdersModule,
     CartModule,
+    UsersModule,
+    ProfilesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ProfilesController],
+  providers: [AppService, ProfilesService],
 })
 export class AppModule {}
