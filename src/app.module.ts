@@ -5,11 +5,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-// import { ProductsModule } from './products/products.module';
+import { ProductsModule } from './products/products.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StoresModule } from './stores/stores.module';
 import { OrdersModule } from './orders/orders.module';
-// import { CartModule } from './cart/cart.module';
+import { CartModule } from './cart/cart.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from 'config/typeorm.config.service';
@@ -33,11 +33,11 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
       inject: [ConfigService],
     }),
     AuthModule,
-    // ProductsModule,
+    ProductsModule,
     ReviewsModule,
     StoresModule,
     OrdersModule,
-    // CartModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],
