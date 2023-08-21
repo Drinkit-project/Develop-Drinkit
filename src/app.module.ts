@@ -23,9 +23,9 @@ import { SubscribesModule } from './subscribes/subscribes.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         store: redisStore,
-        // host: configService.get('REDIS_HOST'),
-        // port: configService.get('REDIS_PORT'),
-        url: configService.get('REDIS_URL'),
+        host: configService.get('REDIS_HOST'),
+        port: configService.get('REDIS_PORT'),
+        // url: configService.get('REDIS_URL'),
         ttl: 0, // expire - 만료 없는 상태 유지
       }),
     }),
