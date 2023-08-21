@@ -3,6 +3,8 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CommonEntity } from './common.entity';
 import { User } from './user.entity';
 import { Product } from './product.entity';
+import { IsNumber, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 enum ReviewRating {
   ONE = 1,
@@ -17,11 +19,23 @@ export class Review extends CommonEntity {
   @Column('bigint')
   productId: number;
 
+  @IsString()
+  @ApiProperty({
+    example: '개나이잉이이이이스요',
+    description: '리뷰 내용',
+    required: true,
+  })
   @Column('varchar')
   content: string;
 
-  @Column({ type: 'enum', enum: ReviewRating })
-  status: number;
+  @IsNumber()
+  @ApiProperty({
+    example: '5',
+    description: '리뷰 평점',
+    required: true,
+  })
+  @Column({ type: 'int', enum: ReviewRating })
+  rating: number;
 
   @Column('bigint')
   userId: number;
