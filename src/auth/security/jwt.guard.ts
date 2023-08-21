@@ -62,6 +62,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
 
         request.userId = user.userId;
       }
+      request.userId = payload.userId;
       return true;
     } catch (error) {
       throw new UnauthorizedException('Invalid token.');
