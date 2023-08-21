@@ -6,8 +6,8 @@ import {
 import { PaymentLogRepository } from './paymentLogs.repository';
 import { PaymentDetailRepository } from './paymentDetails.repository';
 import { Store_ProductsRepository } from 'src/stores/stores_products.repository';
+import { UsersRepository } from 'src/users/users.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
-import { UsersRepository } from 'src/auth/users.repository';
 import { ProductsRepository } from 'src/products/products.repository';
 import { Product } from 'src/entities/product.entity';
 import { User } from 'src/entities/user.entity';
@@ -220,16 +220,15 @@ export class OrdersService {
       });
 
       //paymentDetail 생성
-      const postPaymentDetailData =
-        await this.paymentDetailsRepository.postPaymentDetail(
-          paymentDetailArray,
-          manager,
-        );
+      await this.paymentDetailsRepository.postPaymentDetail(
+        paymentDetailArray,
+        manager,
+      );
 
       //유저 포인트 계산 후 업데이트
       const addPoint = totalPrice * 0.05 - paidPoint;
 
-      const updateUserPointData = await manager
+      await manager
         .createQueryBuilder()
         .update(User)
         .set({ point: () => `point + ${addPoint}` })
@@ -246,33 +245,7 @@ export class OrdersService {
             .where('productId = :productId', { productId: productIdList[i] })
             .execute();
         }
-        // const updateTotalStockByStoreProduct = await manager
-        //   .createQueryBuilder()
-        //   .update(Store_Product)
-        //   .set({ totalStock: () => `totalStock - 1` })
-        //   // .set({
-        //   //   totalStock: () => {
-        //   //     for (let i = 0; i < countList.length; i++) {
-        //   //       `totalStock - ${countList}`;
-        //   //     }
-        //   //   },
-        //   // })
-        //   .where('productId IN (:...ids)', { ids: productIdList })
-        //   .execute();
       } else {
-        //product 재고 업데이트
-        // const updateTotalStockByProduct = await manager
-        //   .createQueryBuilder()
-        //   .update(Product)
-        //   .set({
-        //     totalStock: () => {
-        //       for (let i = 0; i < countList.length; i++) {
-        //         `totalStock - ${countList[i]}`;
-        //       }
-        //     },
-        //   })
-        //   .where('id IN (:...ids)', { ids: productIdList })
-        //   .execute();
         for (let i = 0; i < countList.length; i++) {
           await manager
             .createQueryBuilder()
@@ -283,19 +256,6 @@ export class OrdersService {
             .where('id = :productId', { productId: productIdList[i] })
             .execute();
         }
-        // const updateTotalStockByProduct = manager
-        //   .createQueryBuilder()
-        //   .update(Product)
-        //   .set({ totalStock: () => `totalStock - ${countList}` })
-        //   // .set({
-        //   //   totalStock: () => {
-        //   //     for (let i = 0; i < countList.length; i++) {
-        //   //       `totalStock - ${countList}`;
-        //   //     }
-        //   //   },
-        //   // })
-        //   .where('id IN (:...ids)', { ids: productIdList })
-        //   .execute();
       }
       //todo: 레디스 누적판매량갱신(추후)
       return '결제 완료';
@@ -333,15 +293,19 @@ export class OrdersService {
       paymentLogId,
     );
 
+    if (getPaymentLogData.status != PaymentStatus.WAIT_CANCELL) {
+      throw new PreconditionFailedException('권한이 없습니다.');
+    }
+
     const getUserData = await this.usersRepository
       .createQueryBuilder('user')
       .where('user.id = :userId', { userId })
       .getOne();
 
-    const getOrdersDetailData =
-      await this.paymentDetailsRepository.getOrdersDetail(paymentLogId);
+    const getPaymentDetailsData =
+      await this.paymentDetailsRepository.getPaymentDetails(paymentLogId);
 
-    if (getPaymentLogData.storeId) {
+    if (getPaymentLogData.storeId != 1) {
       const getStoreData = await this.storesRepository
         .createQueryBuilder('store')
         .where('store.userId = :userId', { userId })
@@ -355,10 +319,10 @@ export class OrdersService {
       }
     }
 
-    let productIdList: Array<number>;
-    let countList: Array<number>;
+    const productIdList: Array<number> = [];
+    const countList: Array<number> = [];
 
-    getOrdersDetailData.forEach((v) => {
+    getPaymentDetailsData.forEach((v) => {
       productIdList.push(v.productId);
       countList.push(v.count);
     });
@@ -368,44 +332,69 @@ export class OrdersService {
 
     await this.dataSource.transaction(async (manager) => {
       // 픽업/배송 여부
-      if (getPaymentLogData.storeId) {
-        const updateTotalStockByStoreProduct = await manager
+      if (getPaymentLogData.storeId != 1) {
+        const getStoreProductsData = await this.store_ProductsRepository
+          .createQueryBuilder('store_product')
+          .where('store_product.productId IN (:...ids)', { ids: productIdList })
+          .getMany();
+
+        for (let i = 0; i < countList.length; i++) {
+          getStoreProductsData[i].totalStock =
+            Number(getStoreProductsData[i].totalStock) + Number(countList[i]);
+        }
+
+        await manager
           .createQueryBuilder()
-          .update(Store_Product)
-          .set({ totalStock: () => `totalStock - ${countList}` })
-          .where('productId IN (:productId)', {
-            productId: productIdList,
+          .insert()
+          .into(Store_Product, ['id', 'storeId', 'totalStock', 'productId'])
+          .values(getStoreProductsData)
+          .orUpdate(['totalStock'], ['id'], {
+            skipUpdateIfNoValuesChanged: true,
           })
           .execute();
       } else {
-        const updateTotalStockByProduct = manager
+        const getProductsData = await this.productsRepository
+          .createQueryBuilder('product')
+          .where('product.id IN (:...ids)', { ids: productIdList })
+          .getMany();
+
+        for (let i = 0; i < countList.length; i++) {
+          getProductsData[i].totalStock =
+            getProductsData[i].totalStock + Number(countList[i]);
+        }
+
+        await manager
           .createQueryBuilder()
-          .update(Product)
-          .set({ totalStock: () => `totalStock - ${countList}` })
-          .where('id IN (:id)', {
-            id: productIdList,
+          .insert()
+          .into(Product, [
+            'id',
+            'price',
+            'productName',
+            'categoryId',
+            'description',
+            'imgUrl',
+            'totalStock',
+          ])
+          .values(getProductsData)
+          .orUpdate(['totalStock'], ['id'], {
+            skipUpdateIfNoValuesChanged: true,
           })
           .execute();
       }
 
-      const updateUserPointData = await manager
+      await manager
         .createQueryBuilder()
         .update(User)
         .set({ point: () => `point + ${addPoint}` })
         .where('id = :id', { id: userId })
         .execute();
 
-      const deletePaymentDetailsData =
-        await this.paymentDetailsRepository.deletePaymentDetails(
-          paymentLogId,
-          manager,
-        );
+      await this.paymentDetailsRepository.deletePaymentDetails(
+        paymentLogId,
+        manager,
+      );
 
-      const deletePaymentLogData =
-        await this.paymentLogsRepository.deletePaymentLog(
-          paymentLogId,
-          manager,
-        );
+      await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
 
       return '환불 / 반품 요청이 완료되었습니다.';
     });
@@ -426,21 +415,21 @@ export class OrdersService {
     }
 
     const getStoreData = await this.storesRepository
-      .createQueryBuilder('user')
-      .where('user.userId = :userId', { userId })
+      .createQueryBuilder('store')
+      .where('store.userId = :userId', { userId })
       .getOne();
 
-    if (getStoreData.userId != userId) {
+    if (getStoreData.id != storeId) {
       throw new PreconditionFailedException('권한이 없습니다.');
     }
 
-    const getOrdersDetailData =
-      await this.paymentDetailsRepository.getOrdersDetail(paymentLogId);
+    const getPaymentDetailsData =
+      await this.paymentDetailsRepository.getPaymentDetails(paymentLogId);
 
-    let productIdList: Array<number>;
-    let countList: Array<number>;
+    const productIdList: Array<number> = [];
+    const countList: Array<number> = [];
 
-    getOrdersDetailData.forEach((v) => {
+    getPaymentDetailsData.forEach((v) => {
       productIdList.push(v.productId);
       countList.push(v.count);
     });
@@ -448,34 +437,40 @@ export class OrdersService {
     const addPoint =
       getPaymentLogData.paidPoint - getPaymentLogData.totalPrice * 0.05;
 
+    const getStoreProductsData = await this.store_ProductsRepository
+      .createQueryBuilder('store_product')
+      .where('store_product.productId IN (:...ids)', { ids: productIdList })
+      .getMany();
+
+    for (let i = 0; i < countList.length; i++) {
+      getStoreProductsData[i].totalStock =
+        Number(getStoreProductsData[i].totalStock) + Number(countList[i]);
+    }
+
     await this.dataSource.transaction(async (manager) => {
-      const updateTotalStockByStoreProduct = await manager
+      await manager
         .createQueryBuilder()
-        .update(Store_Product)
-        .set({ totalStock: () => `totalStock - ${countList}` })
-        .where('productId IN (:productId)', {
-          productId: productIdList,
+        .insert()
+        .into(Store_Product, ['id', 'storeId', 'totalStock', 'productId'])
+        .values(getStoreProductsData)
+        .orUpdate(['totalStock'], ['id'], {
+          skipUpdateIfNoValuesChanged: true,
         })
         .execute();
 
-      const updateUserPointData = await manager
+      await manager
         .createQueryBuilder()
         .update(User)
         .set({ point: () => `point + ${addPoint}` })
         .where('id = :id', { id: getPaymentLogData.userId })
         .execute();
 
-      const deletePaymentDetailsData =
-        await this.paymentDetailsRepository.deletePaymentDetails(
-          paymentLogId,
-          manager,
-        );
+      await this.paymentDetailsRepository.deletePaymentDetails(
+        paymentLogId,
+        manager,
+      );
 
-      const deletePaymentLogData =
-        await this.paymentLogsRepository.deletePaymentLog(
-          paymentLogId,
-          manager,
-        );
+      await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
 
       return '주문이 취소되었습니다.';
     });
@@ -495,14 +490,17 @@ export class OrdersService {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
+    if (getPaymentLogData.storeId != 1) {
+      throw new PreconditionFailedException('권한이 없습니다.');
+    }
 
-    const getOrdersDetailData =
-      await this.paymentDetailsRepository.getOrdersDetail(paymentLogId);
+    const getPaymentDetailsData =
+      await this.paymentDetailsRepository.getPaymentDetails(paymentLogId);
 
-    let productIdList: Array<number>;
-    let countList: Array<number>;
+    const productIdList: Array<number> = [];
+    const countList: Array<number> = [];
 
-    getOrdersDetailData.forEach((v) => {
+    getPaymentDetailsData.forEach((v) => {
       productIdList.push(v.productId);
       countList.push(v.count);
     });
@@ -510,34 +508,48 @@ export class OrdersService {
     const addPoint =
       getPaymentLogData.paidPoint - getPaymentLogData.totalPrice * 0.05;
 
+    const getProductsData = await this.productsRepository
+      .createQueryBuilder('product')
+      .where('product.id IN (:...ids)', { ids: productIdList })
+      .getMany();
+
+    for (let i = 0; i < countList.length; i++) {
+      getProductsData[i].totalStock =
+        Number(getProductsData[i].totalStock) + Number(countList[i]);
+    }
+
     await this.dataSource.transaction(async (manager) => {
-      const updateTotalStockByProduct = manager
+      await manager
         .createQueryBuilder()
-        .update(Product)
-        .set({ totalStock: () => `totalStock - ${countList}` })
-        .where('id IN (:id)', {
-          id: productIdList,
+        .insert()
+        .into(Product, [
+          'id',
+          'price',
+          'productName',
+          'categoryId',
+          'description',
+          'imgUrl',
+          'totalStock',
+        ])
+        .values(getProductsData)
+        .orUpdate(['totalStock'], ['id'], {
+          skipUpdateIfNoValuesChanged: true,
         })
         .execute();
 
-      const updateUserPointData = await manager
+      await manager
         .createQueryBuilder()
         .update(User)
         .set({ point: () => `point + ${addPoint}` })
         .where('id = :id', { id: getPaymentLogData.userId })
         .execute();
 
-      const deletePaymentDetailsData =
-        await this.paymentDetailsRepository.deletePaymentDetails(
-          paymentLogId,
-          manager,
-        );
+      await this.paymentDetailsRepository.deletePaymentDetails(
+        paymentLogId,
+        manager,
+      );
 
-      const deletePaymentLogData =
-        await this.paymentLogsRepository.deletePaymentLog(
-          paymentLogId,
-          manager,
-        );
+      await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
 
       return '주문이 취소되었습니다.';
     });

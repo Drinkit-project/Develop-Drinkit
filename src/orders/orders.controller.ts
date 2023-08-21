@@ -116,7 +116,7 @@ export class OrdersController {
   @ApiOperation({ summary: '고객 주문 취소 완료' })
   @Delete(':paymentLogId/Ok')
   async cancelOrderByCustomer(@Param('paymentLogId') paymentLogId: number) {
-    const userId = 3; //Todo: (인증 부분 확인 후 추가)
+    const userId = 2; //Todo: (인증 부분 확인 후 추가)
     const cancelOrderByCustomerData =
       await this.ordersService.cancelOrderByCustomer(userId, paymentLogId);
 
@@ -129,7 +129,7 @@ export class OrdersController {
     @Param('paymentLogId') paymentLogId: number,
     @Param('storeId') storeId: number,
   ) {
-    const userId = 3; //Todo: (인증 부분 확인 후 추가)
+    const userId = 2; //Todo: (인증 부분 확인 후 추가)
     const cancelOrderByStoreData = await this.ordersService.cancelOrderByStore(
       userId,
       paymentLogId,
@@ -142,7 +142,7 @@ export class OrdersController {
   @ApiOperation({ summary: '쇼핑몰 관리자 주문 취소' })
   @Delete(':paymentLogId/Admin')
   async cancelOrderByAdmin(@Param('paymentLogId') paymentLogId: number) {
-    const userId = 3; //Todo: (인증 부분 확인 후 추가)
+    const userId = 1; //Todo: (인증 부분 확인 후 추가)
     const cancelOrderByAdminData = await this.ordersService.cancelOrderByAdmin(
       userId,
       paymentLogId,

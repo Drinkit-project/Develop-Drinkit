@@ -18,10 +18,27 @@ export class SubscribesRepository extends Repository<Subscribe> {
     return postSubscribeData;
   }
 
-  async deleteSubscribe(subscribeId: number) {
+  async getSubscribe(userId: number) {
+    const getSubscribeData = await this.createQueryBuilder('subscribe')
+      .where('subscribe.userId = :userId', { userId })
+      .getOne();
+    return getSubscribeData;
+  }
+
+  async updateSubscribe(userId: number, isPaid: boolean) {
+    const updateSubscribeData = await this.createQueryBuilder()
+      .update(Subscribe)
+      .set({ isPaid })
+      .where('userId = :userId', { userId })
+      .execute();
+    return updateSubscribeData;
+  }
+
+  async deleteSubscribe(userId: number) {
     const deleteSubscribe = await this.createQueryBuilder()
       .delete()
-      .where('subscribeId = :subscribeId', { subscribeId })
+      .from(Subscribe)
+      .where('userId = :userId', { userId })
       .execute();
     return deleteSubscribe;
   }

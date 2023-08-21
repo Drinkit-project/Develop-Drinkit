@@ -21,6 +21,13 @@ export class PaymentDetailRepository extends Repository<PaymentDetail> {
     return getOrdersDetailData;
   }
 
+  async getPaymentDetails(paymentLogId: number) {
+    const getOrdersDetailData = await this.createQueryBuilder('paymentDetail')
+      .where('paymentDetail.paymentLogId = :paymentLogId', { paymentLogId })
+      .getMany();
+    return getOrdersDetailData;
+  }
+
   async postPaymentDetail(
     paymentDetailArray: Array<{
       productId: number;
