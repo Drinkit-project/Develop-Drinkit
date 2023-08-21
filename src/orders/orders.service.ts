@@ -99,15 +99,16 @@ export class OrdersService {
     return updateOrdersStatusByStoreData;
   }
 
+  //todo: 타 작업물과 합병, 테스트 이후 주석 제거
   async updateOrdersStatusByAdmin(userId: number, paymentLogId: number) {
-    const getUserData = await this.usersRepository
-      .createQueryBuilder('user')
-      .where('user.id = :userId', { userId })
-      .getOne();
+    // const getUserData = await this.usersRepository
+    //   .createQueryBuilder('user')
+    //   .where('user.id = :userId', { userId })
+    //   .getOne();
 
-    if (!getUserData.isAdmin) {
-      throw new PreconditionFailedException('권한이 없습니다.');
-    }
+    // if (!getUserData.isAdmin) {
+    //   throw new PreconditionFailedException('권한이 없습니다.');
+    // }
 
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
@@ -477,15 +478,16 @@ export class OrdersService {
   }
 
   // 관리자 주문 취소
+  //todo: 타 작업물과 합병 이후 주석 제거
   async cancelOrderByAdmin(userId: number, paymentLogId: number) {
-    const getUserData = await this.usersRepository
-      .createQueryBuilder('user')
-      .where('user.id = :userId', { userId })
-      .getOne();
+    // const getUserData = await this.usersRepository
+    //   .createQueryBuilder('user')
+    //   .where('user.id = :userId', { userId })
+    //   .getOne();
 
-    if (!getUserData.isAdmin) {
-      throw new PreconditionFailedException('권한이 없습니다.');
-    }
+    // if (!getUserData.isAdmin) {
+    //   throw new PreconditionFailedException('권한이 없습니다.');
+    // }
 
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,

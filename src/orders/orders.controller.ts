@@ -15,6 +15,7 @@ import { OrderReqDto } from './dto/orders.request.dto';
 import { PostOrderReqDto } from './dto/postOrders.request.dto';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorators';
+import { AuthAdminGuard } from 'src/auth/security/jwt.admin.guard';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -73,7 +74,7 @@ export class OrdersController {
   }
 
   @ApiOperation({ summary: '쇼핑몰 관리자 주문 상태 변경' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthAdminGuard)
   @Put(':paymentLogId/byAdmin')
   async updateOrdersStatusByAdmin(
     @CurrentUser() userId: number,
@@ -159,7 +160,7 @@ export class OrdersController {
   }
 
   @ApiOperation({ summary: '쇼핑몰 관리자 주문 취소' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthAdminGuard)
   @Delete(':paymentLogId/Admin')
   async cancelOrderByAdmin(
     @CurrentUser() userId: number,
