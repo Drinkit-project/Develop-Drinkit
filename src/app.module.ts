@@ -4,7 +4,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StoresModule } from './stores/stores.module';
@@ -24,6 +24,7 @@ import { SubscribesModule } from './subscribes/subscribes.module';
       useFactory: (configService: ConfigService) => ({
         store: redisStore,
         url: configService.get('REDIS_URL'),
+        ttl: 0, // expire - 만료 없는 상태 유지
       }),
     }),
     ConfigModule.forRoot({ isGlobal: true }),
@@ -32,7 +33,7 @@ import { SubscribesModule } from './subscribes/subscribes.module';
       useClass: TypeOrmConfigService,
       inject: [ConfigService],
     }),
-    UsersModule,
+    AuthModule,
     ProductsModule,
     ReviewsModule,
     StoresModule,
