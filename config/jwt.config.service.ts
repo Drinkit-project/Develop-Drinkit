@@ -9,7 +9,7 @@ export class JwtConfigService implements JwtOptionsFactory {
   createJwtOptions(): JwtModuleOptions {
     return {
       secret: this.configService.get<string>('JWT_SECRET_ACCESS'), // 액세스 토큰 시크릿 값
-      signOptions: { expiresIn: '5s' },
+      signOptions: { expiresIn: '10m' },
     };
   }
 
