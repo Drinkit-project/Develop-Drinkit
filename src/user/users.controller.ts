@@ -9,28 +9,28 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthService } from 'src/auth/auth.service';
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { AuthGuard } from './security/jwt.guard';
+import { AuthGuard } from '../auth/security/jwt.guard';
 import { Response } from 'express';
 import { CurrentUser } from 'src/commons/decorators/user.decorators';
+import { UsersService } from './users.service';
 
 @ApiTags('users')
 @Controller('user')
-export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: 'sign-up' })
   @Post('/signUp')
   async signUp(@Body() data: UserDto) {
-    return await this.authService.signUp(data);
+    return await this.usersService.signUp(data);
   }
 
   @ApiOperation({ summary: 'sign-in' })
   @Post('/signIn')
   async signIn(@Body() data: Partial<UserDto>, @Res() response: Response) {
-    const tokens = await this.authService.signIn(data);
+    const tokens = await this.usersService.signIn(data);
 
     // 액세스 토큰과 리프레시 토큰을 쿠키로 설정하여 클라이언트에게 전달
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
@@ -55,21 +55,21 @@ export class AuthController {
     @CurrentUser() userId: number,
     @Body() data: UpdateUserDto,
   ) {
-    return await this.authService.updateUserPassword(userId, data);
+    return await this.usersService.updateUserPassword(userId, data);
   }
 
   @ApiOperation({ summary: 'delete user' })
   @UseGuards(AuthGuard)
   @Delete()
   async deleteUser(@CurrentUser() userId: number) {
-    return await this.authService.deleteUser(userId);
+    return await this.usersService.deleteUser(userId);
   }
 
   @ApiOperation({ summary: 'get user' })
   @UseGuards(AuthGuard)
   @Get('/authenticate')
   async getUser(@CurrentUser() userId: number, @Body() data: Partial<UserDto>) {
-    const userchecked = await this.authService.authenticationByPassword(
+    const userchecked = await this.usersService.authenticationByPassword(
       userId,
       data.password,
     );
