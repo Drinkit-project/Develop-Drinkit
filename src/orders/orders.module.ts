@@ -14,9 +14,11 @@ import { UsersRepository } from 'src/auth/users.repository';
 import { ProductsRepository } from 'src/products/products.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
 import { Store_ProductsRepository } from 'src/stores/stores_products.repository';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     TypeOrmModule.forFeature([
       PaymentDetail,
       PaymentLog,
