@@ -1,18 +1,28 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './jwt.strategy'; // 작성할 전략
+import { JwtStrategy } from './jwt/jwt.strategy';
 import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { UsersRepository } from './users.repository';
+import { UsersService } from './users.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/entities/user.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtConfigService } from 'config/jwt.config.service';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: 'your-secret-key', // 비밀 키
-      signOptions: { expiresIn: '1h' }, // 토큰 만료 시간
+    TypeOrmModule.forFeature([User]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useClass: JwtConfigService,
+      inject: [ConfigService],
     }),
+    PassportModule,
   ],
-  providers: [AuthService, JwtStrategy],
-  exports: [PassportModule, JwtModule],
+  exports: [UsersService],
+  controllers: [AuthController],
+  providers: [AuthService, UsersService, JwtStrategy, UsersRepository],
 })
 export class AuthModule {}

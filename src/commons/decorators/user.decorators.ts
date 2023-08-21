@@ -1,9 +1,24 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { User } from '../../entities/user.entity';
+import * as jwt from 'jsonwebtoken';
+import { Payload } from 'src/auth/security/payload.interface';
 
 export const CurrentUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): User => {
+  (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user;
+    const token = request.cookies.Authentication.replace('Bearer ', ''); // Remove 'Bearer ' from the token
+
+    try {
+      const decodedToken = jwt.verify(
+        token,
+        process.env.JWT_SECRET_ACCESS,
+      ) as Payload;
+      if (decodedToken && decodedToken.userId) {
+        return decodedToken.userId;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      return null;
+    }
   },
 );

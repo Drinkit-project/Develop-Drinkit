@@ -3,11 +3,10 @@ import {
   IsString,
   IsEmail,
   IsBoolean,
-  IsNumber,
   IsNotEmpty,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class UserDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
@@ -34,9 +33,5 @@ export class CreateUserDto {
   @IsBoolean()
   @IsNotEmpty()
   isPersoner: boolean;
-
-  @IsNumber()
-  @IsNotEmpty()
-  point: number;
 }
-export default CreateUserDto;
+export default UserDto;
