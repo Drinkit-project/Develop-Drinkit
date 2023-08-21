@@ -16,16 +16,16 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
 
 @Module({
   imports: [
-    CacheModule.registerAsync<RedisClientOptions>({
-      isGlobal: true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        store: redisStore,
-        url: configService.get('REDIS_URL'),
-        ttl: 0, // expire - 만료 없는 상태 유지
-      }),
-    }),
+    // CacheModule.registerAsync<RedisClientOptions>({
+    //   isGlobal: true,
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => ({
+    //     store: redisStore,
+    //     url: configService.get('REDIS_URL'),
+    //     ttl: 0, // expire - 만료 없는 상태 유지
+    //   }),
+    // }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -37,7 +37,7 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
     ReviewsModule,
     StoresModule,
     OrdersModule,
-    CartModule,
+    // CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],

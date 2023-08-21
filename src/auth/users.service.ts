@@ -23,7 +23,7 @@ export class UsersService {
   }
 
   async createUser(data: UserDto) {
-    const { email, password, isAdmin, isPersoner } = data;
+    const { email, password, isAdmin, isPersonal } = data;
 
     const hashedPassword = await this.transformPassword(password);
 
@@ -31,7 +31,7 @@ export class UsersService {
       email,
       password: hashedPassword,
       isAdmin,
-      isPersoner,
+      isPersonal,
       point: 0,
     });
   }

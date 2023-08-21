@@ -32,6 +32,6 @@ export class UserDto {
 
   @IsBoolean()
   @IsNotEmpty()
-  isPersoner: boolean;
+  isPersonal: boolean;
 }
 export default UserDto;
