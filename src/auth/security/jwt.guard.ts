@@ -42,14 +42,15 @@ export class AuthGuard extends NestAuthGuard('jwt') {
           throw new UnauthorizedException('세션이 만료되었습니다.'); // 세션 만료 오류
         }
 
-        if (!this.authService.isRefreshTokenValid(refreshToken)) {
+        //예외처리를 통과했다는 건 Payload라는 것이기 때문에 Payload로 설정
+        const user: Payload = verifiedRefreshToken as Payload;
+
+        if (!this.authService.isRefreshTokenValid(refreshToken, user.userId)) {
           throw new UnauthorizedException(
             '유효하지 않은 요청입니다. 관리자에게 문의하세요',
           ); // 유효하지 않은 리프레시 토큰 오류
         }
 
-        //예외처리를 통과했다는 건 Payload라는 것이기 때문에 Payload로 설정
-        const user: Payload = verifiedRefreshToken as Payload;
         const newAccessToken = await this.authService.generateAccessToken(
           user.userId,
         );

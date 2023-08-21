@@ -23,6 +23,11 @@ import { SubscribesModule } from './subscribes/subscribes.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         store: redisStore,
+<<<<<<< HEAD
+=======
+        // host: configService.get('REDIS_HOST'),
+        // port: configService.get('REDIS_PORT'),
+>>>>>>> 90347d4199abc3a72b79a9bae99f876ea2231b7e
         url: configService.get('REDIS_URL'),
         ttl: 0, // expire - 만료 없는 상태 유지
       }),
@@ -39,7 +44,10 @@ import { SubscribesModule } from './subscribes/subscribes.module';
     StoresModule,
     OrdersModule,
     CartModule,
+<<<<<<< HEAD
     SubscribesModule,
+=======
+>>>>>>> 90347d4199abc3a72b79a9bae99f876ea2231b7e
   ],
   controllers: [AppController],
   providers: [AppService],
