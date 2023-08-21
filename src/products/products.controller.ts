@@ -7,12 +7,15 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import {
   CreateProductsRequestDto,
   UpdateProductsRequestDto,
 } from './dto/products.request.dto';
+import { CurrentUser } from 'src/commons/decorators/user.decorators';
+import { AuthAdminGuard } from 'src/auth/security/jwt.admin.guard';
 
 @Controller('products')
 export class ProductsController {
@@ -34,14 +37,19 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: '상품 등록' })
+  @UseGuards(AuthAdminGuard)
   @Post()
-  async createProducts(@Body() body: CreateProductsRequestDto) {
+  async createProducts(
+    @CurrentUser() userId: number,
+    @Body() body: CreateProductsRequestDto,
+  ) {
     const newProduct = await this.productsService.createProducts(body);
 
     return '상품 등록 완료!';
   }
 
   @ApiOperation({ summary: '상품 수정' })
+  @UseGuards(AuthAdminGuard)
   @Put('/:productId')
   async updateProducts(@Param() param, @Body() body: UpdateProductsRequestDto) {
     const { productId } = param;
@@ -54,7 +62,8 @@ export class ProductsController {
     return '상품 수정 완료!';
   }
 
-  @ApiOperation({ summary: '상품 수정' })
+  @ApiOperation({ summary: '상품 삭제' })
+  @UseGuards(AuthAdminGuard)
   @Delete('/:productId')
   async removeProducts(@Param() param) {
     const { productId } = param;

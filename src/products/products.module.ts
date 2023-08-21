@@ -11,6 +11,7 @@ import { Discount } from 'src/entities/discout.entity';
 import { DiscountsService } from './discounts/discounts.service';
 import { DiscountsRepository } from './discounts/discounts.repository';
 import { DiscountsController } from './discounts/discounts.controller';
+import { User } from 'src/entities/user.entity';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DiscountsController } from './discounts/discounts.controller';
       Discount,
       Category,
       Review,
+      User,
       Store_Product,
     ]),
   ],
