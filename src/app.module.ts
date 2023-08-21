@@ -4,7 +4,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StoresModule } from './stores/stores.module';
@@ -32,7 +32,7 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
       useClass: TypeOrmConfigService,
       inject: [ConfigService],
     }),
-    UsersModule,
+    AuthModule,
     ProductsModule,
     ReviewsModule,
     StoresModule,
