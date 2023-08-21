@@ -30,9 +30,14 @@ export class AuthController {
   @ApiOperation({ summary: 'sign-in' })
   @Post('/signIn')
   async signIn(@Body() data: Partial<UserDto>, @Res() response: Response) {
-    const jwt = await this.authService.signIn(data);
-    response.cookie('Authentication', 'Bearer ' + jwt);
-    return response.json(jwt);
+    const tokens = await this.authService.signIn(data);
+
+    // 액세스 토큰과 리프레시 토큰을 쿠키로 설정하여 클라이언트에게 전달
+    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
+    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+
+    // 반환값으로 액세스 토큰과 리프레시 토큰을 클라이언트에게 전달
+    return response.json(tokens);
   }
 
   @ApiOperation({ summary: 'sign-out' })

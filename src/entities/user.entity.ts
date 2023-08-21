@@ -16,7 +16,7 @@ export class User extends CommonEntity {
   email: string;
 
   @Column('boolean')
-  isPersoner: boolean;
+  isPersonal: boolean;
 
   @Column('bigint')
   point: number;
