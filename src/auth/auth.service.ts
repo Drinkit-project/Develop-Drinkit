@@ -1,4 +1,5 @@
 import {
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -12,13 +13,16 @@ import { UpdateUserDto } from './dto/updateUser.dto';
 import { User } from 'src/entities/user.entity';
 import { JwtConfigService } from '../../config/jwt.config.service';
 import * as nodemailer from 'nodemailer';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { UserInfo } from 'src/entities/redis.userInfo';
 
 @Injectable()
 export class AuthService {
   //이메일 인증용
   // private transporter: nodemailer.Transporter;
-
   constructor(
+    @Inject(CACHE_MANAGER) private cache: Cache,
     private jwtConfigService: JwtConfigService,
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -173,22 +177,24 @@ export class AuthService {
       secret: refreshTokenOptions.secret,
       expiresIn: refreshTokenOptions.signOptions.expiresIn,
     });
+
+    await this.cache.set('refreshToken:' + userId, refreshToken);
     return refreshToken;
   }
 
-  isRefreshTokenValid(refreshToken: string): boolean {
+  async isRefreshTokenValid(
+    refreshToken: string,
+    userId: number,
+  ): Promise<boolean> {
     try {
-      const refreshJwtOptions = this.jwtConfigService.createRefreshJwtOptions();
-      const secret = refreshJwtOptions.secret;
+      const redisRefreshToken = await this.cache.store.get<'refreshToken'>(
+        'refreshToken:' + userId,
+      ); //레디스에서 가져온 리프레시 토큰;
+      console.log('레디스 리프레시토큰:' + redisRefreshToken);
+      if (!this.isClientRefreshTokenExpired(redisRefreshToken)) return false;
+      if (refreshToken !== redisRefreshToken) return false;
+      // 사용자가 보낸 리프레시 토큰과 레디스에 저장된 리프레시 토큰을 비교합니다.
 
-      // const redisRefreshToken = // 레디스에서 가져온 리프레시 토큰;
-
-      // // 사용자가 보낸 리프레시 토큰과 레디스에 저장된 리프레시 토큰을 비교합니다.
-      // if (refreshToken !== redisRefreshToken) {
-      //   return false;
-      // }
-
-      this.jwtService.verify(refreshToken, { secret });
       return true;
     } catch (error) {
       return false;
