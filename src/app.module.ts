@@ -17,16 +17,16 @@ import { SubscribesModule } from './subscribes/subscribes.module';
 
 @Module({
   imports: [
-    // CacheModule.registerAsync<RedisClientOptions>({
-    //   isGlobal: true,
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: (configService: ConfigService) => ({
-    //     store: redisStore,
-    //     url: configService.get('REDIS_URL'),
-    //     ttl: 0, // expire - 만료 없는 상태 유지
-    //   }),
-    // }),
+    CacheModule.registerAsync<RedisClientOptions>({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        store: redisStore,
+        url: configService.get('REDIS_URL'),
+        ttl: 0, // expire - 만료 없는 상태 유지
+      }),
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -38,12 +38,8 @@ import { SubscribesModule } from './subscribes/subscribes.module';
     ReviewsModule,
     StoresModule,
     OrdersModule,
-<<<<<<< HEAD
     CartModule,
     SubscribesModule,
-=======
-    // CartModule,
->>>>>>> 40d45ebe7486c999d8451346662d5a85acceebd0
   ],
   controllers: [AppController],
   providers: [AppService],
