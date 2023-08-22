@@ -1,15 +1,15 @@
 import {
-  IsArray,
   IsBoolean,
   IsEmail,
+  IsJSON,
   IsNotEmpty,
   IsString,
   Matches,
 } from 'class-validator';
 
 export class createUserDto {
-  @IsArray()
-  address: Array<{ address: string; addressName: string }>;
+  @IsJSON()
+  address: JSON;
 
   @IsString()
   @IsNotEmpty()

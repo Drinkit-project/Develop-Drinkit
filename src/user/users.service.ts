@@ -6,16 +6,20 @@ import {
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
 import { UserDto } from './dto/user.dto';
-import { FindOneOptions } from 'typeorm';
+import { DataSource, FindOneOptions } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import UpdateUserDto from 'src/user/dto/updateUser.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { Payload } from 'src/auth/security/payload.interface';
+import { ProfilesService } from './profiles.service';
+import createUserDto from './dto/createUser.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private dataSource: DataSource,
+    private profilesService: ProfilesService,
     private authService: AuthService,
     @InjectRepository(UsersRepository)
     private readonly usersRepository: UsersRepository,
@@ -62,8 +66,18 @@ export class UsersService {
   }
 
   //회원가입
-  async signUp(data: UserDto) {
-    const { email, password, confirm, isAdmin, isPersonal } = data;
+  async signUp(data: createUserDto) {
+    const {
+      email,
+      password,
+      confirm,
+      isAdmin,
+      isPersonal,
+      address,
+      phoneNumber,
+      nickname,
+      name,
+    } = data;
 
     if (password !== confirm) {
       throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
@@ -79,13 +93,39 @@ export class UsersService {
 
     const hashedPassword = await this.transformPassword(password);
 
-    await this.usersRepository.insert({
-      email,
-      password: hashedPassword,
-      isAdmin,
-      isPersonal,
-      point: 0,
-    });
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        const result = await manager
+          .createQueryBuilder()
+          .insert()
+          .into(User, [
+            'email',
+            'password',
+            'isAdmin',
+            'isPersonal',
+            'name',
+            'point',
+          ])
+          .values({
+            email,
+            password: hashedPassword,
+            isAdmin,
+            isPersonal,
+            point: 0,
+          })
+          .execute();
+
+        const [user] = result.identifiers;
+        await this.profilesService.createProfile(
+          user.id,
+          address,
+          phoneNumber,
+          nickname,
+          name,
+          manager,
+        );
+      });
+    } catch (error) {}
   }
 
   //토큰 존재 시 한번 더 인증이 필요할 때, 비밀번호 인증

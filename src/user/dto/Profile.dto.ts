@@ -1,8 +1,8 @@
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsJSON, IsNotEmpty, IsString } from 'class-validator';
 
 export class ProfileDto {
-  @IsArray()
-  address: Array<{ address: string; addressName: string }>;
+  @IsJSON()
+  address: JSON;
 
   @IsString()
   @IsNotEmpty()

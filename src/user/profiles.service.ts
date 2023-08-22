@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ProfilesRepository } from './profiles.repository';
 import ProfileDto from './dto/Profile.dto';
+import { DataSource, EntityManager } from 'typeorm';
 
 @Injectable()
 export class ProfilesService {
@@ -11,15 +12,23 @@ export class ProfilesService {
     return getOrdersData;
   }
 
-  async createProfile(userId: number, data: ProfileDto) {
-    const { address, phoneNumber, nickname, name } = data;
-    return await this.profilesRepository.insert({
-      userId,
-      address,
-      phoneNumber,
-      nickname,
-      name,
-    });
+  async createProfile(
+    userId: number,
+    address: JSON,
+    phoneNumber: string,
+    nickname: string,
+    name: string,
+    manager: EntityManager,
+  ) {
+    await manager
+      .createQueryBuilder()
+      .insert()
+      .into(Store_Product, ['id', 'storeId', 'totalStock', 'productId'])
+      .values(getStoreProductsData)
+      .orUpdate(['totalStock'], ['id'], {
+        skipUpdateIfNoValuesChanged: true,
+      })
+      .execute();
   }
 
   async updateProfile(userId: number, data: Partial<ProfileDto>) {
