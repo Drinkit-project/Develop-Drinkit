@@ -51,7 +51,7 @@ export class ReviewsController {
       rating,
     );
 
-    return '상품 등록 완료!';
+    return '리뷰 등록 완료!';
   }
 
   @ApiOperation({ summary: '리뷰 수정' })
@@ -72,7 +72,7 @@ export class ReviewsController {
       rating,
     );
 
-    return '상품 수정 완료!';
+    return '리뷰 수정 완료!';
   }
 
   @ApiOperation({ summary: '리뷰 삭제' })
@@ -83,6 +83,6 @@ export class ReviewsController {
 
     const newProduct = await this.reviewsService.removeReview(userId, reviewId);
 
-    return '상품 삭제 완료!';
+    return '리뷰 삭제 완료!';
   }
 }
