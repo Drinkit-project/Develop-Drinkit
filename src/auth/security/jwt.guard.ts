@@ -43,7 +43,6 @@ export class AuthGuard extends NestAuthGuard('jwt') {
         request.myUser = myuser;
 
         await super.canActivate(context);
-
         return true;
       } catch (error) {
         throw new UnauthorizedException('Invalid token.');
@@ -59,7 +58,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
     info: any,
     context: ExecutionContext,
   ): any {
-    (async () => {
+    return (async () => {
       if (err) {
         throw new UnauthorizedException('AUTH', 'JWT AUTH ERROR');
       }
@@ -92,11 +91,6 @@ export class AuthGuard extends NestAuthGuard('jwt') {
           const newAccessToken = await this.authService.generateAccessToken(
             payload.userId,
           );
-
-          await context
-            .switchToHttp()
-            .getResponse()
-            .cookie('AccessToken', 'Bearer ' + newAccessToken);
 
           const myuser = await this.usersService.findByFields({
             where: { id: payload.userId },
