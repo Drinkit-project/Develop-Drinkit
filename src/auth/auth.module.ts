@@ -3,13 +3,12 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './security/jwt.strategy';
 import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { UsersRepository } from './users.repository';
-import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtConfigService } from 'config/jwt.config.service';
+import { UsersService } from 'src/user/users.service';
+import { UsersRepository } from 'src/user/users.repository';
 
 @Module({
   imports: [
@@ -19,16 +18,15 @@ import { JwtConfigService } from 'config/jwt.config.service';
       useClass: JwtConfigService,
       inject: [ConfigService],
     }),
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt', session: false }),
   ],
-  exports: [AuthService],
-  controllers: [AuthController],
+  exports: [AuthService, JwtStrategy],
   providers: [
     AuthService,
-    UsersService,
     JwtStrategy,
-    UsersRepository,
     JwtConfigService,
+    UsersService,
+    UsersRepository,
   ],
 })
 export class AuthModule {}

@@ -12,6 +12,11 @@ import { OrdersModule } from './orders/orders.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from 'config/typeorm.config.service';
+import { UsersModule } from './user/users.module';
+import { ProfilesController } from './profiles/profiles.controller';
+import { ProfilesService } from './profiles/profiles.service';
+import { ProfilesModule } from './profiles/profiles.module';
+import { SubscribesModule } from './subscribes/subscribes.module';
 
 @Module({
   imports: [
@@ -26,6 +31,18 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
       }),
     }),
     ConfigModule.forRoot({ isGlobal: true }),
+    CacheModule.registerAsync<RedisClientOptions>({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        store: redisStore,
+        host: configService.get('REDIS_HOST'),
+        port: configService.get('REDIS_PORT'),
+        // url: configService.get('REDIS_URL'),
+        ttl: 0, // expire - 만료 없는 상태 유지
+      }),
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: TypeOrmConfigService,
@@ -36,8 +53,11 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
     ReviewsModule,
     StoresModule,
     OrdersModule,
+    UsersModule,
+    ProfilesModule,
+    SubscribesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ProfilesController],
+  providers: [AppService, ProfilesService],
 })
 export class AppModule {}

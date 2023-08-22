@@ -12,6 +12,8 @@ export class ProductsRepository extends Repository<Product> {
     const product = await this.createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.discount', 'discount')
+      .leftJoinAndSelect('product.review', 'review')
+      .leftJoinAndSelect('review.user', 'user')
       .select([
         'product.id',
         'product.productName',
@@ -24,6 +26,11 @@ export class ProductsRepository extends Repository<Product> {
         'product.imgUrl',
         'product.price',
         'product.totalStock',
+        'review.id',
+        'review.content',
+        'review.userId',
+        'review.rating',
+        'user.email',
       ])
       .where('product.id = :id', { id })
       .getOne();

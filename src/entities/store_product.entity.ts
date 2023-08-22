@@ -12,7 +12,7 @@ export class Store_Product extends CommonEntity {
   productId: number;
 
   @Column('bigint')
-  toalStock: number;
+  totalStock: number;
 
   @ManyToOne(() => Store, (store) => store.store_product)
   @JoinColumn([{ name: 'storeId', referencedColumnName: 'id' }])

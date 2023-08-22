@@ -28,6 +28,7 @@ export class ProductsController {
     return products;
   }
 
+  @ApiOperation({ summary: '상품 상세 조회' })
   @Get('/:productId')
   // Todo: 로그인 추가
   async getProductsById(@Param() param) {

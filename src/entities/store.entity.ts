@@ -6,13 +6,13 @@ import { CommonEntity } from './common.entity';
 @Entity({ schema: '', name: 'store' })
 export class Store extends CommonEntity {
   @Column('varchar')
-  adress: string;
+  address: string;
 
   @Column('varchar')
   name: string;
 
   @Column('bigint')
-  userId: bigint;
+  userId: number;
 
   @Column('varchar')
   imgUrl: string;

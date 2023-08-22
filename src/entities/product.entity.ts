@@ -74,8 +74,8 @@ export class Product extends CommonEntity {
   @OneToMany(() => Store_Product, (store_product) => store_product.product)
   store_product: Store_Product[];
 
-  @OneToOne(() => PaymentDetail, (paymentDetail) => paymentDetail.product)
-  paymentDetail: PaymentDetail;
+  @OneToMany(() => PaymentDetail, (paymentDetail) => paymentDetail.product)
+  paymentDetail: PaymentDetail[];
 
   @OneToOne(() => Discount, (discount) => discount.product)
   discount: Discount;
