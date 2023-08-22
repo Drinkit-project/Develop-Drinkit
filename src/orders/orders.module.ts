@@ -14,6 +14,7 @@ import { UsersRepository } from 'src/user/users.repository';
 import { ProductsRepository } from 'src/products/products.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
 import { Store_ProductsRepository } from 'src/stores/stores_products.repository';
+import { UsersModule } from 'src/user/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
@@ -27,6 +28,8 @@ import { AuthModule } from 'src/auth/auth.module';
       Store,
       Store_Product,
     ]),
+    UsersModule,
+    AuthModule,
   ],
   controllers: [OrdersController],
   providers: [
