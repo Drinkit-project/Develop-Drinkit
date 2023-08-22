@@ -16,7 +16,6 @@ import { PostOrderReqDto } from './dto/postOrders.request.dto';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorators';
 import { AuthAdminGuard } from 'src/auth/security/jwt.admin.guard';
-import { userInfo } from 'os';
 
 @ApiTags('orders')
 @Controller('orders')

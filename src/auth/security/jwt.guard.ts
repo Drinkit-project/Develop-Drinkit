@@ -45,7 +45,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
     info: any,
     context: ExecutionContext,
   ): any {
-    (async () => {
+    async () => {
       if (err) {
         throw new UnauthorizedException('AUTH', 'JWT AUTH ERROR');
       }
@@ -79,10 +79,11 @@ export class AuthGuard extends NestAuthGuard('jwt') {
             payload.userId,
           );
 
-          context
+          await context
             .switchToHttp()
             .getResponse()
             .cookie('AccessToken', 'Bearer ' + newAccessToken);
+          throw new UnauthorizedException('다시 로그인 해주세요');
           request.userId = payload;
           return user;
         } catch (err) {
@@ -90,6 +91,8 @@ export class AuthGuard extends NestAuthGuard('jwt') {
           throw new UnauthorizedException('다시 로그인 해주세요');
         }
       }
-    })();
+
+      return user;
+    };
   }
 }
