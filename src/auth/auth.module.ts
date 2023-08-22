@@ -21,7 +21,7 @@ import { JwtConfigService } from 'config/jwt.config.service';
     }),
     PassportModule,
   ],
-  exports: [UsersService],
+  exports: [AuthService],
   controllers: [AuthController],
   providers: [
     AuthService,
