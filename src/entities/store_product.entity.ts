@@ -11,10 +11,12 @@ export class Store_Product extends CommonEntity {
   @Column('bigint')
   productId: number;
 
-  @Column('bigint')
+  @Column({
+    type: 'integer',
+  })
   totalStock: number;
 
-  @ManyToOne(() => Store, (store) => store.store_product)
+  @ManyToOne(() => Store, (store) => store.productList)
   @JoinColumn([{ name: 'storeId', referencedColumnName: 'id' }])
   store: Store;
 

@@ -9,6 +9,7 @@ import { Review } from 'src/entities/review.entity';
 import { ReviewsRepository } from './reviews.repository';
 import { PaymentLog } from 'src/entities/paymentLog.entity';
 import { PaymentDetail } from 'src/entities/paymentDetail.entity';
+import { UsersRepository } from 'src/user/users.repository';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { PaymentDetail } from 'src/entities/paymentDetail.entity';
     ]),
   ],
   controllers: [ReviewsController],
-  providers: [ReviewsService, ReviewsRepository],
+  providers: [ReviewsService, ReviewsRepository, UsersRepository],
 })
 export class ReviewsModule {}

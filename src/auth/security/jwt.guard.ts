@@ -2,16 +2,29 @@ import {
   Injectable,
   ExecutionContext,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthGuard as NestAuthGuard } from '@nestjs/passport';
 import * as jwt from 'jsonwebtoken';
 import { AuthService } from '../auth.service';
 import { Payload } from './payload.interface';
+import { UsersRepository } from 'src/user/users.repository';
 
 @Injectable()
 export class AuthGuard extends NestAuthGuard('jwt') {
-  constructor(private readonly authService: AuthService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userRepository: UsersRepository,
+  ) {
     super();
+  }
+
+  async getUser(id: string) {
+    const userId = parseInt(id);
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('There is no User in DB');
+
+    return user;
   }
 
   canActivate(context: ExecutionContext) {
@@ -29,7 +42,11 @@ export class AuthGuard extends NestAuthGuard('jwt') {
           process.env.JWT_SECRET_ACCESS,
           { ignoreExpiration: true },
         );
-        request.userId = payload.userId;
+
+        this.getUser(payload.userId).then((user) => {
+          request.user = user;
+        });
+
         return super.canActivate(context);
       } catch (error) {
         throw new UnauthorizedException('Invalid token.');
@@ -68,7 +85,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
             ); // 유효하지 않은 리프레시 토큰 오류
           }
 
-          this.authService
+          return this.authService
             .generateAccessToken(user.userId)
             .then((newAccessToken) => {
               // 새로운 액세스 토큰을 쿠키로 저장
@@ -76,9 +93,15 @@ export class AuthGuard extends NestAuthGuard('jwt') {
                 .switchToHttp()
                 .getResponse()
                 .cookie('AccessToken', 'Bearer ' + newAccessToken);
-              request.userId = user.userId;
+
+              this.getUser(user.userId + '').then((user) => {
+                request.user = user;
+              });
               console.log('신규리프레시토큰', refreshToken);
               return refreshToken;
+            })
+            .catch((e) => {
+              console.error(e);
             });
         });
     }
