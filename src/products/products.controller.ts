@@ -15,7 +15,7 @@ import {
   UpdateProductsRequestDto,
 } from './dto/products.request.dto';
 import { CurrentUser } from 'src/commons/decorators/user.decorators';
-import { AuthAdminGuard } from 'src/auth/security/jwt.admin.guard';
+import { AuthGuard } from 'src/auth/security/jwt.guard';
 
 @Controller('products')
 export class ProductsController {
@@ -38,7 +38,7 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: '상품 등록' })
-  @UseGuards(AuthAdminGuard)
+  @UseGuards(AuthGuard)
   @Post()
   async createProducts(
     @CurrentUser() userId: number,
@@ -50,7 +50,7 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: '상품 수정' })
-  @UseGuards(AuthAdminGuard)
+  @UseGuards(AuthGuard)
   @Put('/:productId')
   async updateProducts(@Param() param, @Body() body: UpdateProductsRequestDto) {
     const { productId } = param;
@@ -64,7 +64,7 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: '상품 삭제' })
-  @UseGuards(AuthAdminGuard)
+  @UseGuards(AuthGuard)
   @Delete('/:productId')
   async removeProducts(@Param() param) {
     const { productId } = param;
