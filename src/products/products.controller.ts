@@ -14,7 +14,7 @@ import {
   CreateProductsRequestDto,
   UpdateProductsRequestDto,
 } from './dto/products.request.dto';
-import { CurrentUser } from 'src/commons/decorators/user.decorators';
+import { AdminUser, CurrentUser } from 'src/commons/decorators/user.decorators';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
 
 @Controller('products')
@@ -41,9 +41,10 @@ export class ProductsController {
   @UseGuards(AuthGuard)
   @Post()
   async createProducts(
-    @CurrentUser() userId: number,
+    @AdminUser() user,
     @Body() body: CreateProductsRequestDto,
   ) {
+    console.log(user);
     const newProduct = await this.productsService.createProducts(body);
 
     return '상품 등록 완료!';
@@ -52,7 +53,11 @@ export class ProductsController {
   @ApiOperation({ summary: '상품 수정' })
   @UseGuards(AuthGuard)
   @Put('/:productId')
-  async updateProducts(@Param() param, @Body() body: UpdateProductsRequestDto) {
+  async updateProducts(
+    @AdminUser() user,
+    @Param() param,
+    @Body() body: UpdateProductsRequestDto,
+  ) {
     const { productId } = param;
 
     const newProduct = await this.productsService.updateProducts(
@@ -66,7 +71,7 @@ export class ProductsController {
   @ApiOperation({ summary: '상품 삭제' })
   @UseGuards(AuthGuard)
   @Delete('/:productId')
-  async removeProducts(@Param() param) {
+  async removeProducts(@AdminUser() user, @Param() param) {
     const { productId } = param;
 
     const removedProduct = await this.productsService.removeProducts(productId);
