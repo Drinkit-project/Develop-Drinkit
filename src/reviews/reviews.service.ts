@@ -1,5 +1,6 @@
 import {
   BadGatewayException,
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -70,11 +71,15 @@ export class ReviewsService {
           productId,
           content,
           rating,
+          paymentDetailId,
         })
         .execute();
 
       return createdReview;
     } catch (error) {
+      if (error.code === '23505') {
+        throw new BadRequestException('이미 리뷰가 등록되어 있습니다');
+      }
       throw new BadGatewayException('서버오류');
     }
   }
