@@ -9,7 +9,6 @@ import { ProductsModule } from './products/products.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StoresModule } from './stores/stores.module';
 import { OrdersModule } from './orders/orders.module';
-import { CartModule } from './cart/cart.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from 'config/typeorm.config.service';
@@ -21,6 +20,16 @@ import { SubscribesModule } from './subscribes/subscribes.module';
 
 @Module({
   imports: [
+    CacheModule.registerAsync<RedisClientOptions>({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        store: redisStore,
+        url: configService.get('REDIS_URL'),
+        ttl: 0, // expire - 만료 없는 상태 유지
+      }),
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync<RedisClientOptions>({
       isGlobal: true,
@@ -44,7 +53,6 @@ import { SubscribesModule } from './subscribes/subscribes.module';
     ReviewsModule,
     StoresModule,
     OrdersModule,
-    CartModule,
     UsersModule,
     ProfilesModule,
     SubscribesModule,
