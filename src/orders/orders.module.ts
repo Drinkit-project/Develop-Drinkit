@@ -10,7 +10,7 @@ import { User } from 'src/entities/user.entity';
 import { Product } from 'src/entities/product.entity';
 import { Store } from 'src/entities/store.entity';
 import { Store_Product } from 'src/entities/store_product.entity';
-import { UsersRepository } from 'src/auth/users.repository';
+import { UsersRepository } from 'src/user/users.repository';
 import { ProductsRepository } from 'src/products/products.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
 import { Store_ProductsRepository } from 'src/stores/stores_products.repository';
