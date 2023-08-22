@@ -57,16 +57,7 @@ export class OrdersService {
     return getStoreOrdersData;
   }
 
-  async getAdminOrders(userId: number) {
-    const getUserData = await this.usersRepository
-      .createQueryBuilder('user')
-      .where('user.id = :userId', { userId })
-      .getOne();
-
-    if (!getUserData.isAdmin) {
-      throw new PreconditionFailedException('권한이 없습니다.');
-    }
-
+  async getAdminOrders() {
     const getAdminOrdersData =
       await this.paymentLogsRepository.getAdminOrders();
 
@@ -99,17 +90,7 @@ export class OrdersService {
     return updateOrdersStatusByStoreData;
   }
 
-  //todo: 타 작업물과 합병, 테스트 이후 주석 제거
-  async updateOrdersStatusByAdmin(userId: number, paymentLogId: number) {
-    // const getUserData = await this.usersRepository
-    //   .createQueryBuilder('user')
-    //   .where('user.id = :userId', { userId })
-    //   .getOne();
-
-    // if (!getUserData.isAdmin) {
-    //   throw new PreconditionFailedException('권한이 없습니다.');
-    // }
-
+  async updateOrdersStatusByAdmin(paymentLogId: number) {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
@@ -139,6 +120,7 @@ export class OrdersService {
     userId: number,
     usePoint: boolean,
     storeId: number,
+    point: number,
   ) {
     const productIdList: Array<number> = [];
     const countList: Array<number> = [];
@@ -156,7 +138,9 @@ export class OrdersService {
 
       totalStockByStoreProductData.forEach((v, i: number) => {
         if (countList[i] > v.totalStock) {
-          throw new PreconditionFailedException();
+          throw new PreconditionFailedException(
+            `${i}번 상품의 재고 수량이 부족합니다.`,
+          );
         }
       });
     } else {
@@ -167,17 +151,15 @@ export class OrdersService {
 
       totalStockByProductData.forEach((v, i: number) => {
         if (countList[i] > v.totalStock) {
-          throw new PreconditionFailedException();
+          throw new PreconditionFailedException(
+            `${i}번 상품의 재고 수량이 부족합니다.`,
+          );
         }
       });
     }
 
     if (usePoint) {
-      const userPointData = await this.usersRepository
-        .createQueryBuilder('user')
-        .where('user.id = :userId', { userId })
-        .getOne();
-      return userPointData.point;
+      return point;
     }
 
     return 0;
@@ -289,7 +271,11 @@ export class OrdersService {
   }
 
   // 고객 주문 취소 승인
-  async cancelOrderByCustomer(userId: number, paymentLogId: number) {
+  async cancelOrderByCustomer(
+    userId: number,
+    paymentLogId: number,
+    isAdmin: boolean,
+  ) {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
@@ -297,11 +283,6 @@ export class OrdersService {
     if (getPaymentLogData.status != PaymentStatus.WAIT_CANCELL) {
       throw new PreconditionFailedException('권한이 없습니다.');
     }
-
-    const getUserData = await this.usersRepository
-      .createQueryBuilder('user')
-      .where('user.id = :userId', { userId })
-      .getOne();
 
     const getPaymentDetailsData =
       await this.paymentDetailsRepository.getPaymentDetails(paymentLogId);
@@ -315,7 +296,7 @@ export class OrdersService {
         throw new PreconditionFailedException('권한이 없습니다.');
       }
     } else {
-      if (getUserData.isAdmin != true) {
+      if (isAdmin != true) {
         throw new PreconditionFailedException('권한이 없습니다.');
       }
     }
@@ -478,17 +459,7 @@ export class OrdersService {
   }
 
   // 관리자 주문 취소
-  //todo: 타 작업물과 합병 이후 주석 제거
-  async cancelOrderByAdmin(userId: number, paymentLogId: number) {
-    // const getUserData = await this.usersRepository
-    //   .createQueryBuilder('user')
-    //   .where('user.id = :userId', { userId })
-    //   .getOne();
-
-    // if (!getUserData.isAdmin) {
-    //   throw new PreconditionFailedException('권한이 없습니다.');
-    // }
-
+  async cancelOrderByAdmin(paymentLogId: number) {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
