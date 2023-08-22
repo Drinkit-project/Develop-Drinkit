@@ -9,23 +9,29 @@ export class ProfilesService {
   constructor(private profilesRepository: ProfilesRepository) {}
 
   async getProfile(userId: number) {
-    const getOrdersData = await this.profilesRepository.getProfile(userId);
-    return getOrdersData;
+    const profile = await this.profilesRepository.getProfile(userId);
+    return profile;
   }
 
   async createProfile(
     userId: number,
-    address: JSON,
+    address: { address: string; name: string },
     phoneNumber: string,
     nickname: string,
     name: string,
     manager: EntityManager,
   ) {
-    await manager
+    return await manager
       .createQueryBuilder()
       .insert()
       .into(Profile)
-      .values({ userId, address: [address], phoneNumber, nickname, name })
+      .values({
+        userId,
+        address: JSON.stringify([address]),
+        phoneNumber,
+        nickname,
+        name,
+      })
       .execute();
   }
 
@@ -39,7 +45,16 @@ export class ProfilesService {
 
   async addAddress(userId: number, data: Partial<ProfileDto>) {
     const { address } = data;
-    // return this.profilesRepository.addAddress(userId, address);
+
+    this.profilesRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Profile)
+      .values({
+        userId,
+        address: JSON.stringify(address),
+      })
+      .execute();
   }
 
   async updateAddress(

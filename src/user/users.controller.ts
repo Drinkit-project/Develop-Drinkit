@@ -18,6 +18,7 @@ import { UsersService } from './users.service';
 import { ProfilesService } from './profiles.service';
 import { ProfileDto } from './dto/Profile.dto';
 import createUserDto from './dto/createUser.dto';
+import { User } from 'src/entities/user.entity';
 
 @ApiTags('users')
 @Controller('user')
@@ -94,18 +95,20 @@ export class UsersController {
     return userchecked;
   }
 
-  // @Get('profile') // 프로필 조회
-  // @ApiOperation({ summary: 'Get profile' })
-  // @ApiResponse({ status: 200, description: 'OK' })
-  // @ApiResponse({ status: 404, description: 'Not Found' })
-  // getProfile(@CurrentUser() userId: number) {
-  //   const profile = await this.profilesService.getProfile(userId);
-  //   return profile;
-  // }
+  @Get('/profile') // 프로필 조회
+  @ApiOperation({ summary: 'Get profile' })
+  @ApiResponse({ status: 200, description: 'OK' })
+  @ApiResponse({ status: 404, description: 'Not Found' })
+  @UseGuards(AuthGuard)
+  async getProfile(@CurrentUser() user: User) {
+    console.log(user.id);
+    const profile = await this.profilesService.getProfile(user.id);
+    return profile;
+  }
 
   // @ApiOperation({ summary: 'update profile' })
   // @UseGuards(AuthGuard)
-  // @Put('profile')
+  // @Put('/profile')
   // updateProfile(
   //   @CurrentUser() userId: number,
   //   @Body() data: Partial<ProfileDto>,

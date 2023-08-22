@@ -1,5 +1,4 @@
 import {
-  HttpException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -15,7 +14,6 @@ import { AuthService } from 'src/auth/auth.service';
 import { Payload } from 'src/auth/security/payload.interface';
 import { ProfilesService } from './profiles.service';
 import createUserDto from './dto/createUser.dto';
-import { HttpExceptionFilter } from 'src/commons/exceptions/httpException.filter';
 
 @Injectable()
 export class UsersService {
@@ -95,45 +93,37 @@ export class UsersService {
 
     const hashedPassword = await this.transformPassword(password);
 
-    try {
-      await this.dataSource.transaction(async (manager) => {
-        const result = await manager
-          .createQueryBuilder()
-          .insert()
-          .into(User, [
-            'email',
-            'password',
-            'isAdmin',
-            'isPersonal',
-            'name',
-            'point',
-          ])
-          .values({
-            email,
-            password: hashedPassword,
-            isAdmin,
-            isPersonal,
-            point: 0,
-          })
-          .execute();
+    return await this.dataSource.transaction(async (manager) => {
+      const result = await manager
+        .createQueryBuilder()
+        .insert()
+        .into(User, [
+          'email',
+          'password',
+          'isAdmin',
+          'isPersonal',
+          'name',
+          'point',
+        ])
+        .values({
+          email,
+          password: hashedPassword,
+          isAdmin,
+          isPersonal,
+          point: 0,
+        })
+        .execute();
 
-        const [user] = result.identifiers;
-        await this.profilesService.createProfile(
-          user.id,
-          address,
-          phoneNumber,
-          nickname,
-          name,
-          manager,
-        );
-      });
-      return {
-        statusCode: 201,
-        message: '회원가입 성공',
-      };
-    } catch (error) {
-      return error;
-    }
+      const [user] = result.identifiers;
+      await this.profilesService.createProfile(
+        user.id,
+        address,
+        phoneNumber,
+        nickname,
+        name,
+        manager,
+      );
+    });
   }
 
   //토큰 존재 시 한번 더 인증이 필요할 때, 비밀번호 인증

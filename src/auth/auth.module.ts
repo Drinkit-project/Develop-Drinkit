@@ -9,6 +9,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtConfigService } from 'config/jwt.config.service';
 import { UsersService } from 'src/user/users.service';
 import { UsersRepository } from 'src/user/users.repository';
+import { ProfilesService } from 'src/user/profiles.service';
+import { ProfilesRepository } from 'src/user/profiles.repository';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { UsersRepository } from 'src/user/users.repository';
   ],
   exports: [AuthService, JwtStrategy],
   providers: [
+    ProfilesService,
+    ProfilesRepository,
     AuthService,
     JwtStrategy,
     JwtConfigService,

@@ -1,15 +1,13 @@
 import {
   IsBoolean,
   IsEmail,
-  IsJSON,
   IsNotEmpty,
   IsString,
   Matches,
 } from 'class-validator';
 
 export class createUserDto {
-  @IsJSON()
-  address: JSON;
+  address: { address: string; name: string };
 
   @IsString()
   @IsNotEmpty()

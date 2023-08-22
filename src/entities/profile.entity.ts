@@ -12,8 +12,8 @@ export class Profile extends PickType(CommonEntity, [
   @PrimaryColumn({ type: 'bigint', name: 'userId' })
   userId: number;
 
-  @Column('jsonb', { array: true })
-  address: Array<object>;
+  @Column('varchar')
+  address: string;
 
   @Column('varchar')
   phoneNumber: string;
