@@ -7,44 +7,30 @@ import { AuthGuard as NestAuthGuard } from '@nestjs/passport';
 import * as jwt from 'jsonwebtoken';
 import { AuthService } from '../auth.service';
 import { Payload } from './payload.interface';
-import { UsersService } from 'src/user/users.service';
 
 @Injectable()
 export class AuthGuard extends NestAuthGuard('jwt') {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly usersService: UsersService,
-  ) {
+  constructor(private readonly authService: AuthService) {
     super();
   }
 
-  async canActivate(context: ExecutionContext) {
+  canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
 
     try {
-      const accessToken = await request.cookies.AccessToken.replace(
-        'Bearer ',
-        '',
-      );
+      const accessToken = request.cookies.AccessToken.replace('Bearer ', '');
 
       if (!accessToken) {
         throw new UnauthorizedException('Token not found in the cookie.');
       }
       try {
-        const payload: any = await jwt.verify(
+        const payload: any = jwt.verify(
           accessToken,
           process.env.JWT_SECRET_ACCESS,
           { ignoreExpiration: true },
         );
-
-        const myuser = await this.usersService.findByFields({
-          where: { id: payload.userId },
-        });
-        request.myUser = myuser;
-
-        await super.canActivate(context);
-
-        return true;
+        request.userId = payload.userId;
+        return super.canActivate(context);
       } catch (error) {
         throw new UnauthorizedException('Invalid token.');
       }
@@ -93,20 +79,19 @@ export class AuthGuard extends NestAuthGuard('jwt') {
             payload.userId,
           );
 
-          await context
+          context
             .switchToHttp()
             .getResponse()
             .cookie('AccessToken', 'Bearer ' + newAccessToken);
-
-          const myuser = await this.usersService.findByFields({
-            where: { id: payload.userId },
-          });
-          request.myUser = myuser;
+          request.userId = payload;
+          return user;
         } catch (err) {
           console.log(err);
           throw new UnauthorizedException('다시 로그인 해주세요');
         }
       }
+
+      return user;
     };
   }
 }

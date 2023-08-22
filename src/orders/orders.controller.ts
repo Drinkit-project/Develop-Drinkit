@@ -16,6 +16,7 @@ import { PostOrderReqDto } from './dto/postOrders.request.dto';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorators';
 import { AuthAdminGuard } from 'src/auth/security/jwt.admin.guard';
+import { userInfo } from 'os';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -88,10 +89,10 @@ export class OrdersController {
   @ApiOperation({ summary: '주문 요청 - i`mport' })
   @UseGuards(AuthGuard)
   @Post()
-  async order(@CurrentUser() userId: number, @Body() dto: OrderReqDto) {
+  async order(@CurrentUser() user: any, @Body() dto: OrderReqDto) {
     const checkOrderListData = await this.ordersService.checkOrderList(
       dto.orderList,
-      userId,
+      user.id,
       dto.usePoint,
       dto.storeId,
     );
@@ -102,9 +103,9 @@ export class OrdersController {
   @ApiOperation({ summary: '결제 성공 후' })
   @UseGuards(AuthGuard)
   @Post('postOrder')
-  async postOrder(@CurrentUser() userId: number, @Body() dto: PostOrderReqDto) {
+  async postOrder(@CurrentUser() user: any, @Body() dto: PostOrderReqDto) {
     const postOrderData = await this.ordersService.postOrder(
-      userId,
+      user.id,
       dto.paidPoint,
       dto.totalPrice,
       dto.orderList,
