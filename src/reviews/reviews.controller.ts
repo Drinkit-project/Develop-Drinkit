@@ -17,6 +17,7 @@ import {
   UpdateReviewsRequestDto,
 } from './dto/reviews.request.dto';
 import { ReviewsService } from './reviews.service';
+import UserDto from 'src/user/dto/user.dto';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -37,7 +38,7 @@ export class ReviewsController {
   @UseGuards(AuthGuard)
   @Post()
   async createReview(
-    @CurrentUser() userId: number,
+    @CurrentUser() user,
     @Query() query: any,
     @Body() body: CreateReviewsRequestDto,
   ) {
@@ -45,7 +46,7 @@ export class ReviewsController {
     const { content, rating } = body;
 
     const newProduct = await this.reviewsService.createReview(
-      userId,
+      user.id,
       paymentDetailId,
       content,
       rating,
@@ -58,7 +59,7 @@ export class ReviewsController {
   @UseGuards(AuthGuard)
   @Put(':reviewId')
   async updateReview(
-    @CurrentUser() userId: number,
+    @CurrentUser() user,
     @Param() param: any,
     @Body() body: UpdateReviewsRequestDto,
   ) {
@@ -66,7 +67,7 @@ export class ReviewsController {
     const { content, rating } = body;
 
     const newProduct = await this.reviewsService.updateReview(
-      userId,
+      user.id,
       reviewId,
       content,
       rating,
@@ -78,10 +79,13 @@ export class ReviewsController {
   @ApiOperation({ summary: '리뷰 삭제' })
   @UseGuards(AuthGuard)
   @Delete(':reviewId')
-  async removeReview(@CurrentUser() userId: number, @Param() param: any) {
+  async removeReview(@CurrentUser() user, @Param() param: any) {
     const { reviewId } = param;
 
-    const newProduct = await this.reviewsService.removeReview(userId, reviewId);
+    const newProduct = await this.reviewsService.removeReview(
+      user.id,
+      reviewId,
+    );
 
     return '리뷰 삭제 완료!';
   }
