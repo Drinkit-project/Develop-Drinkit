@@ -24,12 +24,6 @@ export class User extends CommonEntity {
   @Column('varchar')
   password: string;
 
-  @Column({
-    type: 'json',
-    default: '{"products":"[]"}',
-  })
-  cart: string;
-
   @OneToMany(() => PaymentLog, (paymentLog) => paymentLog.user)
   paymentLog: PaymentLog[];
 
