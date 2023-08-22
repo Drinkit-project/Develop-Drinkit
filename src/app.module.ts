@@ -15,7 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from 'config/typeorm.config.service';
 import { UsersModule } from './user/users.module';
 import { ProfilesController } from './profiles/profiles.controller';
-import { ProfilesService } from './profiles/profiles.service';
+import { ProfilesService } from './user/profiles.service';
 import { ProfilesModule } from './profiles/profiles.module';
 import { SubscribesModule } from './subscribes/subscribes.module';
 

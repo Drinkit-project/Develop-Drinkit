@@ -76,7 +76,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
                 .switchToHttp()
                 .getResponse()
                 .cookie('AccessToken', 'Bearer ' + newAccessToken);
-              request.userId = user.userId;
+              request.user = user;
               console.log('신규리프레시토큰', refreshToken);
               return refreshToken;
             });
