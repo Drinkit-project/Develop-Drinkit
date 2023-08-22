@@ -5,8 +5,9 @@ import { Store_ProductsRepository } from './stores_products.repository';
 import { StoresRepository } from './stores.repository';
 import { UsersRepository } from 'src/user/users.repository';
 import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from 'src/user/users.module';
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, UsersModule],
   controllers: [StoresController],
   providers: [
     StoresService,
