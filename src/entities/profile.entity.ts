@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, OneToOne, JoinColumn, PrimaryColumn } from 'typeorm';
 import { PickType } from '@nestjs/swagger';
 
 import { User } from './user.entity';
@@ -15,7 +9,7 @@ export class Profile extends PickType(CommonEntity, [
   'createdAt',
   'updatedAt',
 ]) {
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'userId' })
+  @PrimaryColumn({ type: 'bigint', name: 'userId' })
   userId: boolean;
 
   @Column('jsonb', { array: true })

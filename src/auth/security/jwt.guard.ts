@@ -14,7 +14,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
     super();
   }
 
-  async canActivate(context: ExecutionContext) {
+  canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
 
     try {
@@ -29,24 +29,37 @@ export class AuthGuard extends NestAuthGuard('jwt') {
           process.env.JWT_SECRET_ACCESS,
           { ignoreExpiration: true },
         );
-        request.user = payload; // Set user data to the request
+        request.userId = payload.userId;
+        return super.canActivate(context);
+      } catch (error) {
+        throw new UnauthorizedException('Invalid token.');
+      }
+    } catch (error) {
+      throw new UnauthorizedException('Token not found in the cookie.');
+    }
+  }
 
-        // 액세스 토큰이 만료되었을 때 리프레시 토큰을 검증하고 액세스 토큰을 재발급합니다.
-        if (this.authService.isAccessTokenExpired(payload.exp)) {
-          const refreshToken = request.cookies.RefreshToken.replace(
-            'Bearer ',
-            '',
-          );
+  handleRequest<TUser = any>(
+    err: any,
+    user: any,
+    info: any,
+    context: ExecutionContext,
+  ): TUser {
+    if (err) {
+      throw new UnauthorizedException('AUTH', 'JWT AUTH ERROR');
+    }
+    if (info) {
+      const request = context.switchToHttp().getRequest();
+      const refreshToken = request.cookies.RefreshToken.replace('Bearer ', '');
 
-          const verifiedRefreshToken =
-            await this.authService.isRefreshTokenExpired(refreshToken);
+      this.authService
+        .isRefreshTokenExpired(refreshToken)
+        .then((verifiedRefreshToken) => {
           if (!verifiedRefreshToken) {
             throw new UnauthorizedException('세션이 만료되었습니다.'); // 세션 만료 오류
           }
-
           //예외처리를 통과했다는 건 Payload라는 것이기 때문에 Payload로 설정
           const user: Payload = verifiedRefreshToken as Payload;
-
           if (
             !this.authService.isRefreshTokenValid(refreshToken, user.userId)
           ) {
@@ -55,25 +68,20 @@ export class AuthGuard extends NestAuthGuard('jwt') {
             ); // 유효하지 않은 리프레시 토큰 오류
           }
 
-          const newAccessToken = await this.authService.generateAccessToken(
-            user.userId,
-          );
-
-          // 새로운 액세스 토큰을 쿠키로 저장
-          context
-            .switchToHttp()
-            .getResponse()
-            .cookie('AccessToken', 'Bearer ' + newAccessToken);
-
-          request.userId = user.userId;
-        }
-        request.userId = payload.userId;
-        return true;
-      } catch (error) {
-        throw new UnauthorizedException('Invalid token.');
-      }
-    } catch (error) {
-      throw new UnauthorizedException('Token not found in the cookie.');
+          this.authService
+            .generateAccessToken(user.userId)
+            .then((newAccessToken) => {
+              // 새로운 액세스 토큰을 쿠키로 저장
+              context
+                .switchToHttp()
+                .getResponse()
+                .cookie('AccessToken', 'Bearer ' + newAccessToken);
+              request.userId = user.userId;
+              console.log('신규리프레시토큰', refreshToken);
+              return refreshToken;
+            });
+        });
     }
+    return user;
   }
 }
