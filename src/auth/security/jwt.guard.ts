@@ -7,30 +7,44 @@ import { AuthGuard as NestAuthGuard } from '@nestjs/passport';
 import * as jwt from 'jsonwebtoken';
 import { AuthService } from '../auth.service';
 import { Payload } from './payload.interface';
+import { UsersService } from 'src/user/users.service';
 
 @Injectable()
 export class AuthGuard extends NestAuthGuard('jwt') {
-  constructor(private readonly authService: AuthService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {
     super();
   }
 
-  canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
 
     try {
-      const accessToken = request.cookies.AccessToken.replace('Bearer ', '');
+      const accessToken = await request.cookies.AccessToken.replace(
+        'Bearer ',
+        '',
+      );
 
       if (!accessToken) {
         throw new UnauthorizedException('Token not found in the cookie.');
       }
       try {
-        const payload: any = jwt.verify(
+        const payload: any = await jwt.verify(
           accessToken,
           process.env.JWT_SECRET_ACCESS,
           { ignoreExpiration: true },
         );
-        request.userId = payload.userId;
-        return super.canActivate(context);
+
+        const myuser = await this.usersService.findByFields({
+          where: { id: payload.userId },
+        });
+        request.myUser = myuser;
+
+        await super.canActivate(context);
+
+        return true;
       } catch (error) {
         throw new UnauthorizedException('Invalid token.');
       }
@@ -44,44 +58,55 @@ export class AuthGuard extends NestAuthGuard('jwt') {
     user: any,
     info: any,
     context: ExecutionContext,
-  ): TUser {
-    if (err) {
-      throw new UnauthorizedException('AUTH', 'JWT AUTH ERROR');
-    }
-    if (info) {
-      const request = context.switchToHttp().getRequest();
-      const refreshToken = request.cookies.RefreshToken.replace('Bearer ', '');
+  ): any {
+    async () => {
+      if (err) {
+        throw new UnauthorizedException('AUTH', 'JWT AUTH ERROR');
+      }
 
-      this.authService
-        .isRefreshTokenExpired(refreshToken)
-        .then((verifiedRefreshToken) => {
+      if (info) {
+        const request = context.switchToHttp().getRequest();
+        const refreshToken = request.cookies.RefreshToken.replace(
+          'Bearer ',
+          '',
+        );
+
+        try {
+          const verifiedRefreshToken =
+            await this.authService.isRefreshTokenExpired(refreshToken);
+
           if (!verifiedRefreshToken) {
-            throw new UnauthorizedException('세션이 만료되었습니다.'); // 세션 만료 오류
+            throw new UnauthorizedException('세션이 만료되었습니다.');
           }
-          //예외처리를 통과했다는 건 Payload라는 것이기 때문에 Payload로 설정
-          const user: Payload = verifiedRefreshToken as Payload;
+
+          const payload: Payload = verifiedRefreshToken as Payload;
+
           if (
-            !this.authService.isRefreshTokenValid(refreshToken, user.userId)
+            !this.authService.isRefreshTokenValid(refreshToken, payload.userId)
           ) {
             throw new UnauthorizedException(
               '유효하지 않은 요청입니다. 관리자에게 문의하세요',
-            ); // 유효하지 않은 리프레시 토큰 오류
+            );
           }
 
-          this.authService
-            .generateAccessToken(user.userId)
-            .then((newAccessToken) => {
-              // 새로운 액세스 토큰을 쿠키로 저장
-              context
-                .switchToHttp()
-                .getResponse()
-                .cookie('AccessToken', 'Bearer ' + newAccessToken);
-              request.user = user;
-              console.log('신규리프레시토큰', refreshToken);
-              return refreshToken;
-            });
-        });
-    }
-    return user;
+          const newAccessToken = await this.authService.generateAccessToken(
+            payload.userId,
+          );
+
+          await context
+            .switchToHttp()
+            .getResponse()
+            .cookie('AccessToken', 'Bearer ' + newAccessToken);
+
+          const myuser = await this.usersService.findByFields({
+            where: { id: payload.userId },
+          });
+          request.myUser = myuser;
+        } catch (err) {
+          console.log(err);
+          throw new UnauthorizedException('다시 로그인 해주세요');
+        }
+      }
+    };
   }
 }
