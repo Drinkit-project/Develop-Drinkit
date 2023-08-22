@@ -7,25 +7,25 @@ import {
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user;
+    return request.myUser;
   },
 );
 
 export const AdminUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    if (!request.user.isAdmin) throw new BadRequestException('권한 없음');
+    if (!request.myUser.isAdmin) throw new BadRequestException('권한 없음');
 
-    return request.user.isAdmin;
+    return request.myUser;
   },
 );
 
 export const PersonalUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    if (!request.user.isPersonal)
+    if (!request.myUser.isPersonal)
       throw new BadRequestException('권한 없음이지롱~');
 
-    return request.user.isPersonal;
+    return request.myUser.isPersonal;
   },
 );

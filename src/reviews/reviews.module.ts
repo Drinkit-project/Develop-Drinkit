@@ -9,7 +9,8 @@ import { Review } from 'src/entities/review.entity';
 import { ReviewsRepository } from './reviews.repository';
 import { PaymentLog } from 'src/entities/paymentLog.entity';
 import { PaymentDetail } from 'src/entities/paymentDetail.entity';
-import { UsersRepository } from 'src/user/users.repository';
+import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from 'src/user/users.module';
 
 @Module({
   imports: [
@@ -21,6 +22,8 @@ import { UsersRepository } from 'src/user/users.repository';
       Review,
       User,
     ]),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [ReviewsController],
   providers: [ReviewsService, ReviewsRepository, UsersRepository],
