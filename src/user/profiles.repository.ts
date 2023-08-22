@@ -38,55 +38,55 @@ export class ProfilesRepository extends Repository<Profile> {
     return getAdminOrdersData;
   }
 
-  async updateOrdersStatus(paymentLogId: number, status: string) {
-    const updateOrdersStatusData = await this.createQueryBuilder()
-      .update(PaymentLog)
-      .set({ status })
-      .where('id = :paymentLogId', { paymentLogId })
-      .execute();
-    return updateOrdersStatusData;
-  }
+  // async updateOrdersStatus(paymentLogId: number, status: string) {
+  //   const updateOrdersStatusData = await this.createQueryBuilder()
+  //     .update(PaymentLog)
+  //     .set({ status })
+  //     .where('id = :paymentLogId', { paymentLogId })
+  //     .execute();
+  //   return updateOrdersStatusData;
+  // }
 
-  async postPaymentLog(
-    userId: number,
-    totalPrice: number,
-    storeId: number,
-    paidPoint: number,
-    manager: EntityManager,
-  ) {
-    const postPaymentLogData = await manager
-      .createQueryBuilder()
-      .insert()
-      .into(PaymentLog)
-      .values({
-        userId,
-        status: PaymentStatus.ORDER_PENDING,
-        totalPrice,
-        storeId,
-        paidPoint,
-      })
-      .execute();
+  // async postPaymentLog(
+  //   userId: number,
+  //   totalPrice: number,
+  //   storeId: number,
+  //   paidPoint: number,
+  //   manager: EntityManager,
+  // ) {
+  //   const postPaymentLogData = await manager
+  //     .createQueryBuilder()
+  //     .insert()
+  //     .into(PaymentLog)
+  //     .values({
+  //       userId,
+  //       status: PaymentStatus.ORDER_PENDING,
+  //       totalPrice,
+  //       storeId,
+  //       paidPoint,
+  //     })
+  //     .execute();
 
-    return postPaymentLogData;
-  }
+  //   return postPaymentLogData;
+  // }
 
-  async findPaymentLog(userId: number) {
-    const findPaymentLogData = await this.createQueryBuilder('paymentLog')
-      .where('paymentLog.userId = :userId', { userId })
-      .orderBy('paymentLog.createdAt', 'DESC')
-      .getOne();
+  // async findPaymentLog(userId: number) {
+  //   const findPaymentLogData = await this.createQueryBuilder('paymentLog')
+  //     .where('paymentLog.userId = :userId', { userId })
+  //     .orderBy('paymentLog.createdAt', 'DESC')
+  //     .getOne();
 
-    return findPaymentLogData;
-  }
+  //   return findPaymentLogData;
+  // }
 
-  async deletePaymentLog(paymentLogId: number, manager: EntityManager) {
-    const deletePaymentLogData = await manager
-      .createQueryBuilder()
-      .delete()
-      .from(PaymentLog)
-      .where('id = :paymentLogId', { paymentLogId })
-      .execute();
+  // async deletePaymentLog(paymentLogId: number, manager: EntityManager) {
+  //   const deletePaymentLogData = await manager
+  //     .createQueryBuilder()
+  //     .delete()
+  //     .from(PaymentLog)
+  //     .where('id = :paymentLogId', { paymentLogId })
+  //     .execute();
 
-    return deletePaymentLogData;
-  }
+  //   return deletePaymentLogData;
+  // }
 }

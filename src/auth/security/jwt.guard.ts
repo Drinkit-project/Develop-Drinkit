@@ -59,7 +59,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
     info: any,
     context: ExecutionContext,
   ): any {
-    (async () => {
+    return (async () => {
       if (err) {
         throw new UnauthorizedException('AUTH', 'JWT AUTH ERROR');
       }

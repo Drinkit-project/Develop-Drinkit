@@ -17,6 +17,7 @@ import { CurrentUser } from 'src/commons/decorators/user.decorators';
 import { UsersService } from './users.service';
 import { ProfilesService } from './profiles.service';
 import { ProfileDto } from './dto/Profile.dto';
+import createUserDto from './dto/createUser.dto';
 
 @ApiTags('users')
 @Controller('user')
@@ -30,7 +31,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
   @Post('/signUp')
-  async signUp(@Body() data: UserDto) {
+  async signUp(@Body() data: createUserDto) {
     return await this.usersService.signUp(data);
   }
 
@@ -93,50 +94,50 @@ export class UsersController {
     return userchecked;
   }
 
-  @Get('profile') // 프로필 조회
-  @ApiOperation({ summary: 'Get profile' })
-  @ApiResponse({ status: 200, description: 'OK' })
-  @ApiResponse({ status: 404, description: 'Not Found' })
-  getProfile(@CurrentUser() userId: number) {
-    const profile = await this.profilesService.getProfile(userId);
-    return profile;
-  }
+  // @Get('profile') // 프로필 조회
+  // @ApiOperation({ summary: 'Get profile' })
+  // @ApiResponse({ status: 200, description: 'OK' })
+  // @ApiResponse({ status: 404, description: 'Not Found' })
+  // getProfile(@CurrentUser() userId: number) {
+  //   const profile = await this.profilesService.getProfile(userId);
+  //   return profile;
+  // }
 
-  @ApiOperation({ summary: 'update profile' })
-  @UseGuards(AuthGuard)
-  @Put('profile')
-  updateProfile(
-    @CurrentUser() userId: number,
-    @Body() data: Partial<ProfileDto>,
-  ) {
-    return await this.profilesService.updateProfile(userId, data);
-  }
+  // @ApiOperation({ summary: 'update profile' })
+  // @UseGuards(AuthGuard)
+  // @Put('profile')
+  // updateProfile(
+  //   @CurrentUser() userId: number,
+  //   @Body() data: Partial<ProfileDto>,
+  // ) {
+  //   return await this.profilesService.updateProfile(userId, data);
+  // }
 
-  @Post('/address')
-  @ApiOperation({ summary: 'add address' })
-  @UseGuards(AuthGuard)
-  addAddress(@CurrentUser() userId: number, @Body() data: Partial<ProfileDto>) {
-    return await this.profilesService.addAddress(userId, data);
-  }
+  // @Post('/address')
+  // @ApiOperation({ summary: 'add address' })
+  // @UseGuards(AuthGuard)
+  // addAddress(@CurrentUser() userId: number, @Body() data: Partial<ProfileDto>) {
+  //   return await this.profilesService.addAddress(userId, data);
+  // }
 
-  @ApiOperation({ summary: 'update address' })
-  @UseGuards(AuthGuard)
-  @Put('/address')
-  updateAddress(
-    @CurrentUser() userId: number,
-    @Query('addressIdx', ParseIntPipe) addressIdx: number,
-    @Body() data: Partial<ProfileDto>,
-  ) {
-    return await this.profilesService.updateAddress(userId, addressIdx, data);
-  }
+  // @ApiOperation({ summary: 'update address' })
+  // @UseGuards(AuthGuard)
+  // @Put('/address')
+  // updateAddress(
+  //   @CurrentUser() userId: number,
+  //   @Query('addressIdx', ParseIntPipe) addressIdx: number,
+  //   @Body() data: Partial<ProfileDto>,
+  // ) {
+  //   return await this.profilesService.updateAddress(userId, addressIdx, data);
+  // }
 
-  @ApiOperation({ summary: 'delete address' })
-  @UseGuards(AuthGuard)
-  @Delete('/address')
-  delteAddress(
-    @CurrentUser() userId: number,
-    @Query('addressIdx', ParseIntPipe) addressIdx: number,
-  ) {
-    return await this.profilesService.delteAddress(userId, addressIdx);
-  }
+  // @ApiOperation({ summary: 'delete address' })
+  // @UseGuards(AuthGuard)
+  // @Delete('/address')
+  // delteAddress(
+  //   @CurrentUser() userId: number,
+  //   @Query('addressIdx', ParseIntPipe) addressIdx: number,
+  // ) {
+  //   return await this.profilesService.delteAddress(userId, addressIdx);
+  // }
 }

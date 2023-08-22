@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ProfilesRepository } from './profiles.repository';
 import ProfileDto from './dto/Profile.dto';
 import { DataSource, EntityManager } from 'typeorm';
+import { Profile } from 'src/entities/profile.entity';
 
 @Injectable()
 export class ProfilesService {
@@ -23,11 +24,8 @@ export class ProfilesService {
     await manager
       .createQueryBuilder()
       .insert()
-      .into(Store_Product, ['id', 'storeId', 'totalStock', 'productId'])
-      .values(getStoreProductsData)
-      .orUpdate(['totalStock'], ['id'], {
-        skipUpdateIfNoValuesChanged: true,
-      })
+      .into(Profile)
+      .values({ userId, address: [address], phoneNumber, nickname, name })
       .execute();
   }
 
@@ -41,7 +39,7 @@ export class ProfilesService {
 
   async addAddress(userId: number, data: Partial<ProfileDto>) {
     const { address } = data;
-    return this.profilesRepository.addAddress(userId, address);
+    // return this.profilesRepository.addAddress(userId, address);
   }
 
   async updateAddress(
@@ -50,10 +48,10 @@ export class ProfilesService {
     data: Partial<ProfileDto>,
   ) {
     const { address } = data;
-    return this.profilesRepository.updateAddress(userId, addressIdx, address);
+    // return this.profilesRepository.updateAddress(userId, addressIdx, address);
   }
 
   async delteAddress(userId: number, addressIdx: number) {
-    return this.profilesRepository.delteAddress(userId, addressIdx);
+    // return this.profilesRepository.delteAddress(userId, addressIdx);
   }
 }
