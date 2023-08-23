@@ -28,6 +28,7 @@ export class ProductsService {
     const { categoryId, productName, price, description, imgUrl, totalStock } =
       newProduct;
     try {
+      console.log(newProduct);
       const createdProduct = await this.productsRepository.insert({
         categoryId: parseInt(categoryId),
         productName,
