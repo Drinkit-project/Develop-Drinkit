@@ -1,12 +1,26 @@
 import {
-  Matches,
-  IsString,
-  IsEmail,
   IsBoolean,
+  IsEmail,
   IsNotEmpty,
+  IsString,
+  Matches,
 } from 'class-validator';
 
-export class UserDto {
+export class createUserDto {
+  address: { address: string; name: string };
+
+  @IsString()
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsString()
+  @IsNotEmpty()
+  nickname: string;
+
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
   @IsEmail()
   @IsNotEmpty()
   email: string;
@@ -30,4 +44,5 @@ export class UserDto {
   @IsNotEmpty()
   isPersonal: boolean;
 }
-export default UserDto;
+
+export default createUserDto;

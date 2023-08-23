@@ -10,10 +10,10 @@ export class Profile extends PickType(CommonEntity, [
   'updatedAt',
 ]) {
   @PrimaryColumn({ type: 'bigint', name: 'userId' })
-  userId: boolean;
+  userId: number;
 
-  @Column('jsonb', { array: true })
-  address: Array<object>;
+  @Column('varchar')
+  address: string;
 
   @Column('varchar')
   phoneNumber: string;
