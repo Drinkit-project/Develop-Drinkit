@@ -1,6 +1,8 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { Store } from 'src/entities/store.entity';
+import { Store_Product } from 'src/entities/store_product.entity';
+import { Column } from 'typeorm';
 
 export class UpdateStoreDTO extends OmitType(Store, ['id', 'businessLicense']) {
   @IsOptional()
@@ -37,4 +39,30 @@ export class UpdateStoreDTO extends OmitType(Store, ['id', 'businessLicense']) {
     required: false,
   })
   userId: number;
+}
+
+export class UpdateProductDTO extends OmitType(Store_Product, [
+  'id',
+  'storeStock',
+  'productId',
+]) {
+  @ApiProperty({
+    example: 30,
+    name: 'updateStock',
+    description: 'To update Stock of product on store',
+  })
+  @Column({
+    type: 'integer',
+  })
+  updateStock: number;
+
+  @ApiProperty({
+    example: true,
+    name: 'upDown',
+    description: '"true" means add and "false" means sub',
+  })
+  @Column({
+    type: 'boolean',
+  })
+  upDown: boolean;
 }

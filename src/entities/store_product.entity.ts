@@ -11,7 +11,9 @@ export class Store_Product extends CommonEntity {
     name: 'storeId',
     description: 'ID of store',
   })
-  @Column('bigint')
+  @Column({
+    type: 'integer',
+  })
   storeId: number;
 
   @ApiProperty({
@@ -19,7 +21,9 @@ export class Store_Product extends CommonEntity {
     name: 'productId',
     description: 'ID of product',
   })
-  @Column('bigint')
+  @Column({
+    type: 'integer',
+  })
   productId: number;
 
   @ApiProperty({
