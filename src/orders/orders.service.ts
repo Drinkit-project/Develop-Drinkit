@@ -6,7 +6,6 @@ import {
 import { PaymentLogRepository } from './paymentLogs.repository';
 import { PaymentDetailRepository } from './paymentDetails.repository';
 import { Store_ProductsRepository } from 'src/stores/stores_products.repository';
-import { UsersRepository } from 'src/user/users.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
 import { ProductsRepository } from 'src/products/products.repository';
 import { Product } from 'src/entities/product.entity';
@@ -14,6 +13,7 @@ import { User } from 'src/entities/user.entity';
 import { Store_Product } from 'src/entities/store_product.entity';
 import { PaymentStatus } from 'src/entities/paymentLog.entity';
 import { DataSource } from 'typeorm';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class OrdersService {
@@ -23,7 +23,6 @@ export class OrdersService {
     private paymentDetailsRepository: PaymentDetailRepository,
     private store_ProductsRepository: Store_ProductsRepository,
     private storesRepository: StoresRepository,
-    private usersRepository: UsersRepository,
     private productsRepository: ProductsRepository,
   ) {}
 

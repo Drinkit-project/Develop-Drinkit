@@ -19,7 +19,6 @@ import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
-    AuthModule,
     TypeOrmModule.forFeature([
       PaymentDetail,
       PaymentLog,
@@ -36,7 +35,6 @@ import { AuthModule } from 'src/auth/auth.module';
     OrdersService,
     PaymentDetailRepository,
     PaymentLogRepository,
-    UsersRepository,
     ProductsRepository,
     StoresRepository,
     Store_ProductsRepository,

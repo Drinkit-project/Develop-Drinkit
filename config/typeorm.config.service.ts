@@ -40,9 +40,9 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       ],
       logging: this.configService.get<boolean>('DATABASE_LOGGING'),
       synchronize: this.configService.get<boolean>('DATABASE_SYNCHRONIZE'),
-      extra: {
-        ssl: { rejectUnauthorized: false },
-      },
+      // extra: {
+      //   ssl: { rejectUnauthorized: false },
+      // },
     };
   }
 }
