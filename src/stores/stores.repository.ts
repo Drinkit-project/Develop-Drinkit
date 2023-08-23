@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Store } from 'src/entities/store.entity';
+import { Store_Product } from 'src/entities/store_product.entity';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
@@ -9,7 +10,8 @@ export class StoresRepository extends Repository<Store> {
   }
   findStoreById(id: number) {
     return this.createQueryBuilder('store')
-      .leftJoinAndSelect('store.user', 'user')
+      .leftJoinAndSelect('store.user', 'storeOwner')
+      .leftJoinAndSelect('store.productList', 'store_product')
       .where('store.id = :id', { id })
       .getOne();
   }
@@ -24,7 +26,15 @@ export class StoresRepository extends Repository<Store> {
     return store;
   }
 
-  updateStoreById(id: number, obj: object) {
-    return;
+  addProductOnStore(obj: object) {
+    const product = this.datasource
+      .getRepository(Store_Product)
+      .createQueryBuilder('store_product')
+      .insert()
+      .into(Store_Product)
+      .values(obj)
+      .execute();
+
+    return product;
   }
 }

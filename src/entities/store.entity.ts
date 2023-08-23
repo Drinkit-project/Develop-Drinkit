@@ -18,7 +18,7 @@ export class Store extends CommonEntity {
   address: string;
 
   @ApiProperty({
-    example: 'Drink!t 1호 직영점',
+    example: 'Drink!t Store 1호점',
     name: 'name',
     description: 'Store name what it is.',
     required: true,
@@ -26,6 +26,16 @@ export class Store extends CommonEntity {
   @IsNotEmpty()
   @Column('varchar')
   name: string;
+
+  @ApiProperty({
+    example: '드링킷 1호점입니다. 방문시 다양한 주류를 확인하실 수 있습니다.',
+    name: 'description',
+    description: 'Description for store',
+    required: true,
+  })
+  @IsNotEmpty()
+  @Column('varchar')
+  description: string;
 
   @ApiProperty({
     example: '123-98-45678',

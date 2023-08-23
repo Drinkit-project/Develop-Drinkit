@@ -155,7 +155,7 @@ export class OrdersService {
         .getMany();
 
       totalStockByStoreProductData.forEach((v, i: number) => {
-        if (countList[i] > v.totalStock) {
+        if (countList[i] > v.storeStock) {
           throw new PreconditionFailedException();
         }
       });
@@ -242,7 +242,7 @@ export class OrdersService {
           await manager
             .createQueryBuilder()
             .update(Store_Product)
-            .set({ totalStock: () => `totalStock - ${countList[i]}` })
+            .set({ storeStock: () => `storeStock - ${countList[i]}` })
             .where('productId = :productId', { productId: productIdList[i] })
             .execute();
         }
@@ -252,7 +252,7 @@ export class OrdersService {
             .createQueryBuilder()
             .update(Product)
             .set({
-              totalStock: () => `totalStock - ${countList[i]}`,
+              storeStock: () => `storeStock - ${countList[i]}`,
             })
             .where('id = :productId', { productId: productIdList[i] })
             .execute();
@@ -340,16 +340,16 @@ export class OrdersService {
           .getMany();
 
         for (let i = 0; i < countList.length; i++) {
-          getStoreProductsData[i].totalStock =
-            Number(getStoreProductsData[i].totalStock) + Number(countList[i]);
+          getStoreProductsData[i].storeStock =
+            Number(getStoreProductsData[i].storeStock) + Number(countList[i]);
         }
 
         await manager
           .createQueryBuilder()
           .insert()
-          .into(Store_Product, ['id', 'storeId', 'totalStock', 'productId'])
+          .into(Store_Product, ['id', 'storeId', 'storeStock', 'productId'])
           .values(getStoreProductsData)
-          .orUpdate(['totalStock'], ['id'], {
+          .orUpdate(['storeStock'], ['id'], {
             skipUpdateIfNoValuesChanged: true,
           })
           .execute();
@@ -374,10 +374,10 @@ export class OrdersService {
             'categoryId',
             'description',
             'imgUrl',
-            'totalStock',
+            'storeStock',
           ])
           .values(getProductsData)
-          .orUpdate(['totalStock'], ['id'], {
+          .orUpdate(['storeStock'], ['id'], {
             skipUpdateIfNoValuesChanged: true,
           })
           .execute();
@@ -444,17 +444,17 @@ export class OrdersService {
       .getMany();
 
     for (let i = 0; i < countList.length; i++) {
-      getStoreProductsData[i].totalStock =
-        Number(getStoreProductsData[i].totalStock) + Number(countList[i]);
+      getStoreProductsData[i].storeStock =
+        Number(getStoreProductsData[i].storeStock) + Number(countList[i]);
     }
 
     await this.dataSource.transaction(async (manager) => {
       await manager
         .createQueryBuilder()
         .insert()
-        .into(Store_Product, ['id', 'storeId', 'totalStock', 'productId'])
+        .into(Store_Product, ['id', 'storeId', 'storeStock', 'productId'])
         .values(getStoreProductsData)
-        .orUpdate(['totalStock'], ['id'], {
+        .orUpdate(['storeStock'], ['id'], {
           skipUpdateIfNoValuesChanged: true,
         })
         .execute();
@@ -531,10 +531,10 @@ export class OrdersService {
           'categoryId',
           'description',
           'imgUrl',
-          'totalStock',
+          'storeStock',
         ])
         .values(getProductsData)
-        .orUpdate(['totalStock'], ['id'], {
+        .orUpdate(['storeStock'], ['id'], {
           skipUpdateIfNoValuesChanged: true,
         })
         .execute();

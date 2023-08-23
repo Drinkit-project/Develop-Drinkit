@@ -44,7 +44,6 @@ export class ProductsController {
     @AdminUser() user,
     @Body() body: CreateProductsRequestDto,
   ) {
-    console.log(user);
     const newProduct = await this.productsService.createProducts(body);
 
     return '상품 등록 완료!';

@@ -14,10 +14,13 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StoresService } from './stores.service';
-import { PersonalUser } from 'src/commons/decorators/user.decorators';
+import {
+  AdminUser,
+  PersonalUser,
+} from 'src/commons/decorators/user.decorators';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
 import { User } from 'src/entities/user.entity';
-import { CreateStoreDTO } from './DTO/create.DTO';
+import { AddProductDTO, CreateStoreDTO } from './DTO/create.DTO';
 import { UpdateStoreDTO } from './DTO/update.DTO';
 
 @ApiTags('Store')
@@ -25,6 +28,7 @@ import { UpdateStoreDTO } from './DTO/update.DTO';
 export class StoresController {
   constructor(private readonly storeService: StoresService) {}
 
+  // 가게 조회
   @ApiOperation({
     summary: 'Get Store detail by storeId',
     parameters: [{ name: 'storeId', in: 'path' }],
@@ -39,6 +43,7 @@ export class StoresController {
     }
   }
 
+  // 가게 정보 등록 by AdminUser
   @ApiOperation({
     summary: 'Create Store',
   })
@@ -53,15 +58,43 @@ export class StoresController {
   @HttpCode(201)
   @UseGuards(AuthGuard)
   @Post()
-  async createStore(@PersonalUser() user: User, @Body() body: CreateStoreDTO) {
+  async createStore(@AdminUser() user: User, @Body() body: CreateStoreDTO) {
     try {
-      const result = await this.storeService.createStore(body, user.id);
+      const result = await this.storeService.createStore(body);
       return result;
     } catch (e) {
       throw new BadRequestException('error => ' + e.message);
     }
   }
 
+  // 가게 상품 추가
+  @ApiOperation({
+    summary: 'Add product on Store',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'created',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+  })
+  @HttpCode(201)
+  @UseGuards(AuthGuard)
+  @Post('/products')
+  async addProductOnStore(
+    @PersonalUser() user: User,
+    @Body() body: AddProductDTO,
+  ) {
+    try {
+      const result = await this.storeService.addProductOnStore(user, body);
+      return result;
+    } catch (e) {
+      throw new BadRequestException('error => ' + e.message);
+    }
+  }
+
+  // 가게 정보 수정
   @ApiOperation({
     summary: 'Update Store detail by storeId',
     parameters: [{ name: 'storeId', in: 'path' }],
@@ -76,19 +109,24 @@ export class StoresController {
   })
   @UseGuards(AuthGuard)
   @Patch('/:storeId')
-  async updateStroe(
+  updateStroe(
     @Param('storeId', ParseIntPipe) id: number,
     @PersonalUser() user: User,
     @Body() body: UpdateStoreDTO,
   ) {
     try {
-      const result = await this.storeService.updateStore(id, user, body);
-      return result;
+      const result = this.storeService.updateStore(id, user, body);
+      if (result) {
+        return { message: '성공적으로 업데이트되었습니다.' };
+      } else {
+        throw new BadRequestException('업데이트에 실패했습니다.');
+      }
     } catch (e) {
       throw new BadRequestException('Please try again..');
     }
   }
 
+  // 가게 정보 삭제
   @ApiOperation({
     summary: 'Delete Store by storeId',
     parameters: [{ name: 'storeId', in: 'path' }],
@@ -103,12 +141,19 @@ export class StoresController {
   })
   @UseGuards(AuthGuard)
   @Delete('/:storeId')
-  deleteStore(
+  async deleteStore(
     @Param('storeId', ParseIntPipe) id: number,
     @PersonalUser() user: User,
   ) {
     try {
-      const result = this.storeService.deleteStore(id, user);
+      const result = await this.storeService.deleteStore(id, user);
+      if (result) {
+        console.log(result);
+
+        return { message: '성공적으로 삭제되었습니다.' };
+      } else {
+        throw new BadRequestException('삭제에 실패했습니다.');
+      }
     } catch (e) {
       throw new BadRequestException('Please try again..');
     }
