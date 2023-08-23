@@ -1,7 +1,9 @@
 import {
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  forwardRef,
 } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
@@ -20,7 +22,7 @@ export class UsersService {
   constructor(
     private dataSource: DataSource,
     private profilesService: ProfilesService,
-    private authService: AuthService,
+    @Inject(forwardRef(() => AuthService)) private authService: AuthService,
     @InjectRepository(UsersRepository)
     private readonly usersRepository: UsersRepository,
   ) {}
@@ -34,6 +36,14 @@ export class UsersService {
   async transformPassword(password: string): Promise<string> {
     const transformedPassword = await bcrypt.hash(password, 10);
     return transformedPassword;
+  }
+
+  async sendEmail(email: string): Promise<void> {
+    return await this.authService.sendVerificationEmail(email);
+  }
+
+  async authEmail(emailToken: string): Promise<boolean> {
+    return await this.authService.verifyVerificationCode(emailToken);
   }
 
   //로그인
@@ -81,14 +91,6 @@ export class UsersService {
 
     if (password !== confirm) {
       throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
-    }
-
-    const isUserExist = await this.findByFields({
-      where: { email },
-    });
-
-    if (isUserExist) {
-      throw new UnauthorizedException('이미 존재하는 사용자 입니다.');
     }
 
     const hashedPassword = await this.transformPassword(password);

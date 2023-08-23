@@ -1,27 +1,92 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  UnauthorizedException,
+  forwardRef,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Payload } from './security/payload.interface';
 import { JwtConfigService } from '../../config/jwt.config.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import * as nodemailer from 'nodemailer';
+import { UsersService } from 'src/user/users.service';
 
 @Injectable()
 export class AuthService {
   //이메일 인증용
-  // private transporter: nodemailer.Transporter;
+  private transporter: nodemailer.Transporter;
+
   constructor(
     @Inject(CACHE_MANAGER) private cache: Cache,
     private jwtConfigService: JwtConfigService,
     private jwtService: JwtService,
+    @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {
     //이메일 인증용
-    // this.transporter = nodemailer.createTransport({
-    //   service: 'Gmail', // 이메일 서비스 제공자 설정
-    //   auth: {
-    //     user: process.env.NODEMAILER_EMAIL, // 발신자 이메일 주소
-    //     pass: process.env.NODEMAILER_EMAIL_PASSWORD, // 발신자 이메일 비밀번호 (보안에 주의)
-    //   },
-    // });
+    this.transporter = nodemailer.createTransport({
+      host: 'smtp.naver.com',
+      port: 465,
+      secure: true, // true for 465, false for other ports
+      auth: {
+        user: process.env.NODEMAILER_EMAIL, // 발신자 이메일 주소
+        pass: process.env.NODEMAILER_EMAIL_PASSWORD, // 발신자 이메일 비밀번호 (보안에 주의)
+      },
+    });
+  }
+
+  //메일 전송
+  async sendVerificationEmail(email: string) {
+    const baseUrl = 'http://localhost:3000/user/emailTokenAuth';
+    const emailToken = await this.generateEmailToken(email);
+    const url = `${baseUrl}?emailToken=${emailToken}`;
+
+    const mailOptions = {
+      to: email,
+      from: process.env.NODEMAILER_EMAIL,
+      subject: '가입 인증 메일',
+      html: `가입 확인 버튼을 누르시면 가입 인증이 완료됩니다.<br/>
+              <form action="${url}" method="POST">
+              <button>가입확인</button>
+            </form>`,
+    };
+
+    return await this.transporter.sendMail(mailOptions);
+  }
+
+  async verifyVerificationCode(emailToken: string): Promise<boolean> {
+    const emailTokenOptions = this.jwtConfigService.createEmailJwtOptions();
+    const secret = emailTokenOptions.secret;
+
+    // 클라이언트가 보낸 리프레시 토큰의 만료 여부를 검증합니다.
+    try {
+      const verifiedEmailToken = await this.jwtService.verifyAsync(emailToken, {
+        secret,
+      });
+
+      const isUserExist = await this.usersService.findByFields({
+        where: { email: verifiedEmailToken },
+      });
+
+      if (isUserExist) {
+        throw new UnauthorizedException('이미 존재하는 사용자 입니다.');
+      }
+
+      return true;
+    } catch (error) {
+      throw new UnauthorizedException('인증이 유효하지 않습니다.');
+    }
+  }
+
+  // 이메일토큰 생성
+  async generateEmailToken(email: string): Promise<string> {
+    const payload = { email };
+    const emailTokenOptions = this.jwtConfigService.createEmailJwtOptions();
+    const emailToken = await this.jwtService.signAsync(payload, {
+      secret: emailTokenOptions.secret,
+      expiresIn: emailTokenOptions.signOptions.expiresIn,
+    });
+    return emailToken;
   }
 
   // 액세스 토큰 생성

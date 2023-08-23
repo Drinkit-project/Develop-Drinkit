@@ -38,6 +38,18 @@ export class UsersController {
     return await this.usersService.signUp(data);
   }
 
+  @Post('/emailAuth')
+  async sendEmail(@Body() body: { email: string }) {
+    return await this.usersService.sendEmail(body.email);
+  }
+
+  @Post('/emailTokenAuth')
+  async authEmail(@Query('emailToken') emailToken: string) {
+    const isAuth = await this.usersService.authEmail(emailToken);
+    if (isAuth) console.log('인증완료');
+    else console.log('인증실패');
+  }
+
   @ApiOperation({ summary: 'sign-in' })
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
