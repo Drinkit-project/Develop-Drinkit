@@ -6,10 +6,10 @@ class SwaggerDocument {
 
   public build() {
     this.config = new DocumentBuilder()
-      .setTitle('The Trello Project')
-      .setDescription('The Trello Projecte API description')
+      .setTitle('Drink!t Project')
+      .setDescription('The Drink!t Project API description')
       .setVersion('1.0')
-      .addTag('Trello')
+      .addTag('Drink!t')
       .build();
   }
 

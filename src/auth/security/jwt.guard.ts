@@ -38,6 +38,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
         request.response = context.switchToHttp().getResponse();
+
         await super.canActivate(context);
         return true;
       }

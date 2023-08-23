@@ -23,8 +23,7 @@ export const AdminUser = createParamDecorator(
 export const PersonalUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    if (!request.myUser.isPersonal)
-      throw new BadRequestException('권한 없음이지롱~');
+    if (!request.myUser.isPersonal) throw new BadRequestException('권한 없음');
 
     return request.myUser;
   },

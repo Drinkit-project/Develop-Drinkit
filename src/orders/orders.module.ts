@@ -13,10 +13,10 @@ import { Store_Product } from 'src/entities/store_product.entity';
 import { UsersRepository } from 'src/user/users.repository';
 import { ProductsRepository } from 'src/products/products.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
-import { Store_ProductsRepository } from 'src/stores/stores_products.repository';
 import { UsersModule } from 'src/user/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { RedisModule } from 'src/redis/redis.module';
+import { Store_ProductRepository } from 'src/stores/store_product.repository';
 
 @Module({
   imports: [
@@ -39,7 +39,7 @@ import { RedisModule } from 'src/redis/redis.module';
     PaymentLogRepository,
     ProductsRepository,
     StoresRepository,
-    Store_ProductsRepository,
+    Store_ProductRepository,
   ],
 })
 export class OrdersModule {}

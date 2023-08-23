@@ -18,8 +18,8 @@ export class Store extends CommonEntity {
   address: string;
 
   @ApiProperty({
-    example: 'Drink!t 1호 직영점',
-    name: 'store name',
+    example: 'Drink!t Store 1호점',
+    name: 'name',
     description: 'Store name what it is.',
     required: true,
   })
@@ -28,8 +28,18 @@ export class Store extends CommonEntity {
   name: string;
 
   @ApiProperty({
+    example: '드링킷 1호점입니다. 방문시 다양한 주류를 확인하실 수 있습니다.',
+    name: 'description',
+    description: 'Description for store',
+    required: true,
+  })
+  @IsNotEmpty()
+  @Column('varchar')
+  description: string;
+
+  @ApiProperty({
     example: '123-98-45678',
-    name: 'Business License',
+    name: 'businessLicense',
     description: '사업자 등록증 번호',
     required: true,
   })
@@ -41,15 +51,16 @@ export class Store extends CommonEntity {
   businessLicense: string;
 
   @ApiProperty({
-    name: 'Store image',
+    name: 'imgUrls',
     description: '매장 사진',
     required: false,
   })
   @IsUrl()
   @IsOptional()
   @Column({
-    type: 'json',
-    default: '{"imgUrls":"[]"}',
+    type: 'varchar',
+    length: 65535,
+    default: '[]',
   })
   imgUrls: string;
 
@@ -60,6 +71,7 @@ export class Store extends CommonEntity {
   })
   @Column({
     type: 'integer',
+    unique: true,
   })
   userId: number;
 
