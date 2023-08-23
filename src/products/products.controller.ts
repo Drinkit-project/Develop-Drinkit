@@ -7,15 +7,16 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import {
-  CreateProductsRequestDto,
-  UpdateProductsRequestDto,
-} from './dto/products.request.dto';
-import { AdminUser, CurrentUser } from 'src/commons/decorators/user.decorators';
+import { UpdateProductsRequestDto } from './dto/products.request.dto';
+import { AdminUser } from 'src/commons/decorators/user.decorators';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { TransformBodyInterceptor } from 'src/commons/interceptors/product.request.interceptor';
 
 @Controller('products')
 export class ProductsController {
@@ -39,15 +40,19 @@ export class ProductsController {
 
   @ApiOperation({ summary: '상품 등록' })
   @UseGuards(AuthGuard)
+  @UseInterceptors(TransformBodyInterceptor)
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
   async createProducts(
     @AdminUser() user,
-    @Body() body: CreateProductsRequestDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body,
   ) {
-    console.log(user);
-    const newProduct = await this.productsService.createProducts(body);
+    const productJson = body;
 
-    return '상품 등록 완료!';
+    const newProduct = await this.productsService.createProducts(productJson);
+
+    return `상품 등록 완료!`;
   }
 
   @ApiOperation({ summary: '상품 수정' })
