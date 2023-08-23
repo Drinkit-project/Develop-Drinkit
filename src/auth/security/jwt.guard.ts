@@ -5,16 +5,11 @@ import {
 } from '@nestjs/common';
 import { AuthGuard as NestAuthGuard } from '@nestjs/passport';
 import * as jwt from 'jsonwebtoken';
-import { AuthService } from '../auth.service';
-import { Payload } from './payload.interface';
 import { UsersService } from 'src/user/users.service';
 
 @Injectable()
 export class AuthGuard extends NestAuthGuard('jwt') {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly usersService: UsersService,
-  ) {
+  constructor(private readonly usersService: UsersService) {
     super();
   }
 
@@ -42,6 +37,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
       return true;
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
+        request.response = context.switchToHttp().getResponse();
         await super.canActivate(context);
         return true;
       }
@@ -50,53 +46,13 @@ export class AuthGuard extends NestAuthGuard('jwt') {
     }
   }
 
-  handleRequest<TUser = any>(
-    err: any,
-    user: any,
-    info: any,
-    context: ExecutionContext,
-  ): any {
-    return (async () => {
-      if (err) {
-        throw new UnauthorizedException('AUTH', 'JWT AUTH ERROR');
-      }
+  handleRequest(err: any, info: any): any {
+    if (err) {
+      throw new UnauthorizedException(err.message);
+    }
 
-      if (info) {
-        const request = context.switchToHttp().getRequest();
-        const refreshToken = request.cookies.RefreshToken.replace(
-          'Bearer ',
-          '',
-        );
-
-        try {
-          const verifiedRefreshToken =
-            await this.authService.isRefreshTokenExpired(refreshToken);
-
-          if (!verifiedRefreshToken) {
-            throw new UnauthorizedException('세션이 만료되었습니다.');
-          }
-
-          const payload: Payload = verifiedRefreshToken as Payload;
-
-          if (
-            !this.authService.isRefreshTokenValid(refreshToken, payload.userId)
-          ) {
-            throw new UnauthorizedException(
-              '유효하지 않은 요청입니다. 관리자에게 문의하세요',
-            );
-          }
-
-          await this.authService.generateAccessToken(payload.userId);
-
-          const myuser = await this.usersService.findByFields({
-            where: { id: payload.userId },
-          });
-          request.myUser = myuser;
-        } catch (err) {
-          console.log(err);
-          throw new UnauthorizedException('다시 로그인 해주세요');
-        }
-      }
-    })();
+    if (info) {
+      throw new UnauthorizedException('리프레시 토큰이 유효하지 않습니다.');
+    }
   }
 }
