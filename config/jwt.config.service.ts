@@ -20,4 +20,12 @@ export class JwtConfigService implements JwtOptionsFactory {
     };
     return options;
   }
+
+  createEmailJwtOptions(): JwtModuleOptions {
+    const options = {
+      secret: this.configService.get<string>('JWT_SECRET_EMAIL'),
+      signOptions: { expiresIn: '5m' },
+    };
+    return options;
+  }
 }
