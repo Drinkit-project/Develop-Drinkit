@@ -15,6 +15,7 @@ import { ProductsRepository } from 'src/products/products.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
 import { UsersModule } from 'src/user/users.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { RedisModule } from 'src/redis/redis.module';
 import { Store_ProductRepository } from 'src/stores/store_product.repository';
 
 @Module({
@@ -29,13 +30,13 @@ import { Store_ProductRepository } from 'src/stores/store_product.repository';
     ]),
     UsersModule,
     AuthModule,
+    RedisModule,
   ],
   controllers: [OrdersController],
   providers: [
     OrdersService,
     PaymentDetailRepository,
     PaymentLogRepository,
-    UsersRepository,
     ProductsRepository,
     StoresRepository,
     Store_ProductRepository,
