@@ -63,12 +63,6 @@ export class AuthService {
     }
   }
 
-  // 액세스 토큰의 만료 여부 확인
-  isAccessTokenExpired(expiration: number): boolean {
-    const currentTime = Date.now() / 1000;
-    return expiration <= currentTime;
-  }
-
   //리프레시 토큰의 만료 여부 확인
   async isRefreshTokenExpired(
     refreshToken: string,
