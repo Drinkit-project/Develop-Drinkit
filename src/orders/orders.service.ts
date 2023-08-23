@@ -1,4 +1,6 @@
+'use strict';
 import {
+  Inject,
   Injectable,
   NotFoundException,
   PreconditionFailedException,
@@ -14,6 +16,14 @@ import { Store_Product } from 'src/entities/store_product.entity';
 import { PaymentStatus } from 'src/entities/paymentLog.entity';
 import { DataSource } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { AddRankingDTO } from './dto/addRanking.dto';
+import { Ranking } from 'src/entities/redis.ranking';
+import { count } from 'console';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const redis = require('redis');
+const client = redis.createClient();
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class OrdersService {
@@ -24,6 +34,8 @@ export class OrdersService {
     private store_ProductsRepository: Store_ProductsRepository,
     private storesRepository: StoresRepository,
     private productsRepository: ProductsRepository,
+    private redisService: RedisService,
+    @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
   async getOrders(userId: number) {
@@ -189,6 +201,7 @@ export class OrdersService {
         count: number;
       }> = [];
       const productIdList: Array<number> = [];
+      const productIdList2: Array<string> = [];
       const countList: Array<number> = [];
 
       orderList.forEach((v) => {
@@ -198,6 +211,7 @@ export class OrdersService {
           count: v.count,
         });
         productIdList.push(v.productId);
+        productIdList2.push(String(v.productId));
         countList.push(v.count);
       });
 
@@ -240,6 +254,77 @@ export class OrdersService {
         }
       }
       //todo: 레디스 누적판매량갱신(추후)
+      // const rank = await this.cache.get('rank', '3');
+      // const a = [];
+
+      const d = await this.redisService.hgetall('rank');
+      console.log(d);
+      // console.log(a);
+      // client.hgetall('rank', function (err, obj) {
+      //   a.push(obj);
+      //   console.log(obj);
+      //   console.log(obj['3']);
+      //   abc(obj);
+      // });
+      // console.log(a);
+      // const abc = (obj) => {
+      //   a.push(obj);
+      //   console.log(obj);
+      //   console.log(a);
+      //   return;
+      // };
+      // console.log('마지막', a);
+      //       await client.hgetall('rank', async function (err, obj) {
+
+      //         if (obj) {
+      //           await a.push(obj);
+      //           console.log(a);
+      //           console.log(JSON.stringify(obj));
+      //           // console.log('낫널');
+      //           // const data: Array<[string, number]> = [];
+      //           // for (let i = 0; i < productIdList.length; i++) {
+      //           //   data.push([productIdList2[i], Number(rank[i]) + countList[i]]);
+      //           // }
+      //           // console.log(data);
+      //           // await this.cache.store.mset([
+      //           //   ['3', 10],
+      //           //   ['2', 16],
+      //           // ]);
+      //           // const data = {}
+
+      //           await client.hmset('rank', ['3', 51, '2', 61]);
+      //           // await client.set('4', 77);
+      //           // await this.redisStore.mset([
+      //           //   ['3', '2'],
+      //           //   [10, 16],
+      //           // ]);
+      //           // console.log(rank.count);
+      //           // console.log(countList[i]);
+      //           // const newCount = rank.count + countList[i];
+      //           // console.log(newCount);
+      //           // await this.cache.set(String(productIdList[i]), { count: newCount });
+      //         } else {
+      //           console.log('널');
+      //           await client.hmset('rank', ['2', 1]);
+      //           // await client.hmset('rank', { 3: 272, 2: 33, 1: 6 });
+      //           // const data: Array<[string, number]> = [];
+      //           // for (let i = 0; i < productIdList.length; i++) {
+      //           //   // data.push([String(productIdList[i]), countList[i]]);
+      //           //   // const newCount = rank[i].count + countList[i];
+      //           //   await this.cache.set(String(productIdList[i]), countList[i]);
+      //           // }
+      //           // await this.cache.store.mset([
+      //           //   ['3', 'count:2'],
+      //           //   ['2', 'count:2'],
+      //           // ]);
+      //           // await this.cache.store.mset();
+      //         }
+      //       });
+      // this.cache.store.mset
+      //       //예제
+      //       // await this.cache.store.mset([["1",3],["2",7]]);
+      //       // await this.cache.store.mget("1","3","5");
+      //       console.log('끝나구', a);
       return '결제 완료';
     });
   }

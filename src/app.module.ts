@@ -15,6 +15,7 @@ import { TypeOrmConfigService } from 'config/typeorm.config.service';
 import { UsersModule } from './user/users.module';
 import { ProfilesService } from './user/profiles.service';
 import { SubscribesModule } from './subscribes/subscribes.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { SubscribesModule } from './subscribes/subscribes.module';
     OrdersModule,
     UsersModule,
     SubscribesModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
