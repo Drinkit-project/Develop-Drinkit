@@ -13,9 +13,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from 'config/typeorm.config.service';
 import { UsersModule } from './user/users.module';
-import { ProfilesController } from './profiles/profiles.controller';
-import { ProfilesService } from './profiles/profiles.service';
-import { ProfilesModule } from './profiles/profiles.module';
+import { ProfilesService } from './user/profiles.service';
 import { SubscribesModule } from './subscribes/subscribes.module';
 
 @Module({
@@ -54,10 +52,9 @@ import { SubscribesModule } from './subscribes/subscribes.module';
     StoresModule,
     OrdersModule,
     UsersModule,
-    ProfilesModule,
     SubscribesModule,
   ],
-  controllers: [AppController, ProfilesController],
-  providers: [AppService, ProfilesService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
