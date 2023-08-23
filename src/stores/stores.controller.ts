@@ -1,22 +1,24 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StoresService } from './stores.service';
-import {
-  AdminUser,
-  CurrentUser,
-  PersonalUser,
-} from 'src/commons/decorators/user.decorators';
+import { PersonalUser } from 'src/commons/decorators/user.decorators';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
 import { User } from 'src/entities/user.entity';
+import { CreateStoreDTO } from './DTO/create.DTO';
+import { UpdateStoreDTO } from './DTO/update.DTO';
 
 @ApiTags('Store')
 @Controller('stores')
@@ -28,48 +30,87 @@ export class StoresController {
     parameters: [{ name: 'storeId', in: 'path' }],
   })
   @Get('/:storeId')
-  getStoreDetail(@Param('storeId', ParseIntPipe) id: number) {
-    console.log(id);
-
-    return;
+  async getStoreDetail(@Param('storeId', ParseIntPipe) id: number) {
+    try {
+      const result = await this.storeService.getStoreDetail(id);
+      return result;
+    } catch (e) {
+      throw new NotFoundException('There is no Store in DB');
+    }
   }
 
   @ApiOperation({
     summary: 'Create Store',
   })
+  @ApiResponse({
+    status: 201,
+    description: 'created',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+  })
+  @HttpCode(201)
   @UseGuards(AuthGuard)
   @Post()
-  createStore(@PersonalUser() isPersonal: boolean) {
-    console.log(isPersonal);
-
-    return;
+  async createStore(@PersonalUser() user: User, @Body() body: CreateStoreDTO) {
+    try {
+      const result = await this.storeService.createStore(body, user.id);
+      return result;
+    } catch (e) {
+      throw new BadRequestException('error => ' + e.message);
+    }
   }
 
   @ApiOperation({
     summary: 'Update Store detail by storeId',
     parameters: [{ name: 'storeId', in: 'path' }],
   })
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+  })
   @UseGuards(AuthGuard)
   @Patch('/:storeId')
-  updateStroe(
+  async updateStroe(
     @Param('storeId', ParseIntPipe) id: number,
-    @CurrentUser() user: User,
+    @PersonalUser() user: User,
+    @Body() body: UpdateStoreDTO,
   ) {
-    console.log(user);
-    return;
+    try {
+      const result = await this.storeService.updateStore(id, user, body);
+      return result;
+    } catch (e) {
+      throw new BadRequestException('Please try again..');
+    }
   }
 
   @ApiOperation({
     summary: 'Delete Store by storeId',
     parameters: [{ name: 'storeId', in: 'path' }],
   })
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+  })
   @UseGuards(AuthGuard)
   @Delete('/:storeId')
   deleteStore(
     @Param('storeId', ParseIntPipe) id: number,
-    @CurrentUser() user: User,
+    @PersonalUser() user: User,
   ) {
-    console.log(user);
-    return;
+    try {
+      const result = this.storeService.deleteStore(id, user);
+    } catch (e) {
+      throw new BadRequestException('Please try again..');
+    }
   }
 }

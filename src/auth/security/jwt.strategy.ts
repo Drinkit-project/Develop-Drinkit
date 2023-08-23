@@ -10,20 +10,21 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: any) => {
-          return request?.cookies['AccessToken'].split(' ')[1];
+          return request?.cookies['RefreshToken'].split(' ')[1];
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET_ACCESS,
+      secretOrKey: process.env.JWT_SECRET_REFRESH,
       passReqToCallback: true,
     });
   }
 
-  async validate(payload: Payload) {
+  async validate(req, payload) {
     const user = await this.usersService.tokenValidateUser(payload);
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 사용자 입니다.');
     }
+    req.myUser = user;
     return user;
   }
 }

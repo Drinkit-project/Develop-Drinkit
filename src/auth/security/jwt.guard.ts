@@ -20,35 +20,30 @@ export class AuthGuard extends NestAuthGuard('jwt') {
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-
+    let accessToken: string;
     try {
-      const accessToken = await request.cookies.AccessToken.replace(
-        'Bearer ',
-        '',
+      accessToken = request.cookies.AccessToken.replace('Bearer ', '');
+    } catch (error) {
+      throw new UnauthorizedException("Token doesn't exist in the cookie");
+    }
+    try {
+      const payload: any = jwt.verify(
+        accessToken,
+        process.env.JWT_SECRET_ACCESS,
+        { ignoreExpiration: false },
       );
 
-      if (!accessToken) {
-        throw new UnauthorizedException('Token not found in the cookie.');
-      }
-      try {
-        const payload: any = await jwt.verify(
-          accessToken,
-          process.env.JWT_SECRET_ACCESS,
-          { ignoreExpiration: true },
-        );
+      const myuser = await this.usersService.findByFields({
+        where: { id: payload.userId },
+      });
+      request.myUser = myuser;
 
-        const myuser = await this.usersService.findByFields({
-          where: { id: payload.userId },
-        });
-        request.myUser = myuser;
-
+      return true;
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
         await super.canActivate(context);
         return true;
-      } catch (error) {
-        throw new UnauthorizedException('Invalid token.');
       }
-    } catch (error) {
-      throw new UnauthorizedException('Token not found in the cookie.');
     }
   }
 
@@ -64,6 +59,8 @@ export class AuthGuard extends NestAuthGuard('jwt') {
       }
 
       if (info) {
+        console.log('info hi');
+
         const request = context.switchToHttp().getRequest();
         const refreshToken = request.cookies.RefreshToken.replace(
           'Bearer ',

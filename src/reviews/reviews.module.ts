@@ -26,6 +26,6 @@ import { UsersModule } from 'src/user/users.module';
     UsersModule,
   ],
   controllers: [ReviewsController],
-  providers: [ReviewsService, ReviewsRepository, UsersRepository],
+  providers: [ReviewsService, ReviewsRepository],
 })
 export class ReviewsModule {}
