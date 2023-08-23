@@ -1,4 +1,6 @@
+'use strict';
 import {
+  Inject,
   Injectable,
   NotFoundException,
   PreconditionFailedException,
@@ -6,7 +8,6 @@ import {
 import { PaymentLogRepository } from './paymentLogs.repository';
 import { PaymentDetailRepository } from './paymentDetails.repository';
 import { Store_ProductsRepository } from 'src/stores/stores_products.repository';
-import { UsersRepository } from 'src/user/users.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
 import { ProductsRepository } from 'src/products/products.repository';
 import { Product } from 'src/entities/product.entity';
@@ -14,6 +15,15 @@ import { User } from 'src/entities/user.entity';
 import { Store_Product } from 'src/entities/store_product.entity';
 import { PaymentStatus } from 'src/entities/paymentLog.entity';
 import { DataSource } from 'typeorm';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { AddRankingDTO } from './dto/addRanking.dto';
+import { Ranking } from 'src/entities/redis.ranking';
+import { count } from 'console';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const redis = require('redis');
+const client = redis.createClient();
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class OrdersService {
@@ -23,8 +33,9 @@ export class OrdersService {
     private paymentDetailsRepository: PaymentDetailRepository,
     private store_ProductsRepository: Store_ProductsRepository,
     private storesRepository: StoresRepository,
-    private usersRepository: UsersRepository,
     private productsRepository: ProductsRepository,
+    private redisService: RedisService,
+    @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
   async getOrders(userId: number) {
@@ -57,16 +68,7 @@ export class OrdersService {
     return getStoreOrdersData;
   }
 
-  async getAdminOrders(userId: number) {
-    const getUserData = await this.usersRepository
-      .createQueryBuilder('user')
-      .where('user.id = :userId', { userId })
-      .getOne();
-
-    if (!getUserData.isAdmin) {
-      throw new PreconditionFailedException('권한이 없습니다.');
-    }
-
+  async getAdminOrders() {
     const getAdminOrdersData =
       await this.paymentLogsRepository.getAdminOrders();
 
@@ -99,17 +101,7 @@ export class OrdersService {
     return updateOrdersStatusByStoreData;
   }
 
-  //todo: 타 작업물과 합병, 테스트 이후 주석 제거
-  async updateOrdersStatusByAdmin(userId: number, paymentLogId: number) {
-    // const getUserData = await this.usersRepository
-    //   .createQueryBuilder('user')
-    //   .where('user.id = :userId', { userId })
-    //   .getOne();
-
-    // if (!getUserData.isAdmin) {
-    //   throw new PreconditionFailedException('권한이 없습니다.');
-    // }
-
+  async updateOrdersStatusByAdmin(paymentLogId: number) {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
@@ -139,6 +131,7 @@ export class OrdersService {
     userId: number,
     usePoint: boolean,
     storeId: number,
+    point: number,
   ) {
     const productIdList: Array<number> = [];
     const countList: Array<number> = [];
@@ -156,7 +149,9 @@ export class OrdersService {
 
       totalStockByStoreProductData.forEach((v, i: number) => {
         if (countList[i] > v.totalStock) {
-          throw new PreconditionFailedException();
+          throw new PreconditionFailedException(
+            `${i}번 상품의 재고 수량이 부족합니다.`,
+          );
         }
       });
     } else {
@@ -167,20 +162,19 @@ export class OrdersService {
 
       totalStockByProductData.forEach((v, i: number) => {
         if (countList[i] > v.totalStock) {
-          throw new PreconditionFailedException();
+          throw new PreconditionFailedException(
+            `${i}번 상품의 재고 수량이 부족합니다.`,
+          );
         }
       });
     }
 
     if (usePoint) {
-      const userPointData = await this.usersRepository
-        .createQueryBuilder('user')
-        .where('user.id = :userId', { userId })
-        .getOne();
-      return userPointData.point;
+      return point;
     }
+    const a = await this.redisService.getRanking();
 
-    return 0;
+    return a;
   }
 
   async postOrder(
@@ -208,6 +202,7 @@ export class OrdersService {
         count: number;
       }> = [];
       const productIdList: Array<number> = [];
+      const rankList: Array<string | number> = [];
       const countList: Array<number> = [];
 
       orderList.forEach((v) => {
@@ -218,6 +213,7 @@ export class OrdersService {
         });
         productIdList.push(v.productId);
         countList.push(v.count);
+        rankList.push(String(v.productId), v.count);
       });
 
       //paymentDetail 생성
@@ -258,7 +254,9 @@ export class OrdersService {
             .execute();
         }
       }
-      //todo: 레디스 누적판매량갱신(추후)
+      //레디스 판매량 기록
+      await this.redisService.updateRanking(productIdList, countList, true);
+
       return '결제 완료';
     });
   }
@@ -289,7 +287,11 @@ export class OrdersService {
   }
 
   // 고객 주문 취소 승인
-  async cancelOrderByCustomer(userId: number, paymentLogId: number) {
+  async cancelOrderByCustomer(
+    userId: number,
+    paymentLogId: number,
+    isAdmin: boolean,
+  ) {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
@@ -297,11 +299,6 @@ export class OrdersService {
     if (getPaymentLogData.status != PaymentStatus.WAIT_CANCELL) {
       throw new PreconditionFailedException('권한이 없습니다.');
     }
-
-    const getUserData = await this.usersRepository
-      .createQueryBuilder('user')
-      .where('user.id = :userId', { userId })
-      .getOne();
 
     const getPaymentDetailsData =
       await this.paymentDetailsRepository.getPaymentDetails(paymentLogId);
@@ -315,7 +312,7 @@ export class OrdersService {
         throw new PreconditionFailedException('권한이 없습니다.');
       }
     } else {
-      if (getUserData.isAdmin != true) {
+      if (isAdmin != true) {
         throw new PreconditionFailedException('권한이 없습니다.');
       }
     }
@@ -397,6 +394,9 @@ export class OrdersService {
 
       await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
 
+      //레디스 판매량 기록
+      await this.redisService.updateRanking(productIdList, countList, false);
+
       return '환불 / 반품 요청이 완료되었습니다.';
     });
   }
@@ -473,22 +473,15 @@ export class OrdersService {
 
       await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
 
+      //레디스 판매량 기록
+      await this.redisService.updateRanking(productIdList, countList, true);
+
       return '주문이 취소되었습니다.';
     });
   }
 
   // 관리자 주문 취소
-  //todo: 타 작업물과 합병 이후 주석 제거
-  async cancelOrderByAdmin(userId: number, paymentLogId: number) {
-    // const getUserData = await this.usersRepository
-    //   .createQueryBuilder('user')
-    //   .where('user.id = :userId', { userId })
-    //   .getOne();
-
-    // if (!getUserData.isAdmin) {
-    //   throw new PreconditionFailedException('권한이 없습니다.');
-    // }
-
+  async cancelOrderByAdmin(paymentLogId: number) {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
@@ -552,6 +545,9 @@ export class OrdersService {
       );
 
       await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
+
+      //레디스 판매량 기록
+      await this.redisService.updateRanking(productIdList, countList, true);
 
       return '주문이 취소되었습니다.';
     });

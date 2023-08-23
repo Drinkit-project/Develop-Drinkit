@@ -14,7 +14,11 @@ import { OrdersService } from './orders.service';
 import { OrderReqDto } from './dto/orders.request.dto';
 import { PostOrderReqDto } from './dto/postOrders.request.dto';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
-import { CurrentUser } from 'src/commons/decorators/user.decorators';
+import {
+  CurrentUser,
+  PersonalUser,
+  AdminUser,
+} from 'src/commons/decorators/user.decorators';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -24,8 +28,8 @@ export class OrdersController {
   @ApiOperation({ summary: '유저 주문 내역 조회' })
   @UseGuards(AuthGuard)
   @Get()
-  async getOrders(@CurrentUser() userId: number) {
-    const getOrdersData = await this.ordersService.getOrders(userId);
+  async getOrders(@CurrentUser() user) {
+    const getOrdersData = await this.ordersService.getOrders(user.id);
     return getOrdersData;
   }
 
@@ -33,11 +37,11 @@ export class OrdersController {
   @UseGuards(AuthGuard)
   @Get('storeId')
   async getStoreOrders(
-    @CurrentUser() userId: number,
+    @PersonalUser() user,
     @Query('storeId') storeId: number,
   ) {
     const getStoreOrdersData = await this.ordersService.getStoreOrders(
-      userId,
+      user.id,
       storeId,
     );
     return getStoreOrdersData;
@@ -46,8 +50,8 @@ export class OrdersController {
   @ApiOperation({ summary: '쇼핑몰 관리자 주문 내역 조회' })
   @UseGuards(AuthGuard)
   @Get('/Admin')
-  async getAdminOrders(@CurrentUser() userId: number) {
-    const getAdminOrdersData = await this.ordersService.getAdminOrders(userId);
+  async getAdminOrders(@AdminUser() user) {
+    const getAdminOrdersData = await this.ordersService.getAdminOrders();
     return getAdminOrdersData;
   }
 
@@ -64,34 +68,35 @@ export class OrdersController {
   @UseGuards(AuthGuard)
   @Put(':paymentLogId/byStore')
   async updateOrdersStatusByStore(
-    @CurrentUser() userId: number,
+    @PersonalUser() user,
     @Param('paymentLogId') paymentLogId: number,
   ) {
     const updateOrdersStatusByStoreData =
-      await this.ordersService.updateOrdersStatusByStore(userId, paymentLogId);
+      await this.ordersService.updateOrdersStatusByStore(user.id, paymentLogId);
     return updateOrdersStatusByStoreData;
   }
 
   @ApiOperation({ summary: '쇼핑몰 관리자 주문 상태 변경' })
   @Put(':paymentLogId/byAdmin')
   async updateOrdersStatusByAdmin(
-    @CurrentUser() userId: number,
+    @AdminUser() user,
     @Param('paymentLogId') paymentLogId: number,
   ) {
     const updateOrdersStatusByAdminData =
-      await this.ordersService.updateOrdersStatusByAdmin(userId, paymentLogId);
+      await this.ordersService.updateOrdersStatusByAdmin(paymentLogId);
     return updateOrdersStatusByAdminData;
   }
 
   @ApiOperation({ summary: '주문 요청 - i`mport' })
   @UseGuards(AuthGuard)
   @Post()
-  async order(@CurrentUser() userId: number, @Body() dto: OrderReqDto) {
+  async order(@CurrentUser() user, @Body() dto: OrderReqDto) {
     const checkOrderListData = await this.ordersService.checkOrderList(
       dto.orderList,
-      userId,
+      user.id,
       dto.usePoint,
       dto.storeId,
+      user.point,
     );
 
     return checkOrderListData;
@@ -100,9 +105,9 @@ export class OrdersController {
   @ApiOperation({ summary: '결제 성공 후' })
   @UseGuards(AuthGuard)
   @Post('postOrder')
-  async postOrder(@CurrentUser() userId: number, @Body() dto: PostOrderReqDto) {
+  async postOrder(@CurrentUser() user, @Body() dto: PostOrderReqDto) {
     const postOrderData = await this.ordersService.postOrder(
-      userId,
+      user.id,
       dto.paidPoint,
       dto.totalPrice,
       dto.orderList,
@@ -116,11 +121,11 @@ export class OrdersController {
   @UseGuards(AuthGuard)
   @Delete(':paymentLogId')
   async requestCancelOrder(
-    @CurrentUser() userId: number,
+    @CurrentUser() user,
     @Param('paymentLogId') paymentLogId: number,
   ) {
     const requestCancelOrderData = await this.ordersService.requestCancelOrder(
-      userId,
+      user.id,
       paymentLogId,
     );
 
@@ -131,11 +136,15 @@ export class OrdersController {
   @UseGuards(AuthGuard)
   @Delete(':paymentLogId/Ok')
   async cancelOrderByCustomer(
-    @CurrentUser() userId: number,
+    @CurrentUser() user,
     @Param('paymentLogId') paymentLogId: number,
   ) {
     const cancelOrderByCustomerData =
-      await this.ordersService.cancelOrderByCustomer(userId, paymentLogId);
+      await this.ordersService.cancelOrderByCustomer(
+        user.id,
+        paymentLogId,
+        user.isAdmin,
+      );
 
     return cancelOrderByCustomerData;
   }
@@ -144,12 +153,12 @@ export class OrdersController {
   @UseGuards(AuthGuard)
   @Delete(':paymentLogId/store/:storeId')
   async cancelOrderByStore(
-    @CurrentUser() userId: number,
+    @PersonalUser() user,
     @Param('paymentLogId') paymentLogId: number,
     @Param('storeId') storeId: number,
   ) {
     const cancelOrderByStoreData = await this.ordersService.cancelOrderByStore(
-      userId,
+      user.id,
       paymentLogId,
       storeId,
     );
@@ -160,11 +169,10 @@ export class OrdersController {
   @ApiOperation({ summary: '쇼핑몰 관리자 주문 취소' })
   @Delete(':paymentLogId/Admin')
   async cancelOrderByAdmin(
-    @CurrentUser() userId: number,
+    @AdminUser() user,
     @Param('paymentLogId') paymentLogId: number,
   ) {
     const cancelOrderByAdminData = await this.ordersService.cancelOrderByAdmin(
-      userId,
       paymentLogId,
     );
 

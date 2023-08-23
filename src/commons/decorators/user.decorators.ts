@@ -26,6 +26,6 @@ export const PersonalUser = createParamDecorator(
     if (!request.myUser.isPersonal)
       throw new BadRequestException('권한 없음이지롱~');
 
-    return request.myUser.isPersonal;
+    return request.myUser;
   },
 );

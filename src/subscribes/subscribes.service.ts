@@ -8,7 +8,6 @@ export class SubscribesService {
     const getSubscribeData = await this.subscribesRepository.getSubscribe(
       userId,
     );
-    console.log(getSubscribeData);
     if (getSubscribeData != null) {
       throw new NotFoundException('이미 구독 중입니다.');
     }
