@@ -7,6 +7,8 @@ import {
   Res,
   Patch,
   UseGuards,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
@@ -101,46 +103,51 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'Not Found' })
   @UseGuards(AuthGuard)
   async getProfile(@CurrentUser() user: User) {
-    console.log(user.id);
     const profile = await this.profilesService.getProfile(user.id);
     return profile;
   }
 
-  // @ApiOperation({ summary: 'update profile' })
-  // @UseGuards(AuthGuard)
-  // @Put('/profile')
-  // updateProfile(
-  //   @CurrentUser() userId: number,
-  //   @Body() data: Partial<ProfileDto>,
-  // ) {
-  //   return await this.profilesService.updateProfile(userId, data);
-  // }
+  @Get('/address') // 주소 조회
+  @ApiOperation({ summary: 'Get profile' })
+  @ApiResponse({ status: 200, description: 'OK' })
+  @ApiResponse({ status: 404, description: 'Not Found' })
+  @UseGuards(AuthGuard)
+  async getAddress(@CurrentUser() user: User) {
+    return await this.profilesService.getAddress(user.id);
+  }
 
-  // @Post('/address')
-  // @ApiOperation({ summary: 'add address' })
-  // @UseGuards(AuthGuard)
-  // addAddress(@CurrentUser() userId: number, @Body() data: Partial<ProfileDto>) {
-  //   return await this.profilesService.addAddress(userId, data);
-  // }
+  @Put('/profile')
+  @ApiOperation({ summary: 'update profile' })
+  @UseGuards(AuthGuard)
+  updateProfile(@CurrentUser() user: User, @Body() data: Partial<ProfileDto>) {
+    return this.profilesService.updateProfile(user.id, data);
+  }
 
-  // @ApiOperation({ summary: 'update address' })
-  // @UseGuards(AuthGuard)
-  // @Put('/address')
-  // updateAddress(
-  //   @CurrentUser() userId: number,
-  //   @Query('addressIdx', ParseIntPipe) addressIdx: number,
-  //   @Body() data: Partial<ProfileDto>,
-  // ) {
-  //   return await this.profilesService.updateAddress(userId, addressIdx, data);
-  // }
+  @Post('/address')
+  @ApiOperation({ summary: 'add address' })
+  @UseGuards(AuthGuard)
+  addAddress(@CurrentUser() user: User, @Body() data: Partial<ProfileDto>) {
+    return this.profilesService.addAddress(user.id, data);
+  }
 
-  // @ApiOperation({ summary: 'delete address' })
-  // @UseGuards(AuthGuard)
-  // @Delete('/address')
-  // delteAddress(
-  //   @CurrentUser() userId: number,
-  //   @Query('addressIdx', ParseIntPipe) addressIdx: number,
-  // ) {
-  //   return await this.profilesService.delteAddress(userId, addressIdx);
-  // }
+  @Patch('/address')
+  @ApiOperation({ summary: 'update address' })
+  @UseGuards(AuthGuard)
+  updateAddress(
+    @CurrentUser() user: User,
+    @Query('addressIdx') addressIdx: number,
+    @Body() data: Partial<ProfileDto>,
+  ) {
+    return this.profilesService.updateAddress(user.id, addressIdx, data);
+  }
+
+  @Delete('/address')
+  @ApiOperation({ summary: 'delete address' })
+  @UseGuards(AuthGuard)
+  delteAddress(
+    @CurrentUser() user: User,
+    @Query('addressIdx') addressIdx: number,
+  ) {
+    return this.profilesService.delteAddress(user.id, addressIdx);
+  }
 }
