@@ -10,8 +10,6 @@ import { JwtConfigService } from 'config/jwt.config.service';
 import { ProfilesService } from 'src/user/profiles.service';
 import { ProfilesRepository } from 'src/user/profiles.repository';
 import { UsersModule } from 'src/user/users.module';
-import { UsersService } from 'src/user/users.service';
-import { UsersRepository } from 'src/user/users.repository';
 
 @Module({
   imports: [
