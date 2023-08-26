@@ -28,8 +28,12 @@ export class UsersService {
   ) {}
 
   //field에 따른 조회
-  async findByFields(options: FindOneOptions<User>): Promise<User | undefined> {
-    return await this.usersRepository.findOne(options);
+  async findByFields(options: FindOneOptions<User>): Promise<any> {
+    return await this.usersRepository.findUser(options);
+  }
+
+  async findByFieldsForSignIn(options: FindOneOptions<User>): Promise<any> {
+    return await this.usersRepository.findUserForSignIn(options);
   }
 
   //비밀번호 암호화
@@ -52,7 +56,7 @@ export class UsersService {
   ): Promise<{ accessToken: string; refreshToken: string } | undefined> {
     const { email, password } = data;
 
-    const user = await this.findByFields({
+    const user = await this.findByFieldsForSignIn({
       where: { email },
     });
 
