@@ -4,10 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
+import { OpenSearchService } from 'src/open-search/open-search.service';
 
 @Injectable()
 export class ProductsService {
-  constructor(private productsRepository: ProductsRepository) {}
+  constructor(
+    private productsRepository: ProductsRepository,
+    private openSearchService: OpenSearchService,
+  ) {}
 
   async getProducts() {
     const products = await this.productsRepository.getAll();
@@ -37,6 +41,11 @@ export class ProductsService {
         totalStock,
       });
 
+      await this.openSearchService.uploadSearch(
+        createdProduct.identifiers[0].id,
+        productName,
+      );
+
       return createdProduct;
     } catch (error) {
       throw new BadGatewayException(`서버에러 messege: ${error}`);
@@ -49,6 +58,12 @@ export class ProductsService {
       newProduct,
     );
 
+    await this.openSearchService.deleteSearch(productId);
+    await this.openSearchService.uploadSearch(
+      productId,
+      newProduct.productName,
+    );
+
     return updatedProduct;
   }
 
@@ -56,6 +71,8 @@ export class ProductsService {
     const removedProduct = await this.productsRepository.removeProducts(
       productId,
     );
+
+    await this.openSearchService.deleteSearch(productId);
 
     return removedProduct;
   }

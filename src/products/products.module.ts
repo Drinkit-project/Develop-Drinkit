@@ -11,6 +11,7 @@ import { Discount } from 'src/entities/discout.entity';
 import { DiscountsService } from './discounts/discounts.service';
 import { DiscountsRepository } from './discounts/discounts.repository';
 import { DiscountsController } from './discounts/discounts.controller';
+import { OpenSearchService } from 'src/open-search/open-search.service';
 import { User } from 'src/entities/user.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/user/users.module';
@@ -34,6 +35,7 @@ import { UsersModule } from 'src/user/users.module';
     ProductsRepository,
     DiscountsService,
     DiscountsRepository,
+    OpenSearchService,
   ],
 })
 export class ProductsModule {}
