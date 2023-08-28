@@ -13,7 +13,7 @@ export class UsersRepository extends Repository<User> {
     const user = await this.createQueryBuilder('user')
       .innerJoin(Profile, 'profile', 'profile.userId = user.id')
       .select([
-        'user.id AS "userId"',
+        'user.id AS "id"',
         'profile.nickname AS "nickname"',
         'user.isAdmin AS "isAdmin"',
         'user.isPersonal AS "isPersonal"',
