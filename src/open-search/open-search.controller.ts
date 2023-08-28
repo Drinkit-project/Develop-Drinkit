@@ -9,6 +9,6 @@ export class OpenSearchController {
   @Get()
   async getSearch(@Body() body: OpenSearchDto) {
     const getSearchData = await this.openSearchService.getSearch(body.keyword);
-    return getSearchData['body']['hits']['hits'];
+    return getSearchData;
   }
 }

@@ -16,6 +16,7 @@ import { UsersModule } from './user/users.module';
 import { SubscribesModule } from './subscribes/subscribes.module';
 import { RedisModule } from './redis/redis.module';
 import { OpenSearchModule } from './open-search/open-search.module';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { OpenSearchModule } from './open-search/open-search.module';
     SubscribesModule,
     RedisModule,
     OpenSearchModule,
+    CronModule,
   ],
   controllers: [AppController],
   providers: [AppService],
