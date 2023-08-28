@@ -12,6 +12,7 @@ async function bootstrap() {
   swagger.swaggerSetUp(app);
 
   app.use(cookieParser());
+  app.enableCors();
 
   // class validator 전역 적용
   app.useGlobalPipes(new ValidationPipe());
