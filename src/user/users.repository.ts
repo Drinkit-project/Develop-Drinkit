@@ -13,10 +13,10 @@ export class UsersRepository extends Repository<User> {
     const user = await this.createQueryBuilder('user')
       .innerJoin(Profile, 'profile', 'profile.userId = user.id')
       .select([
-        'user.id AS userId',
-        'profile.nickname AS nickname',
-        'user.isAdmin AS isAdmin',
-        'user.isPersonal AS isPersonal',
+        'user.id AS "userId"',
+        'profile.nickname AS "nickname"',
+        'user.isAdmin AS "isAdmin"',
+        'user.isPersonal AS "isPersonal"',
       ])
       .where(options.where)
       .getRawOne();

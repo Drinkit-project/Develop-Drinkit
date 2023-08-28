@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.8",
     "@nestjs/typeorm": "^10.0.0",
+    "@opensearch-project/opensearch": "^2.3.1",
     "@types/bcrypt": "^5.0.0",
     "@types/passport-jwt": "^3.0.9",
     "aws-sdk": "^2.1442.0",
