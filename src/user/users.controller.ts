@@ -9,11 +9,13 @@ import {
   UseGuards,
   Put,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { AuthGuard } from '../auth/security/jwt.guard';
+import { AuthGuard as OriginAuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { CurrentUser } from 'src/commons/decorators/user.decorators';
 import { UsersService } from './users.service';
@@ -62,6 +64,45 @@ export class UsersController {
     response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
 
     // 반환값으로 액세스 토큰과 리프레시 토큰을 클라이언트에게 전달
+    return response.json(tokens);
+  }
+
+  @Get('/login/google') //restAPI만들기. 엔드포인트는 /login/google.
+  @UseGuards(OriginAuthGuard('google')) //인증과정을 거쳐야하기때문에 UseGuards를 써주고 passport인증으로 AuthGuard를 써준다. 이름은 google로
+  async loginGoogle(
+    @Req() request: Request,
+    @Res() response: Response, //Nest.js가 express를 기반으로 하기때문에 Request는 express에서 import한다.
+  ) {
+    //프로필을 받아온 다음, 로그인 처리해야하는 곳(auth.service.ts에서 선언해준다)
+    const tokens = await this.usersService.oAuthSignIn({ request, response });
+
+    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
+    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+
+    return response.json(tokens);
+  }
+
+  //카카오
+  @Get('/login/kakao')
+  @UseGuards(OriginAuthGuard('kakao'))
+  async loginKakao(@Req() request: Request, @Res() response: Response) {
+    const tokens = await this.usersService.oAuthSignIn({ request, response });
+
+    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
+    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+
+    return response.json(tokens);
+  }
+
+  //네이버
+  @Get('/login/naver')
+  @UseGuards(OriginAuthGuard('naver'))
+  async loginNaver(@Req() request: Request, @Res() response: Response) {
+    const tokens = await this.usersService.oAuthSignIn({ request, response });
+
+    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
+    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+
     return response.json(tokens);
   }
 

@@ -8,6 +8,9 @@ import { ProfilesService } from './profiles.service';
 import { Profile } from 'src/entities/profile.entity';
 import { ProfilesRepository } from './profiles.repository';
 import { AuthModule } from 'src/auth/auth.module';
+import { GoogleStrategy } from 'src/auth/security/google.strategy';
+import { KakaoStrategy } from 'src/auth/security/kakao.strategy';
+import { NaverStrategy } from 'src/auth/security/naver.starategy';
 
 @Module({
   imports: [
@@ -20,6 +23,9 @@ import { AuthModule } from 'src/auth/auth.module';
     ProfilesRepository,
     UsersService,
     UsersRepository,
+    GoogleStrategy,
+    KakaoStrategy,
+    NaverStrategy,
   ],
   exports: [UsersService],
 })
