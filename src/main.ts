@@ -12,7 +12,10 @@ async function bootstrap() {
   swagger.swaggerSetUp(app);
 
   app.use(cookieParser());
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3200', // 허용할 도메인
+    credentials: true, // 요청에 쿠키 정보를 함께 보냄
+  });
 
   // class validator 전역 적용
   app.useGlobalPipes(new ValidationPipe());
