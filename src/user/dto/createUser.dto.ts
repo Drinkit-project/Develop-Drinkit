@@ -1,13 +1,18 @@
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsString,
   Matches,
+  ValidateNested,
 } from 'class-validator';
+import AddressDto from './address.dto';
 
-export class createUserDto {
-  address: { address: string; name: string };
+export class CreateUserDto {
+  @ValidateNested() // 중첩된 객체에 대한 유효성 검사
+  @Type(() => AddressDto) // 클래스를 타입으로 변환
+  address: AddressDto;
 
   @IsString()
   @IsNotEmpty()
@@ -45,4 +50,4 @@ export class createUserDto {
   isPersonal: boolean;
 }
 
-export default createUserDto;
+export default CreateUserDto;

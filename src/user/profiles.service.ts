@@ -3,6 +3,7 @@ import { ProfilesRepository } from './profiles.repository';
 import ProfileDto from './dto/Profile.dto';
 import { EntityManager } from 'typeorm';
 import { Profile } from 'src/entities/profile.entity';
+import AddressDto from './dto/address.dto';
 
 @Injectable()
 export class ProfilesService {
@@ -20,7 +21,7 @@ export class ProfilesService {
 
   async createProfile(
     userId: number,
-    address: { address: string; name: string },
+    address: AddressDto,
     phoneNumber: string,
     nickname: string,
     name: string,

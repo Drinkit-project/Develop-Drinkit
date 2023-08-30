@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Profile } from '../entities/profile.entity';
 import { DataSource, Repository } from 'typeorm';
+import AddressDto from './dto/address.dto';
 
 @Injectable()
 export class ProfilesRepository extends Repository<Profile> {
@@ -43,10 +44,7 @@ export class ProfilesRepository extends Repository<Profile> {
     return address;
   }
 
-  async addAddress(
-    userId: number,
-    newAddress: { address: string; name: string },
-  ) {
+  async addAddress(userId: number, newAddress: AddressDto) {
     const address = await this.getAddress(userId);
     address.push(newAddress);
 
@@ -71,7 +69,7 @@ export class ProfilesRepository extends Repository<Profile> {
 
   async updateAddress(
     userId: number,
-    newAddress: { address: string; name: string },
+    newAddress: AddressDto,
     addressIdx: number,
   ) {
     const address = await this.getAddress(userId);
