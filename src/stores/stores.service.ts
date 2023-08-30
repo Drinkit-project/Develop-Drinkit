@@ -6,6 +6,7 @@ import { UpdateProductDTO, UpdateStoreDTO } from './DTO/update.DTO';
 import { Store } from 'src/entities/store.entity';
 import { Store_ProductRepository } from './store_product.repository';
 import { Store_Product } from 'src/entities/store_product.entity';
+import StockDTO from './DTO/stock.DTO';
 
 @Injectable()
 export class StoresService {
@@ -16,6 +17,10 @@ export class StoresService {
 
   getStoreDetail(id: number) {
     return this.storeRepository.findStoreById(id);
+  }
+
+  getStores(body: Array<StockDTO>) {
+    return this.storeRepository.findStoreByStock(body);
   }
 
   createStore(data: CreateStoreDTO) {
