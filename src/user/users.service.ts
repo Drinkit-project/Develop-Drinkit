@@ -73,8 +73,14 @@ export class UsersService {
       throw new UnauthorizedException('email 또는 password를 확인해주세요.');
     }
 
-    const accessToken = await this.authService.generateAccessToken(user.id);
-    const refreshToken = await this.authService.generateRefreshToken(user.id);
+    const accessToken = await this.authService.generateAccessToken(
+      user.id,
+      user.nickname,
+    );
+    const refreshToken = await this.authService.generateRefreshToken(
+      user.id,
+      user.nickname,
+    );
 
     return { accessToken, refreshToken };
   }
@@ -88,8 +94,14 @@ export class UsersService {
     if (!user) response.redirect('http://localhost:3000'); //user가 없으면 하나 만들고, 있으면 이 if문에 들어오지 않을거기때문에 이러나 저러나 user는 존재하는게 됨.
 
     // 3. 회원가입이 되어있다면? 로그인(AT, RT를 생성해서 브라우저에 전송)한다
-    const accessToken = await this.authService.generateAccessToken(user.id);
-    const refreshToken = await this.authService.generateRefreshToken(user.id);
+    const accessToken = await this.authService.generateAccessToken(
+      user.id,
+      user.nickname,
+    );
+    const refreshToken = await this.authService.generateRefreshToken(
+      user.id,
+      user.nickname,
+    );
 
     return { accessToken, refreshToken };
   }

@@ -1,4 +1,4 @@
 export interface Payload {
   userId: number;
-  // nickname: string;
+  nickname: string;
 }

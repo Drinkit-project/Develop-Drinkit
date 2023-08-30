@@ -90,15 +90,18 @@ export class AuthService {
   }
 
   // 액세스 토큰 생성
-  async generateAccessToken(userId: number): Promise<string> {
-    const payload = { userId };
+  async generateAccessToken(userId: number, nickname: string): Promise<string> {
+    const payload = { userId, nickname };
     const accessToken = await this.jwtService.signAsync(payload);
     return accessToken;
   }
 
   // 리프레시 토큰 생성
-  async generateRefreshToken(userId: number): Promise<string> {
-    const payload = { userId };
+  async generateRefreshToken(
+    userId: number,
+    nickname: string,
+  ): Promise<string> {
+    const payload = { userId, nickname };
     const refreshTokenOptions = this.jwtConfigService.createRefreshJwtOptions(); // 리프레시 토큰 설정을 가져옴
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: refreshTokenOptions.secret,

@@ -40,6 +40,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
       const accessToken = await this.authService.generateAccessToken(
         payload.userId,
+        payload.nickname,
       );
 
       request.response.cookie('AccessToken', 'Bearer ' + accessToken);

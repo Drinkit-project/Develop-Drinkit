@@ -25,9 +25,14 @@ export class UsersRepository extends Repository<User> {
 
   async findUserForSignIn(options: FindOneOptions<User>) {
     const user = await this.createQueryBuilder('user')
-      .select(['user.id', 'user.password'])
+      .innerJoin(Profile, 'profile', 'profile.userId = user.id')
+      .select([
+        'user.id AS "id"',
+        'profile.nickname AS "nickname"',
+        'user.password AS "password"',
+      ])
       .where(options.where)
-      .getOne();
+      .getRawOne();
 
     return user;
   }
