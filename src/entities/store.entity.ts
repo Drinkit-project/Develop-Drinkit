@@ -13,10 +13,6 @@ export class Store extends CommonEntity {
     description: 'Address where it is.',
     required: true,
   })
-  @IsNotEmpty()
-  @Column('varchar')
-  address: string;
-
   @ApiProperty({
     example: 'Drink!t Store 1호점',
     name: 'name',
@@ -74,6 +70,18 @@ export class Store extends CommonEntity {
     unique: true,
   })
   userId: number;
+
+  @IsNotEmpty()
+  @Column('varchar')
+  address: string;
+
+  @IsNotEmpty()
+  @Column('float')
+  lng: string;
+
+  @IsNotEmpty()
+  @Column('float')
+  lat: number;
 
   @OneToOne(() => User, (user) => user.store)
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
