@@ -6,7 +6,12 @@ export class PostOrderReqDto {
 
   //orderList = [{productId:2, 수량:3}, ...]
   @IsArray()
-  readonly orderList: Array<{ productId: number; count: number }>;
+  readonly orderList: Array<{
+    productId: number;
+    count: number;
+    productName: string;
+    price: number;
+  }>;
 
   @IsNumber()
   readonly paidPoint: number;

@@ -37,8 +37,6 @@ export class ProfilesRepository extends Repository<Profile> {
       .where(`profile.userId = ${userId}`)
       .getOne();
 
-    console.log(addressString);
-
     const address = await this.addressParse(addressString.address);
 
     return address;

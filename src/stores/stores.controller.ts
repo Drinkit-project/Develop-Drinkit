@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -34,12 +35,11 @@ export class StoresController {
     summary: 'Get Store by stock',
   })
   @Get()
-  async getStores(@Body() body: Array<StockDTO>) {
+  async getStores(@Query('data') data: Array<StockDTO>) {
     try {
-      const result = await this.storeService.getStores(body);
+      const result = await this.storeService.getStores(data);
       return result;
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
       throw new NotFoundException('There is no Store in DB');
     }
   }

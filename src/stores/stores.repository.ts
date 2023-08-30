@@ -27,7 +27,7 @@ export class StoresRepository extends Repository<Store> {
     }
 
     const store = this.query(
-      `SELECT s."id", s."address", s."name", s."description", s."lat", s."lng" FROM "store" as s
+      `SELECT s."id", s."address", s."name", s."description", s."imgUrls", s."lat", s."lng" FROM "store" as s
     WHERE s."id"
     IN (SELECT sp."storeId" FROM "store_product" as sp
       WHERE (sp."productId" = ${body[0].productId} AND sp."storeStock" >= ${body[0].count})
