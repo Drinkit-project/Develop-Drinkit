@@ -22,13 +22,29 @@ import { AuthGuard } from 'src/auth/security/jwt.guard';
 import { User } from 'src/entities/user.entity';
 import { AddProductDTO, CreateStoreDTO } from './DTO/create.DTO';
 import { UpdateProductDTO, UpdateStoreDTO } from './DTO/update.DTO';
+import { StockDTO } from './DTO/stock.DTO';
 
 @ApiTags('Store')
 @Controller('stores')
 export class StoresController {
   constructor(private readonly storeService: StoresService) {}
 
-  // 가게 조회
+  // 재고 있는 가게 조회
+  @ApiOperation({
+    summary: 'Get Store by stock',
+  })
+  @Get()
+  async getStores(@Body() body: Array<StockDTO>) {
+    try {
+      const result = await this.storeService.getStores(body);
+      return result;
+    } catch (e) {
+      console.log(e);
+      throw new NotFoundException('There is no Store in DB');
+    }
+  }
+
+  // 가게 상세 조회
   @ApiOperation({
     summary: 'Get Store detail by storeId',
     parameters: [{ name: 'storeId', in: 'path' }],
