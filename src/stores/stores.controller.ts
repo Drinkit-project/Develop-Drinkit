@@ -16,7 +16,6 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StoresService } from './stores.service';
 import {
   AdminUser,
-  CurrentUser,
   PersonalUser,
 } from 'src/commons/decorators/user.decorators';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
