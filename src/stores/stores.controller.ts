@@ -36,6 +36,7 @@ export class StoresController {
   @Get()
   async getStores(@Body() body: Array<StockDTO>) {
     try {
+      console.log(body);
       const result = await this.storeService.getStores(body);
       return result;
     } catch (e) {

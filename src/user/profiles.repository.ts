@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Profile } from '../entities/profile.entity';
 import { DataSource, Repository } from 'typeorm';
 import AddressDto from './dto/address.dto';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class ProfilesRepository extends Repository<Profile> {
@@ -17,15 +18,21 @@ export class ProfilesRepository extends Repository<Profile> {
 
   async getProfile(userId: number) {
     const profile = await this.createQueryBuilder()
+      .innerJoin(User, 'user', 'profile.userId = user.id')
       .select([
-        'profile.userId',
-        'profile.nickname',
-        'profile.phoneNumber',
-        'profile.name',
+        'user.email AS "email"',
+        'user.createdAt AS "createdAt"',
+        'user.isAdmin AS "isAdmin"',
+        'user.isPersonal AS "isPersonal"',
+        'user.point AS "point"',
+        'profile.userId AS "userId"',
+        'profile.nickname AS "nickname"',
+        'profile.phoneNumber AS "phoneNumber"',
+        'profile.name AS "name"',
       ])
       .from(Profile, 'profile')
       .where(`profile.userId = ${userId}`)
-      .getOne();
+      .getRawOne();
 
     return profile;
   }
@@ -36,8 +43,6 @@ export class ProfilesRepository extends Repository<Profile> {
       .from(Profile, 'profile')
       .where(`profile.userId = ${userId}`)
       .getOne();
-
-    console.log(addressString);
 
     const address = await this.addressParse(addressString.address);
 
