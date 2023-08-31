@@ -18,6 +18,13 @@ export class ProductsService {
     return products;
   }
 
+  async getProductsByCategory(categoryId: number) {
+    const products = await this.productsRepository.getProductsByCategory(
+      categoryId,
+    );
+    return products;
+  }
+
   async getProductsById(id) {
     const products = await this.productsRepository.getById(id);
 
