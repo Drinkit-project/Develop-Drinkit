@@ -60,6 +60,13 @@ export class ProductsRepository extends Repository<Product> {
     return product;
   }
 
+  async getProductsByCategory(categoryId: number) {
+    const products = await this.createQueryBuilder('product')
+      .where('product.categoryId = :categoryId', { categoryId })
+      .getMany();
+    return products;
+  }
+
   async updateProducts(productId, newProduct) {
     const { categoryId, productName, price, description, imgUrl, totalStock } =
       newProduct;
