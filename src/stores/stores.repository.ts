@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Store } from 'src/entities/store.entity';
 import { DataSource, Repository } from 'typeorm';
 import StockDTO from './DTO/stock.DTO';
-import { Store_Product } from 'src/entities/store_product.entity';
 
 @Injectable()
 export class StoresRepository extends Repository<Store> {

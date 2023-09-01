@@ -41,7 +41,7 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: '상품 카테고리 별 조회' })
-  @Get('/category/:productId')
+  @Get('/:productId')
   // Todo: 로그인 추가
   async getProductsById(@Param() param) {
     const { productId } = param;
