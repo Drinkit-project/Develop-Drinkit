@@ -32,6 +32,12 @@ export class PaymentLog extends CommonEntity {
   @Column('bigint')
   paidPoint: number;
 
+  @Column('varchar')
+  impUid: string;
+
+  @Column('varchar')
+  address: string;
+
   @ManyToOne(() => User, (user) => user.paymentLog)
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
