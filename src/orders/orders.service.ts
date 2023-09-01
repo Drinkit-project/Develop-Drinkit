@@ -18,12 +18,6 @@ import { PaymentStatus } from 'src/entities/paymentLog.entity';
 import { DataSource } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { AddRankingDTO } from './dto/addRanking.dto';
-import { Ranking } from 'src/entities/redis.ranking';
-import { count } from 'console';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const redis = require('redis');
-const client = redis.createClient();
 import { RedisService } from 'src/redis/redis.service';
 import axios from 'axios';
 
@@ -37,6 +31,7 @@ export class OrdersService {
     private storesRepository: StoresRepository,
     private productsRepository: ProductsRepository,
     private redisService: RedisService,
+    private usersRepository: UsersRepository,
     @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
@@ -109,11 +104,9 @@ export class OrdersService {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
-    console.log(getPaymentLogData);
     if (getPaymentLogData.storeId != 1) {
       throw new PreconditionFailedException('권한이 없습니다.');
     }
-    console.log('넘어옴');
 
     let status: PaymentStatus;
     if (getPaymentLogData.status == PaymentStatus.ORDER_PENDING) {
@@ -129,6 +122,41 @@ export class OrdersService {
     const updateOrdersStatusByStoreData =
       await this.paymentLogsRepository.updateOrdersStatus(paymentLogId, status);
     return updateOrdersStatusByStoreData;
+  }
+
+  async addPoint(
+    userId: number,
+    point: number,
+    impUid: string,
+    address: string,
+  ) {
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await this.paymentLogsRepository.postPaymentLog(
+          userId,
+          point,
+          1,
+          0,
+          manager,
+          impUid,
+          address,
+          PaymentStatus.READY_COMPLETE,
+        );
+
+        const addPointData = await manager
+          .createQueryBuilder()
+          .update(User)
+          .set({ point: () => `point + ${point}` })
+          .where('id = :userId', { userId })
+          .execute();
+
+        return addPointData;
+      });
+    } catch (err) {
+      console.log(err);
+      await this.refund(impUid);
+      return '서버오류 - 결제에 대한 환불처리가 완료 되었습니다.';
+    }
   }
 
   async refund(imp_uid: string) {
@@ -489,7 +517,7 @@ export class OrdersService {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
-    console.log('스토어아이디', getPaymentLogData.storeId, storeId);
+
     if (getPaymentLogData.storeId != storeId) {
       throw new PreconditionFailedException('권한이 없습니다.');
     }
@@ -498,8 +526,6 @@ export class OrdersService {
       .createQueryBuilder('store')
       .where('store.userId = :userId', { userId })
       .getOne();
-
-    console.log(getStoreData.id != storeId);
 
     if (getStoreData.id != storeId) {
       throw new PreconditionFailedException('권한이 없습니다.');

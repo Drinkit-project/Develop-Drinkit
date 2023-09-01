@@ -57,6 +57,7 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
     manager: EntityManager,
     impUid: string,
     address: string,
+    status?: string,
   ) {
     const postPaymentLogData = await manager
       .createQueryBuilder()
@@ -64,7 +65,7 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
       .into(PaymentLog)
       .values({
         userId,
-        status: PaymentStatus.ORDER_PENDING,
+        status: status || PaymentStatus.ORDER_PENDING,
         totalPrice,
         storeId,
         paidPoint,

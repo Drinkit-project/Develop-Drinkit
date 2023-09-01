@@ -19,6 +19,7 @@ import {
   PersonalUser,
   AdminUser,
 } from 'src/commons/decorators/user.decorators';
+import { addPointDto } from './dto/addPoint.dto';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -88,6 +89,20 @@ export class OrdersController {
     const updateOrdersStatusByAdminData =
       await this.ordersService.updateOrdersStatusByAdmin(paymentLogId);
     return updateOrdersStatusByAdminData;
+  }
+
+  @ApiOperation({ summary: '포인트 충전 - iamport' })
+  @UseGuards(AuthGuard)
+  @Put('/addPoint')
+  async addPoint(@CurrentUser() user, @Body() dto: addPointDto) {
+    const addPointData = await this.ordersService.addPoint(
+      user.id,
+      dto.point,
+      dto.impUid,
+      dto.address,
+    );
+
+    return addPointData;
   }
 
   @ApiOperation({ summary: '환불 - iamport' })

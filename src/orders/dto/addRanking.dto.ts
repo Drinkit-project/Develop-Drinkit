@@ -1,3 +1,3 @@
-export class AddRankingDTO {
+export class AddRankingDto {
   count: number;
 }
