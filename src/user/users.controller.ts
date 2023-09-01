@@ -16,7 +16,7 @@ import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { AuthGuard } from '../auth/security/jwt.guard';
 import { AuthGuard as OriginAuthGuard } from '@nestjs/passport';
-import { Response } from 'express';
+import { Response, response } from 'express';
 import { CurrentUser } from 'src/commons/decorators/user.decorators';
 import { UsersService } from './users.service';
 import { ProfilesService } from './profiles.service';
@@ -46,10 +46,15 @@ export class UsersController {
   }
 
   @Post('/emailTokenAuth')
-  async authEmail(@Query('emailToken') emailToken: string) {
-    const isAuth = await this.usersService.authEmail(emailToken);
-    if (isAuth) console.log('인증완료');
-    else console.log('인증실패');
+  async authEmail(
+    @Query('emailToken') emailToken: string,
+    @Res() response: Response,
+  ) {
+    const email = await this.usersService.authEmail(emailToken);
+    if (email) {
+      response.cookie(`email`, email);
+      return response.redirect('http://localhost:3200/signup');
+    } else return response.status(400);
   }
 
   @ApiOperation({ summary: 'sign-in' })
@@ -76,10 +81,12 @@ export class UsersController {
     //프로필을 받아온 다음, 로그인 처리해야하는 곳(auth.service.ts에서 선언해준다)
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
+    if (!tokens) return response.redirect('http://localhost:3200/signup');
+
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
     response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
 
-    return response.json(tokens);
+    return response.redirect('http://localhost:3200');
   }
 
   //카카오
@@ -88,10 +95,12 @@ export class UsersController {
   async loginKakao(@Req() request: Request, @Res() response: Response) {
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
+    if (!tokens) return response.redirect('http://localhost:3200/signup');
+
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
     response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
 
-    return response.json(tokens);
+    return response.redirect('http://localhost:3200');
   }
 
   //네이버
@@ -100,10 +109,12 @@ export class UsersController {
   async loginNaver(@Req() request: Request, @Res() response: Response) {
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
+    if (!tokens) return response.redirect('http://localhost:3200/signup');
+
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
     response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
 
-    return response.json(tokens);
+    return response.redirect('http://localhost:3200');
   }
 
   @ApiOperation({ summary: 'sign-out' })

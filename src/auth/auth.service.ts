@@ -50,11 +50,16 @@ export class AuthService {
               <button>가입확인</button>
             </form>`,
     };
-
-    return await this.transporter.sendMail(mailOptions);
+    try {
+      return await this.transporter.sendMail(mailOptions);
+    } catch (error) {
+      throw new UnauthorizedException(
+        '인증 정보 발송에 실패하였습니다. 메일 주소를 다시 확인해 주세요.',
+      );
+    }
   }
 
-  async verifyVerificationCode(emailToken: string): Promise<boolean> {
+  async verifyVerificationCode(emailToken: string): Promise<any> {
     const emailTokenOptions = this.jwtConfigService.createEmailJwtOptions();
     const secret = emailTokenOptions.secret;
 
@@ -64,15 +69,7 @@ export class AuthService {
         secret,
       });
 
-      const isUserExist = await this.usersService.findByFields({
-        where: { email: verifiedEmailToken },
-      });
-
-      if (isUserExist) {
-        throw new UnauthorizedException('이미 존재하는 사용자 입니다.');
-      }
-
-      return true;
+      return verifiedEmailToken.email;
     } catch (error) {
       throw new UnauthorizedException('인증이 유효하지 않습니다.');
     }
@@ -103,6 +100,7 @@ export class AuthService {
   ): Promise<string> {
     const payload = { userId, nickname };
     const refreshTokenOptions = this.jwtConfigService.createRefreshJwtOptions(); // 리프레시 토큰 설정을 가져옴
+    console.log(refreshTokenOptions.secret);
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: refreshTokenOptions.secret,
       expiresIn: refreshTokenOptions.signOptions.expiresIn,
