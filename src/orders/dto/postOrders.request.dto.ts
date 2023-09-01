@@ -1,4 +1,4 @@
-import { IsNumber, IsArray } from 'class-validator';
+import { IsNumber, IsArray, IsString } from 'class-validator';
 
 export class PostOrderReqDto {
   @IsNumber()
@@ -12,6 +12,12 @@ export class PostOrderReqDto {
     productName: string;
     price: number;
   }>;
+
+  @IsString()
+  readonly impUid: string;
+
+  @IsString()
+  readonly address: string;
 
   @IsNumber()
   readonly paidPoint: number;

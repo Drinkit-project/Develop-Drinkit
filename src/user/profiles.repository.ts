@@ -29,6 +29,7 @@ export class ProfilesRepository extends Repository<Profile> {
         'profile.nickname AS "nickname"',
         'profile.phoneNumber AS "phoneNumber"',
         'profile.name AS "name"',
+        'profile.address AS "address"',
       ])
       .from(Profile, 'profile')
       .where(`profile.userId = ${userId}`)

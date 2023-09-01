@@ -12,6 +12,7 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
   async getOrders(userId: number) {
     const getOrdersData = await this.createQueryBuilder('paymentLog')
       .where('paymentLog.userId = :userId', { userId })
+      .orderBy('paymentLog.id', 'ASC')
       .getMany();
 
     return getOrdersData;
@@ -54,6 +55,8 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
     storeId: number,
     paidPoint: number,
     manager: EntityManager,
+    impUid: string,
+    address: string,
   ) {
     const postPaymentLogData = await manager
       .createQueryBuilder()
@@ -65,6 +68,8 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
         totalPrice,
         storeId,
         paidPoint,
+        impUid,
+        address,
       })
       .execute();
 

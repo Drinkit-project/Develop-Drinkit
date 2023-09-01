@@ -16,8 +16,8 @@ export class OrderReqDto {
     price: number;
   }>;
 
-  @IsBoolean()
-  readonly usePoint: boolean;
+  @IsNumber()
+  readonly paidPoint: number;
 
   @IsNumber()
   readonly storeId: number;
