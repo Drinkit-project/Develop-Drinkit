@@ -18,12 +18,6 @@ import { PaymentStatus } from 'src/entities/paymentLog.entity';
 import { DataSource } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { AddRankingDTO } from './dto/addRanking.dto';
-import { Ranking } from 'src/entities/redis.ranking';
-import { count } from 'console';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const redis = require('redis');
-const client = redis.createClient();
 import { RedisService } from 'src/redis/redis.service';
 import axios from 'axios';
 
@@ -37,6 +31,7 @@ export class OrdersService {
     private storesRepository: StoresRepository,
     private productsRepository: ProductsRepository,
     private redisService: RedisService,
+    private usersRepository: UsersRepository,
     @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
@@ -129,8 +124,39 @@ export class OrdersService {
     return updateOrdersStatusByStoreData;
   }
 
-  async addPoint(userId: number, userPoint: number, point: number) {
-    return;
+  async addPoint(
+    userId: number,
+    point: number,
+    impUid: string,
+    address: string,
+  ) {
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await this.paymentLogsRepository.postPaymentLog(
+          userId,
+          point,
+          1,
+          0,
+          manager,
+          impUid,
+          address,
+          PaymentStatus.READY_COMPLETE,
+        );
+
+        const addPointData = await manager
+          .createQueryBuilder()
+          .update(User)
+          .set({ point: () => `point + ${point}` })
+          .where('id = :userId', { userId })
+          .execute();
+
+        return addPointData;
+      });
+    } catch (err) {
+      console.log(err);
+      await this.refund(impUid);
+      return '서버오류 - 결제에 대한 환불처리가 완료 되었습니다.';
+    }
   }
 
   async refund(imp_uid: string) {

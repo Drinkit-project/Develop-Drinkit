@@ -19,6 +19,7 @@ import {
   PersonalUser,
   AdminUser,
 } from 'src/commons/decorators/user.decorators';
+import { addPointDto } from './dto/addPoint.dto';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -92,12 +93,13 @@ export class OrdersController {
 
   @ApiOperation({ summary: '포인트 충전 - iamport' })
   @UseGuards(AuthGuard)
-  @Post('/addPoint')
-  async addPoint(@CurrentUser() user, @Body() point: number) {
+  @Put('/addPoint')
+  async addPoint(@CurrentUser() user, @Body() dto: addPointDto) {
     const addPointData = await this.ordersService.addPoint(
       user.id,
-      user.point,
-      point,
+      dto.point,
+      dto.impUid,
+      dto.address,
     );
 
     return addPointData;

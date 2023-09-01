@@ -27,6 +27,6 @@ import { NaverStrategy } from 'src/auth/security/naver.starategy';
     KakaoStrategy,
     NaverStrategy,
   ],
-  exports: [UsersService],
+  exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}
