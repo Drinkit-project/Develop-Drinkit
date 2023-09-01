@@ -109,11 +109,9 @@ export class OrdersService {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
-    console.log(getPaymentLogData);
     if (getPaymentLogData.storeId != 1) {
       throw new PreconditionFailedException('권한이 없습니다.');
     }
-    console.log('넘어옴');
 
     let status: PaymentStatus;
     if (getPaymentLogData.status == PaymentStatus.ORDER_PENDING) {
@@ -129,6 +127,10 @@ export class OrdersService {
     const updateOrdersStatusByStoreData =
       await this.paymentLogsRepository.updateOrdersStatus(paymentLogId, status);
     return updateOrdersStatusByStoreData;
+  }
+
+  async addPoint(userId: number, userPoint: number, point: number) {
+    return;
   }
 
   async refund(imp_uid: string) {
@@ -489,7 +491,7 @@ export class OrdersService {
     const getPaymentLogData = await this.paymentLogsRepository.getPaymentLog(
       paymentLogId,
     );
-    console.log('스토어아이디', getPaymentLogData.storeId, storeId);
+
     if (getPaymentLogData.storeId != storeId) {
       throw new PreconditionFailedException('권한이 없습니다.');
     }
@@ -498,8 +500,6 @@ export class OrdersService {
       .createQueryBuilder('store')
       .where('store.userId = :userId', { userId })
       .getOne();
-
-    console.log(getStoreData.id != storeId);
 
     if (getStoreData.id != storeId) {
       throw new PreconditionFailedException('권한이 없습니다.');

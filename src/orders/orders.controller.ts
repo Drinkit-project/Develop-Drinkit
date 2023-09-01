@@ -90,6 +90,19 @@ export class OrdersController {
     return updateOrdersStatusByAdminData;
   }
 
+  @ApiOperation({ summary: '포인트 충전 - iamport' })
+  @UseGuards(AuthGuard)
+  @Post('/addPoint')
+  async addPoint(@CurrentUser() user, @Body() point: number) {
+    const addPointData = await this.ordersService.addPoint(
+      user.id,
+      user.point,
+      point,
+    );
+
+    return addPointData;
+  }
+
   @ApiOperation({ summary: '환불 - iamport' })
   @UseGuards(AuthGuard)
   @Post('/refund')
