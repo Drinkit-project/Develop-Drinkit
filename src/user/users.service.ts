@@ -43,10 +43,18 @@ export class UsersService {
   }
 
   async sendEmail(email: string): Promise<void> {
+    const isUserExist = await this.findByFields({
+      where: { email },
+    });
+
+    if (isUserExist) {
+      throw new UnauthorizedException('이미 존재하는 사용자 입니다.');
+    }
+
     return await this.authService.sendVerificationEmail(email);
   }
 
-  async authEmail(emailToken: string): Promise<boolean> {
+  async authEmail(emailToken: string): Promise<any> {
     return await this.authService.verifyVerificationCode(emailToken);
   }
 
@@ -91,8 +99,10 @@ export class UsersService {
       where: { email: request.user.email },
     }); //user를 찾아서
     // 2, 회원가입이 안되어있다면? 자동회원가입
-    if (!user) response.redirect('http://localhost:3000'); //user가 없으면 하나 만들고, 있으면 이 if문에 들어오지 않을거기때문에 이러나 저러나 user는 존재하는게 됨.
-
+    if (!user) {
+      response.cookie(`email`, request.user.email);
+      return false; //user가 없으면 하나 만들고, 있으면 이 if문에 들어오지 않을거기때문에 이러나 저러나 user는 존재하는게 됨.
+    }
     // 3. 회원가입이 되어있다면? 로그인(AT, RT를 생성해서 브라우저에 전송)한다
     const accessToken = await this.authService.generateAccessToken(
       user.id,
