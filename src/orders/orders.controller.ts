@@ -35,11 +35,12 @@ export class OrdersController {
 
   @ApiOperation({ summary: '가게 주문 내역 조회' })
   @UseGuards(AuthGuard)
-  @Get('storeId')
+  @Get(':storeId')
   async getStoreOrders(
     @PersonalUser() user,
-    @Query('storeId') storeId: number,
+    @Param('storeId') storeId: number,
   ) {
+    console.log(user.id, storeId);
     const getStoreOrdersData = await this.ordersService.getStoreOrders(
       user.id,
       storeId,
@@ -66,10 +67,11 @@ export class OrdersController {
 
   @ApiOperation({ summary: '업주 주문 상태 변경' })
   @UseGuards(AuthGuard)
-  @Put(':paymentLogId/byStore')
+  @Put(':paymentLogId/Store/:storeId')
   async updateOrdersStatusByStore(
     @PersonalUser() user,
     @Param('paymentLogId') paymentLogId: number,
+    @Param('storeId') storeId: number,
   ) {
     const updateOrdersStatusByStoreData =
       await this.ordersService.updateOrdersStatusByStore(user.id, paymentLogId);
@@ -77,7 +79,8 @@ export class OrdersController {
   }
 
   @ApiOperation({ summary: '쇼핑몰 관리자 주문 상태 변경' })
-  @Put(':paymentLogId/byAdmin')
+  @UseGuards(AuthGuard)
+  @Put(':paymentLogId/Admin')
   async updateOrdersStatusByAdmin(
     @AdminUser() user,
     @Param('paymentLogId') paymentLogId: number,
@@ -87,14 +90,23 @@ export class OrdersController {
     return updateOrdersStatusByAdminData;
   }
 
-  @ApiOperation({ summary: '주문 요청 - i`mport' })
+  @ApiOperation({ summary: '환불 - iamport' })
+  @UseGuards(AuthGuard)
+  @Post('/refund')
+  async getPayInfo(@Body() imp_uid: string) {
+    const getPayInfoData = await this.ordersService.refund(imp_uid['imp_uid']);
+
+    return getPayInfoData;
+  }
+
+  @ApiOperation({ summary: '주문 요청 - iamport' })
   @UseGuards(AuthGuard)
   @Post()
   async order(@CurrentUser() user, @Body() dto: OrderReqDto) {
     const checkOrderListData = await this.ordersService.checkOrderList(
       dto.orderList,
       user.id,
-      dto.usePoint,
+      dto.paidPoint,
       dto.storeId,
       user.point,
     );
@@ -102,7 +114,7 @@ export class OrdersController {
     return checkOrderListData;
   }
 
-  @ApiOperation({ summary: '결제 성공 후' })
+  @ApiOperation({ summary: '결제 성공 후 - iamport' })
   @UseGuards(AuthGuard)
   @Post('postOrder')
   async postOrder(@CurrentUser() user, @Body() dto: PostOrderReqDto) {
@@ -112,6 +124,8 @@ export class OrdersController {
       dto.totalPrice,
       dto.orderList,
       dto.storeId,
+      dto.impUid,
+      dto.address,
     );
 
     return postOrderData;
@@ -167,6 +181,7 @@ export class OrdersController {
   }
 
   @ApiOperation({ summary: '쇼핑몰 관리자 주문 취소' })
+  @UseGuards(AuthGuard)
   @Delete(':paymentLogId/Admin')
   async cancelOrderByAdmin(
     @AdminUser() user,

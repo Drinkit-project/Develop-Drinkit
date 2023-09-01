@@ -35,6 +35,7 @@
     "@types/passport-google-oauth20": "^2.0.11",
     "@types/passport-jwt": "^3.0.9",
     "aws-sdk": "^2.1442.0",
+    "axios": "^1.5.0",
     "bcrypt": "^5.1.1",
     "cache-manager": "^5.2.3",
     "cache-manager-redis-store": "^3.0.1",
