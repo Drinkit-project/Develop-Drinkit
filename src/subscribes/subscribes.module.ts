@@ -6,9 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscribesRepository } from './subscribes.repository';
 import { UsersModule } from 'src/user/users.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { Profile } from 'src/entities/profile.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Subscribe]), UsersModule, AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([Subscribe]),
+    UsersModule,
+    AuthModule,
+    Profile,
+  ],
   controllers: [SubscribesController],
   providers: [SubscribesService, SubscribesRepository],
 })

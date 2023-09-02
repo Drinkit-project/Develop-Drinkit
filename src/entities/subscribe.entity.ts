@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  OneToOne,
-  JoinColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToOne, JoinColumn, PrimaryColumn } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { CommonEntity } from './common.entity';
 import { PickType } from '@nestjs/swagger';
@@ -14,11 +8,14 @@ export class Subscribe extends PickType(CommonEntity, [
   'createdAt',
   'updatedAt',
 ]) {
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'userId' })
+  @PrimaryColumn({ type: 'bigint', name: 'userId' })
   userId: number;
 
   @Column('boolean')
   isPaid: boolean;
+
+  @Column('varchar')
+  address: string;
 
   @OneToOne(() => User, (user) => user.subscribe)
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])

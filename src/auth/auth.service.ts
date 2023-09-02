@@ -25,7 +25,7 @@ export class AuthService {
   ) {
     //이메일 인증용
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.naver.com',
+      host: process.env.NODEMAILER_EMAIL_HOST,
       port: 465,
       secure: true, // true for 465, false for other ports
       auth: {

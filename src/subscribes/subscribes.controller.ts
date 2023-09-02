@@ -21,13 +21,11 @@ export class SubscribesController {
 
   @ApiOperation({ summary: '구독 하기' })
   @Post()
-  async postSubscribe(
-    @CurrentUser() userId: number,
-    @Body() dto: SubscribesReqDto,
-  ) {
+  async postSubscribe(@CurrentUser() user, @Body() dto: SubscribesReqDto) {
     const postSubscribeData = await this.subscribesService.postSubscribe(
-      userId,
+      user.id,
       dto.isPaid,
+      dto.address,
     );
 
     return postSubscribeData;
@@ -35,17 +33,19 @@ export class SubscribesController {
 
   @ApiOperation({ summary: '구독 상태확인' })
   @Get()
-  async getSubscribe(@CurrentUser() userId: number) {
-    const getSubscribeData = await this.subscribesService.getSubscribe(userId);
+  async getSubscribe(@CurrentUser() user) {
+    const getSubscribeData = await this.subscribesService.getSubscribe(user.id);
 
     return getSubscribeData;
   }
 
   @ApiOperation({ summary: '구독 상태변경' })
   @Put()
-  async updateSubscribe(@CurrentUser() userId: number) {
+  async updateSubscribe(@CurrentUser() user, @Body() dto: SubscribesReqDto) {
     const postSubscribeData = await this.subscribesService.updateSubscribe(
-      userId,
+      user.id,
+      dto.isPaid,
+      dto.address,
     );
 
     return postSubscribeData;
@@ -53,9 +53,9 @@ export class SubscribesController {
 
   @ApiOperation({ summary: '구독 취소' })
   @Delete()
-  async deleteSubscribe(@CurrentUser() userId: number) {
+  async deleteSubscribe(@CurrentUser() user) {
     const deleteSubscribeData = await this.subscribesService.deleteSubscribe(
-      userId,
+      user.id,
     );
 
     return deleteSubscribeData;

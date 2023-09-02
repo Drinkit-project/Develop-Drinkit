@@ -4,7 +4,7 @@ import { SubscribesRepository } from './subscribes.repository';
 export class SubscribesService {
   constructor(private subscribesRepository: SubscribesRepository) {}
 
-  async postSubscribe(userId: number, isPaid: boolean) {
+  async postSubscribe(userId: number, isPaid: boolean, address: string) {
     const getSubscribeData = await this.subscribesRepository.getSubscribe(
       userId,
     );
@@ -14,6 +14,7 @@ export class SubscribesService {
     const postSubscribeData = await this.subscribesRepository.postSubscribe(
       userId,
       isPaid,
+      address,
     );
 
     return postSubscribeData;
@@ -27,23 +28,14 @@ export class SubscribesService {
     return getSubscribeData;
   }
 
-  async updateSubscribe(userId: number) {
-    const getSubscribeData = await this.subscribesRepository.getSubscribe(
-      userId,
-    );
-    let isPaid: boolean;
-    if (getSubscribeData.isPaid) {
-      isPaid = false;
-    } else {
-      isPaid = true;
-    }
-
-    const postSubscribeData = await this.subscribesRepository.updateSubscribe(
+  async updateSubscribe(userId: number, isPaid: boolean, address: string) {
+    const updateSubscribeData = await this.subscribesRepository.updateSubscribe(
       userId,
       isPaid,
+      address,
     );
 
-    return postSubscribeData;
+    return updateSubscribeData;
   }
 
   async deleteSubscribe(userId: number) {
