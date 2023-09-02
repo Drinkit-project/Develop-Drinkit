@@ -77,6 +77,19 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
     return postPaymentLogData;
   }
 
+  async postPaymentLogBySubscribe(
+    userId: number,
+    totalPrice: number,
+    storeId: number,
+    paidPoint: number,
+    manager: EntityManager,
+    impUid: string,
+    address: string,
+    status?: string,
+  ) {
+    return;
+  }
+
   async findPaymentLog(userId: number) {
     const findPaymentLogData = await this.createQueryBuilder('paymentLog')
       .where('paymentLog.userId = :userId', { userId })

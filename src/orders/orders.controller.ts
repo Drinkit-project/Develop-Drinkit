@@ -36,12 +36,11 @@ export class OrdersController {
 
   @ApiOperation({ summary: '가게 주문 내역 조회' })
   @UseGuards(AuthGuard)
-  @Get(':storeId')
+  @Get('/store/:storeId')
   async getStoreOrders(
     @PersonalUser() user,
     @Param('storeId') storeId: number,
   ) {
-    console.log(user.id, storeId);
     const getStoreOrdersData = await this.ordersService.getStoreOrders(
       user.id,
       storeId,

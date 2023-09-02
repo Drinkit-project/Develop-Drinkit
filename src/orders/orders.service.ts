@@ -46,7 +46,6 @@ export class OrdersService {
     return getOrdersDetailData;
   }
   async getStore(storeId: number) {
-    console.log(storeId);
     const getStoreData = await this.storesRepository
       .createQueryBuilder('store')
       .where('store.id = :storeId', { storeId })
@@ -56,7 +55,6 @@ export class OrdersService {
 
   async getStoreOrders(userId: number, storeId: number) {
     const getStoreData = await this.getStore(storeId);
-    console.log(getStoreData);
     if (getStoreData.userId != userId) {
       throw new PreconditionFailedException();
     }
@@ -162,25 +160,21 @@ export class OrdersService {
   async refund(imp_uid: string) {
     const getToken = await axios({
       url: 'https://api.iamport.kr/users/getToken',
-      method: 'post', // POST method
+      method: 'post',
       headers: { 'Content-Type': 'application/json' },
       data: {
-        imp_key: '1532710637541687', // REST API 키
-        imp_secret:
-          '3uUxnm1tDr122tHZrZXvdldiBDeqNYbLbawIMP7iqV4DiPznO5k5yqVKKwNrrS7q1elCCbxAmrCyTiuF', // REST API Secret
+        imp_key: process.env.IAMPORT_API_KEY,
+        imp_secret: process.env.IAMPORY_SECRET_API_KEY,
       },
     });
-    // const { access_token } = getToken.data; // 인증 토큰
+
     const access_token = getToken.data.response.access_token;
     const getPaymentData = await axios({
-      // imp_uid 전달
       url: `https://api.iamport.kr/payments/${imp_uid}`,
-      // GET method
       method: 'get',
-      // 인증 토큰 Authorization header에 추가
       headers: { Authorization: access_token },
     });
-    const paymentData = getPaymentData.data.response; // 조회한 결제 정보
+    const paymentData = getPaymentData.data.response;
 
     return paymentData;
   }
@@ -333,25 +327,75 @@ export class OrdersService {
 
         if (storeId != 1) {
           //store_product 재고 업데이트
+          // for (let i = 0; i < countList.length; i++) {
+          //   await manager
+          //     .createQueryBuilder()
+          //     .update(Store_Product)
+          //     .set({ storeStock: () => `storeStock - ${countList[i]}` })
+          //     .where('productId = :productId', { productId: productIdList[i] })
+          //     .execute();
+          // }
+
+          const getStoreProductsData = await this.store_ProductsRepository
+            .createQueryBuilder('store_product')
+            .where('store_product.productId IN (:...ids)', {
+              ids: productIdList,
+            })
+            .getMany();
+
           for (let i = 0; i < countList.length; i++) {
-            await manager
-              .createQueryBuilder()
-              .update(Store_Product)
-              .set({ storeStock: () => `storeStock - ${countList[i]}` })
-              .where('productId = :productId', { productId: productIdList[i] })
-              .execute();
+            getStoreProductsData[i].storeStock =
+              Number(getStoreProductsData[i].storeStock) - Number(countList[i]);
           }
+
+          await manager
+            .createQueryBuilder()
+            .insert()
+            .into(Store_Product, ['id', 'storeId', 'storeStock', 'productId'])
+            .values(getStoreProductsData)
+            .orUpdate(['storeStock'], ['id'], {
+              skipUpdateIfNoValuesChanged: true,
+            })
+            .execute();
         } else {
+          // for (let i = 0; i < countList.length; i++) {
+          //   await manager
+          //     .createQueryBuilder()
+          //     .update(Product)
+          //     .set({
+          //       totalStock: () => `totalStock - ${countList[i]}`,
+          //     })
+          //     .where('id = :productId', { productId: productIdList[i] })
+          //     .execute();
+          // }
+
+          const getProductsData = await this.productsRepository
+            .createQueryBuilder('product')
+            .where('product.id IN (:...ids)', { ids: productIdList })
+            .getMany();
+
           for (let i = 0; i < countList.length; i++) {
-            await manager
-              .createQueryBuilder()
-              .update(Product)
-              .set({
-                totalStock: () => `totalStock - ${countList[i]}`,
-              })
-              .where('id = :productId', { productId: productIdList[i] })
-              .execute();
+            getProductsData[i].totalStock =
+              Number(getProductsData[i].totalStock) - Number(countList[i]);
           }
+
+          await manager
+            .createQueryBuilder()
+            .insert()
+            .into(Product, [
+              'id',
+              'price',
+              'productName',
+              'categoryId',
+              'description',
+              'imgUrl',
+              'totalStock',
+            ])
+            .values(getProductsData)
+            .orUpdate(['totalStock'], ['id'], {
+              skipUpdateIfNoValuesChanged: true,
+            })
+            .execute();
         }
         //레디스 판매량 기록
         await this.redisService.updateRanking(productIdList, countList, true);
@@ -462,7 +506,7 @@ export class OrdersService {
 
         for (let i = 0; i < countList.length; i++) {
           getProductsData[i].totalStock =
-            getProductsData[i].totalStock + Number(countList[i]);
+            Number(getProductsData[i].totalStock) + Number(countList[i]);
         }
 
         await manager
