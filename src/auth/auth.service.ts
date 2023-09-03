@@ -100,7 +100,6 @@ export class AuthService {
   ): Promise<string> {
     const payload = { userId, nickname };
     const refreshTokenOptions = this.jwtConfigService.createRefreshJwtOptions(); // 리프레시 토큰 설정을 가져옴
-    console.log(refreshTokenOptions.secret);
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: refreshTokenOptions.secret,
       expiresIn: refreshTokenOptions.signOptions.expiresIn,
