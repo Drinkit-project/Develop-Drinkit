@@ -23,21 +23,26 @@ import { TransformBodyInterceptor } from 'src/commons/interceptors/product.reque
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
 
-  @Get()
-  // Todo: 로그인 추가
-  async getProducts() {
-    const products = await this.productsService.getProducts();
-    return products;
-  }
+  // @Get()
+  // // Todo: 로그인 추가
+  // async getProducts() {
+  //   const products = await this.productsService.getProducts();
+  //   return products;
+  // }
 
   @ApiOperation({ summary: '상품 카테고리 별 조회' })
   @Get()
   // Todo: 로그인 추가
-  async getProductsByCategory(@Query('categoryId') categoryId: number) {
-    const products = await this.productsService.getProductsByCategory(
-      categoryId,
-    );
-    return products;
+  async getProductsByCategory(@Query('categoryId') categoryId) {
+    if (categoryId === '0' || !categoryId) {
+      const products = await this.productsService.getProducts();
+      return products;
+    } else {
+      const products = await this.productsService.getProductsByCategory(
+        categoryId,
+      );
+      return products;
+    }
   }
 
   @ApiOperation({ summary: '상품 상세 조회' })
