@@ -77,7 +77,7 @@ export class Store extends CommonEntity {
 
   @IsNotEmpty()
   @Column('float')
-  lng: string;
+  lng: number;
 
   @IsNotEmpty()
   @Column('float')

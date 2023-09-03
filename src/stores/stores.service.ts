@@ -82,6 +82,11 @@ export class StoresService {
     }
   }
 
+  async seedProductOnStore(data: AddProductDTO) {
+    const result = this.storeProductRepository.addProductOnStore(data);
+    return result;
+  }
+
   async updateProductStock(data: UpdateProductDTO, productId: number) {
     if (!data.upDown) data.updateStock *= -1;
 

@@ -270,4 +270,50 @@ export class StoresController {
       throw new BadRequestException('delete to fail..');
     }
   }
+
+  // // store 더미데이터 생성
+  // @Post('/seed')
+  // async seedStores() {
+  //   for (let i = 0; i < 100; i++) {
+  //     const randImg = [
+  //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_7D596477896F088ACFEC09E8F3CAC1C8.png&type=a340',
+  //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_BFF7D8F799122E2F13F9EC63CA4C2ACC.jpg&type=a340',
+  //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_5BB99A4B14C6640EAA3351E27D29E6E4.png&type=a340',
+  //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_EABAEE47E7178357C7C840AC75C2BC42.png&type=a340',
+  //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_9BB3AFEA6C388FA8BDDB626DD69D6D0A.png&type=a340',
+  //     ][Math.floor(Math.random() * 5)];
+  //     const randString = String(Math.floor(Math.random() * 123456));
+  //     const randLat = 36.8151 + Math.floor(Math.random() * 400) / 10000;
+  //     const randLng = 127.1139 + Math.floor(Math.random() * 400) / 10000;
+  //     const data = {
+  //       address: `천안시 불당동 ${i + 2}번 도로`,
+  //       name: `천안시 ${i + 2}번 가게`,
+  //       description: `${i + 2}번 가게 설명`,
+  //       businessLicense: randString,
+  //       imgUrls: randImg,
+  //       userId: i + 2,
+  //       lat: randLat,
+  //       lng: randLng,
+  //     };
+  //     await this.storeService.createStore(data);
+  //   }
+  //   return '작업완료';
+  // }
+
+  // // stroe_product 더미데이터 생성
+  // @Post('/seedproducts')
+  // async seedStoreProducts() {
+  //   for (let i = 1; i < 101; i++) {
+  //     for (let j = 1; j < 51; j++) {
+  //       const randStock = Math.floor(Math.random() * 21);
+  //       const data = {
+  //         productId: j,
+  //         storeId: i,
+  //         storeStock: randStock,
+  //       };
+  //       await this.storeService.seedProductOnStore(data);
+  //     }
+  //   }
+  //   return '작업완료';
+  // }
 }
