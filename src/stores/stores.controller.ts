@@ -303,7 +303,7 @@ export class StoresController {
   // // stroe_product 더미데이터 생성
   // @Post('/seedproducts')
   // async seedStoreProducts() {
-  //   for (let i = 1; i < 101; i++) {
+  //   for (let i = 2; i < 101; i++) {
   //     for (let j = 1; j < 51; j++) {
   //       const randStock = Math.floor(Math.random() * 21);
   //       const data = {
