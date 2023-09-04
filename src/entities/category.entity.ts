@@ -5,7 +5,11 @@ import { Product } from './product.entity';
 
 @Entity({ schema: '', name: 'category' })
 export class Category extends CommonEntity {
-  @Column('varchar')
+  @Column({
+    type: 'varchar',
+    length: 20,
+    unique: true,
+  })
   name: string;
 
   @OneToMany(() => Product, (product) => product.category)
