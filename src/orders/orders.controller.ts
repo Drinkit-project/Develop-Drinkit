@@ -132,6 +132,7 @@ export class OrdersController {
   @UseGuards(AuthGuard)
   @Post('postOrder')
   async postOrder(@CurrentUser() user, @Body() dto: PostOrderReqDto) {
+    console.log(dto);
     const postOrderData = await this.ordersService.postOrder(
       user.id,
       dto.paidPoint,

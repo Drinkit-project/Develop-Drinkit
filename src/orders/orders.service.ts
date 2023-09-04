@@ -254,7 +254,8 @@ export class OrdersService {
       if (storeId != 1) {
         const totalStockByStoreProductData = await this.store_ProductsRepository
           .createQueryBuilder('store_product')
-          .where('store_product.productId IN (:...ids)', {
+          .where('store_product.storeId = :storeId', { storeId })
+          .andWhere('store_product.productId IN (:...ids)', {
             ids: productIdList,
           })
           .orderBy('store_product.productId', 'ASC')
@@ -338,7 +339,8 @@ export class OrdersService {
 
           const getStoreProductsData = await this.store_ProductsRepository
             .createQueryBuilder('store_product')
-            .where('store_product.productId IN (:...ids)', {
+            .where('store_product.storeId = :storeId', { storeId })
+            .andWhere('store_product.productId IN (:...ids)', {
               ids: productIdList,
             })
             .getMany();
@@ -481,7 +483,12 @@ export class OrdersService {
       if (getPaymentLogData.storeId != 1) {
         const getStoreProductsData = await this.store_ProductsRepository
           .createQueryBuilder('store_product')
-          .where('store_product.productId IN (:...ids)', { ids: productIdList })
+          .where('store_product.storeId = :storeId', {
+            storeId: getPaymentLogData.storeId,
+          })
+          .andWhere('store_product.productId IN (:...ids)', {
+            ids: productIdList,
+          })
           .getMany();
 
         for (let i = 0; i < countList.length; i++) {
@@ -591,7 +598,8 @@ export class OrdersService {
 
     const getStoreProductsData = await this.store_ProductsRepository
       .createQueryBuilder('store_product')
-      .where('store_product.productId IN (:...ids)', { ids: productIdList })
+      .where('store_product.storeId = :storeId', { storeId })
+      .andWhere('store_product.productId IN (:...ids)', { ids: productIdList })
       .getMany();
 
     for (let i = 0; i < countList.length; i++) {

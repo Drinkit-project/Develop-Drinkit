@@ -100,39 +100,39 @@ export class ProductsController {
     return '상품 삭제 완료!';
   }
 
-  // // 더미데이터 생성
-  // @Post('/seed')
-  // async seed() {
-  //   for (let i = 0; i < 50; i++) {
-  //     const arrRandNum = Math.floor(Math.random() * 5);
-  //     const randCategoryArr = [1, 2, 3, 4, 5];
-  //     const randNameArr = ['전통주', '와인', '양주', '과실주', '증류주'];
-  //     const randPriceArr = [30000, 20000, 78000, 15700, 46000];
-  //     const randDesArr = [
-  //       '우리나라 전통주',
-  //       '저렴한 와인',
-  //       '독한 양주',
-  //       '향기좋은 과실주',
-  //       '전통 증류주',
-  //     ];
-  //     const randImgArr = [
-  //       'https://d38cxpfv0ljg7q.cloudfront.net/admin_contents/thumbnail/lvRp-1673341341744-naju+%286%29.jpg',
-  //       'https://c.pxhere.com/photos/62/a4/wine_bottle_red_wine_fruit_wine_red_cork_bottle_beverage-590183.jpg!s1',
-  //       'https://c.pxhere.com/photos/1b/dc/alcohol_bottle_whisky_product_drink_beverage_alcoholic_drinks_design-684162.jpg!s1',
-  //       'https://d38cxpfv0ljg7q.cloudfront.net/admin_contents/thumbnail/xdPQ-1642143289464-gdr%20bsa0.jpg',
-  //       'https://d38cxpfv0ljg7q.cloudfront.net/admin_contents/thumbnail/70IT-1673334350094-21+%282%29.jpg',
-  //     ];
-  //     const randStock = Math.floor(Math.random() * 51);
-  //     const data = {
-  //       categoryId: randCategoryArr[arrRandNum],
-  //       productName: `${i}번 ${randNameArr[arrRandNum]}`,
-  //       price: randPriceArr[arrRandNum],
-  //       description: `${i}번 ${randDesArr[arrRandNum]}`,
-  //       imgUrl: randImgArr[arrRandNum],
-  //       totalStock: randStock,
-  //     };
-  //     await this.productsService.createProducts(data);
-  //   }
-  //   return '작업완료';
-  // }
+  // 더미데이터 생성
+  @Post('/seed')
+  async seed() {
+    for (let i = 0; i < 50; i++) {
+      const arrRandNum = Math.floor(Math.random() * 5);
+      const randCategoryArr = [1, 2, 3, 4, 5];
+      const randNameArr = ['전통주', '와인', '양주', '과실주', '증류주'];
+      const randPriceArr = [30000, 20000, 78000, 15700, 46000];
+      const randDesArr = [
+        '우리나라 전통주',
+        '저렴한 와인',
+        '독한 양주',
+        '향기좋은 과실주',
+        '전통 증류주',
+      ];
+      const randImgArr = [
+        'https://d38cxpfv0ljg7q.cloudfront.net/admin_contents/thumbnail/lvRp-1673341341744-naju+%286%29.jpg',
+        'https://c.pxhere.com/photos/62/a4/wine_bottle_red_wine_fruit_wine_red_cork_bottle_beverage-590183.jpg!s1',
+        'https://c.pxhere.com/photos/1b/dc/alcohol_bottle_whisky_product_drink_beverage_alcoholic_drinks_design-684162.jpg!s1',
+        'https://d38cxpfv0ljg7q.cloudfront.net/admin_contents/thumbnail/xdPQ-1642143289464-gdr%20bsa0.jpg',
+        'https://d38cxpfv0ljg7q.cloudfront.net/admin_contents/thumbnail/70IT-1673334350094-21+%282%29.jpg',
+      ];
+      const randStock = Math.floor(Math.random() * 51);
+      const data = {
+        categoryId: randCategoryArr[arrRandNum],
+        productName: `${i}번 ${randNameArr[arrRandNum]}`,
+        price: randPriceArr[arrRandNum],
+        description: `${i}번 ${randDesArr[arrRandNum]}`,
+        imgUrl: randImgArr[arrRandNum],
+        totalStock: randStock,
+      };
+      await this.productsService.createProducts(data);
+    }
+    return '작업완료';
+  }
 }

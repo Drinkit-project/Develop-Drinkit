@@ -215,32 +215,32 @@ export class UsersController {
     return this.profilesService.delteAddress(user.id, addressIdx);
   }
 
-  // // 더미데이터 생성
-  // @Post('/seed')
-  // async seed() {
-  //   for (let i = 0; i < 100; i++) {
-  //     const a = String(Math.floor(Math.random() * 123456));
-  //     const randLat = 36.8151 + Math.floor(Math.random() * 200) / 10000;
-  //     const randLng = 127.1139 + Math.floor(Math.random() * 200) / 10000;
-  //     const rand = `aaa${a}`;
-  //     const data = {
-  //       email: `${rand}@naver.com`,
-  //       password: `${rand}`,
-  //       confirm: `${rand}`,
-  //       isAdmin: false,
-  //       isPersonal: true,
-  //       address: {
-  //         address: '천안시',
-  //         name: '나의 집',
-  //         lat: randLat,
-  //         lng: randLng,
-  //       },
-  //       phoneNumber: '01012341234',
-  //       nickname: `${rand}`,
-  //       name: `${rand}`,
-  //     };
-  //     await this.usersService.signUp(data);
-  //   }
-  //   return '작업완료';
-  // }
+  // 더미데이터 생성
+  @Post('/seed')
+  async seed() {
+    for (let i = 0; i < 100; i++) {
+      const a = String(Math.floor(Math.random() * 123456));
+      const randLat = 36.8151 + Math.floor(Math.random() * 200) / 10000;
+      const randLng = 127.1139 + Math.floor(Math.random() * 200) / 10000;
+      const rand = `aaa${a}`;
+      const data = {
+        email: `${rand}@naver.com`,
+        password: `${rand}`,
+        confirm: `${rand}`,
+        isAdmin: false,
+        isPersonal: true,
+        address: {
+          address: '천안시',
+          name: '나의 집',
+          lat: randLat,
+          lng: randLng,
+        },
+        phoneNumber: '01012341234',
+        nickname: `${rand}`,
+        name: `${rand}`,
+      };
+      await this.usersService.signUp(data);
+    }
+    return '작업완료';
+  }
 }
