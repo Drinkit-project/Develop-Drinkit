@@ -8,7 +8,6 @@ export class CreateStoreDTO extends PickType(Store, [
   'description',
   'businessLicense',
   'imgUrls',
-  'userId',
   'lat',
   'lng',
 ]) {}

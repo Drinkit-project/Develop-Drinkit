@@ -7,6 +7,7 @@ import { Store } from 'src/entities/store.entity';
 import { Store_ProductRepository } from './store_product.repository';
 import { Store_Product } from 'src/entities/store_product.entity';
 import StockDTO from './DTO/stock.DTO';
+import { integer } from 'aws-sdk/clients/cloudfront';
 
 @Injectable()
 export class StoresService {
@@ -23,8 +24,8 @@ export class StoresService {
     return this.storeRepository.findStoreByStock(body);
   }
 
-  createStore(data: CreateStoreDTO) {
-    return this.storeRepository.createStore(data);
+  createStore(data: CreateStoreDTO, userId: number) {
+    return this.storeRepository.createStore(data, userId);
   }
 
   async updateStore(storeId: number, user: User, data: UpdateStoreDTO) {
