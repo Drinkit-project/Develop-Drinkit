@@ -15,6 +15,9 @@ import { OpenSearchService } from 'src/open-search/open-search.service';
 import { User } from 'src/entities/user.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/user/users.module';
+import { CategoryController } from './category/category.controler';
+import { CategoryService } from './category/category.service';
+import { CategoryRepository } from './category/category.repository';
 
 @Module({
   imports: [
@@ -29,12 +32,14 @@ import { UsersModule } from 'src/user/users.module';
     AuthModule,
     UsersModule,
   ],
-  controllers: [ProductsController, DiscountsController],
+  controllers: [ProductsController, CategoryController, DiscountsController],
   providers: [
     ProductsService,
     ProductsRepository,
     DiscountsService,
     DiscountsRepository,
+    CategoryService,
+    CategoryRepository,
     OpenSearchService,
   ],
 })

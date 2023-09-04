@@ -2,13 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule/dist';
 import { OpenSearchService } from 'src/open-search/open-search.service';
 import { ProductsService } from 'src/products/products.service';
-import { PaymentLogRepository } from 'src/orders/paymentLogs.repository';
 import { SubscribesRepository } from 'src/subscribes/subscribes.repository';
 import { UsersRepository } from 'src/user/users.repository';
 import { PaymentLog, PaymentStatus } from 'src/entities/paymentLog.entity';
 import { User } from 'src/entities/user.entity';
 import { DataSource } from 'typeorm';
-import { OrdersService } from 'src/orders/orders.service';
 import * as nodemailer from 'nodemailer';
 
 @Injectable()
@@ -18,8 +16,6 @@ export class CronService {
     private dataSource: DataSource,
     private readonly openSearchService: OpenSearchService,
     private readonly productService: ProductsService,
-    private readonly ordersService: OrdersService,
-    private readonly paymentLogsRepository: PaymentLogRepository,
     private readonly subscribesRepository: SubscribesRepository,
     private readonly usersRepository: UsersRepository,
   ) {
