@@ -32,6 +32,7 @@ export class UsersController {
     private profilesService: ProfilesService,
   ) {}
 
+  //회원가입
   @ApiOperation({ summary: 'sign-up' })
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
@@ -40,11 +41,34 @@ export class UsersController {
     return await this.usersService.signUp(data);
   }
 
+  //휴대폰 인증 SMS 발송
+  @Post('/phoneAuth')
+  async sendSMS(@Body() body: Partial<ProfileDto>) {
+    return await this.usersService.sendSMS(body.phoneNumber);
+  }
+
+  @Post('/phoneCodeAuth')
+  async authCode(
+    @Res() response: Response,
+    @Body() body: { phoneNumber: string; code: string },
+  ) {
+    const isAuth = await this.usersService.authCode(body);
+    if (isAuth) {
+      // 성공적인 인증일 경우, 상태 코드 201과 함께 JSON 응답을 보냅니다.
+      return response.status(201).json({ message: '인증 성공' });
+    }
+
+    // 인증 실패일 경우, 상태 코드 401과 함께 JSON 응답을 보냅니다.
+    return response.status(401).json({ message: '인증 실패' });
+  }
+
+  //이메일 인증 전송
   @Post('/emailAuth')
   async sendEmail(@Body() body: Partial<UserDto>) {
     return await this.usersService.sendEmail(body.email);
   }
 
+  //이메일 인증
   @Post('/emailTokenAuth')
   async authEmail(
     @Query('emailToken') emailToken: string,
@@ -57,6 +81,7 @@ export class UsersController {
     } else return response.status(400);
   }
 
+  //로그인
   @ApiOperation({ summary: 'sign-in' })
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
@@ -72,6 +97,7 @@ export class UsersController {
     return response.json(tokens);
   }
 
+  //구글 로그인
   @Get('/login/google') //restAPI만들기. 엔드포인트는 /login/google.
   @UseGuards(OriginAuthGuard('google')) //인증과정을 거쳐야하기때문에 UseGuards를 써주고 passport인증으로 AuthGuard를 써준다. 이름은 google로
   async loginGoogle(
@@ -89,7 +115,7 @@ export class UsersController {
     return response.redirect('http://localhost:3200');
   }
 
-  //카카오
+  //카카오 로그인
   @Get('/login/kakao')
   @UseGuards(OriginAuthGuard('kakao'))
   async loginKakao(@Req() request: Request, @Res() response: Response) {
@@ -103,7 +129,7 @@ export class UsersController {
     return response.redirect('http://localhost:3200');
   }
 
-  //네이버
+  //네이버 로그인
   @Get('/login/naver')
   @UseGuards(OriginAuthGuard('naver'))
   async loginNaver(@Req() request: Request, @Res() response: Response) {
@@ -117,6 +143,7 @@ export class UsersController {
     return response.redirect('http://localhost:3200');
   }
 
+  //로그아웃
   @ApiOperation({ summary: 'sign-out' })
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
@@ -127,27 +154,7 @@ export class UsersController {
     return response.status(200).send('signed out successfully');
   }
 
-  @ApiOperation({ summary: 'update user' })
-  @ApiResponse({ status: 200, description: 'OK' })
-  @ApiResponse({ status: 404, description: 'Not Found' })
-  @UseGuards(AuthGuard)
-  @Patch()
-  async updateUserPassword(
-    @CurrentUser() userId: number,
-    @Body() data: UpdateUserDto,
-  ) {
-    return await this.usersService.updateUserPassword(userId, data);
-  }
-
-  @ApiOperation({ summary: 'delete user' })
-  @ApiResponse({ status: 200, description: 'OK' })
-  @ApiResponse({ status: 404, description: 'Not Found' })
-  @UseGuards(AuthGuard)
-  @Delete()
-  async deleteUser(@CurrentUser() userId: number) {
-    return await this.usersService.deleteUser(userId);
-  }
-
+  //로그인된 상황에 비밀번호 검사(비밀번호 변경 시)
   @ApiOperation({ summary: 'get user' })
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
@@ -161,7 +168,31 @@ export class UsersController {
     return userchecked;
   }
 
-  @Get('/profile') // 프로필 조회
+  //유저 비밀번호 변경
+  @ApiOperation({ summary: 'update user' })
+  @ApiResponse({ status: 200, description: 'OK' })
+  @ApiResponse({ status: 404, description: 'Not Found' })
+  @UseGuards(AuthGuard)
+  @Patch()
+  async updateUserPassword(
+    @CurrentUser() userId: number,
+    @Body() data: UpdateUserDto,
+  ) {
+    return await this.usersService.updateUserPassword(userId, data);
+  }
+
+  //회원 탈퇴
+  @ApiOperation({ summary: 'delete user' })
+  @ApiResponse({ status: 200, description: 'OK' })
+  @ApiResponse({ status: 404, description: 'Not Found' })
+  @UseGuards(AuthGuard)
+  @Delete()
+  async deleteUser(@CurrentUser() userId: number) {
+    return await this.usersService.deleteUser(userId);
+  }
+
+  // 프로필 조회
+  @Get('/profile')
   @ApiOperation({ summary: 'Get profile' })
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
@@ -171,7 +202,8 @@ export class UsersController {
     return profile;
   }
 
-  @Get('/address') // 주소 조회
+  // 주소 조회
+  @Get('/address')
   @ApiOperation({ summary: 'Get profile' })
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
@@ -180,6 +212,7 @@ export class UsersController {
     return await this.profilesService.getAddress(user.id);
   }
 
+  // 프로필 수정
   @Put('/profile')
   @ApiOperation({ summary: 'update profile' })
   @UseGuards(AuthGuard)
@@ -187,6 +220,7 @@ export class UsersController {
     return this.profilesService.updateProfile(user.id, data);
   }
 
+  //주소 추가
   @Post('/address')
   @ApiOperation({ summary: 'add address' })
   @UseGuards(AuthGuard)
@@ -194,6 +228,7 @@ export class UsersController {
     return this.profilesService.addAddress(user.id, data);
   }
 
+  //주소 변경
   @Patch('/address')
   @ApiOperation({ summary: 'update address' })
   @UseGuards(AuthGuard)
@@ -205,6 +240,7 @@ export class UsersController {
     return this.profilesService.updateAddress(user.id, addressIdx, data);
   }
 
+  //주소 삭제
   @Delete('/address')
   @ApiOperation({ summary: 'delete address' })
   @UseGuards(AuthGuard)
