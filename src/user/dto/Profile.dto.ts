@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+  IsPhoneNumber,
+} from 'class-validator';
 import AddressDto from './address.dto';
 import { Type } from 'class-transformer';
 
@@ -7,7 +12,7 @@ export class ProfileDto {
   @Type(() => AddressDto) // 클래스를 타입으로 변환
   address: AddressDto;
 
-  @IsString()
+  @IsPhoneNumber('KR')
   @IsNotEmpty()
   phoneNumber: string;
 

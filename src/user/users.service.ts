@@ -54,8 +54,37 @@ export class UsersService {
     return await this.authService.sendVerificationEmail(email);
   }
 
+  async sendSMS(phoneNumber: string) {
+    const isUserExist = await this.profilesService.findByFields({
+      where: { phoneNumber },
+    });
+
+    if (isUserExist) {
+      throw new UnauthorizedException('이미 존재하는 사용자 입니다.');
+    }
+
+    return await this.authService.sendSMS(phoneNumber);
+  }
+
   async authEmail(emailToken: string): Promise<any> {
     return await this.authService.verifyVerificationCode(emailToken);
+  }
+
+  async authCode(body: {
+    phoneNumber: string;
+    code: string;
+  }): Promise<boolean> {
+    const { phoneNumber, code } = body;
+    try {
+      const redisCode = await this.authService.authCode(phoneNumber);
+      if (redisCode === code) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error(error); // 오류 로깅
+      throw error; // 오류 재전파 (선택사항)
+    }
   }
 
   //로그인

@@ -36,11 +36,11 @@ export class StoresRepository extends Repository<Store> {
     return store;
   }
 
-  createStore(obj: object) {
+  createStore(obj: object, userId: number) {
     const store = this.createQueryBuilder('store')
       .insert()
       .into(Store)
-      .values(obj)
+      .values({ ...obj, userId })
       .execute();
 
     return store;

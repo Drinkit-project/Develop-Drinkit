@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ProfilesRepository } from './profiles.repository';
 import ProfileDto from './dto/Profile.dto';
-import { EntityManager } from 'typeorm';
+import { EntityManager, FindOneOptions } from 'typeorm';
 import { Profile } from 'src/entities/profile.entity';
 import AddressDto from './dto/address.dto';
 
@@ -17,6 +17,11 @@ export class ProfilesService {
   async getAddress(userId: number) {
     const address = await this.profilesRepository.getAddress(userId);
     return address;
+  }
+
+  //field에 따른 조회
+  async findByFields(options: FindOneOptions<Profile>): Promise<any> {
+    return await this.profilesRepository.findOne(options);
   }
 
   async createProfile(

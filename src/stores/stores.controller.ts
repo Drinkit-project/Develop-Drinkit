@@ -11,7 +11,9 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StoresService } from './stores.service';
@@ -24,6 +26,8 @@ import { User } from 'src/entities/user.entity';
 import { AddProductDTO, CreateStoreDTO } from './DTO/create.DTO';
 import { UpdateProductDTO, UpdateStoreDTO } from './DTO/update.DTO';
 import { StockDTO } from './DTO/stock.DTO';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { TransformBodyInterceptor } from 'src/commons/interceptors/store.request.interceptors';
 
 @ApiTags('Store')
 @Controller('stores')
@@ -73,10 +77,16 @@ export class StoresController {
   })
   @HttpCode(201)
   @UseGuards(AuthGuard)
+  @UseInterceptors(TransformBodyInterceptor)
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  async createStore(@AdminUser() user: User, @Body() body: CreateStoreDTO) {
+  async createStore(
+    @UploadedFile() file: Express.Multer.File,
+    @AdminUser() user: User,
+    @Body() body: CreateStoreDTO,
+  ) {
     try {
-      const result = await this.storeService.createStore(body);
+      const result = await this.storeService.createStore(body, user.id);
       return result;
     } catch (e) {
       throw new BadRequestException('error => ' + e.message);
@@ -195,6 +205,7 @@ export class StoresController {
     @Body() body: AddProductDTO,
   ) {
     try {
+      console.log(body);
       const result = await this.storeService.addProductOnStore(user, body);
       return result;
     } catch (e) {

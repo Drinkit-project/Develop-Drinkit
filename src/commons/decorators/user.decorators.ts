@@ -14,9 +14,8 @@ export const CurrentUser = createParamDecorator(
 export const AdminUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    console.log(request.myUser);
     if (!request.myUser.isAdmin) throw new BadRequestException('권한 없음');
-
+    console.log(request.myUser);
     return request.myUser;
   },
 );
