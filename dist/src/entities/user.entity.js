@@ -24,7 +24,11 @@ __decorate([
     __metadata("design:type", Boolean)
 ], User.prototype, "isAdmin", void 0);
 __decorate([
-    (0, typeorm_1.Column)('varchar'),
+    (0, typeorm_1.Column)({
+        type: 'varchar',
+        length: 35,
+        unique: true,
+    }),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([

@@ -96,12 +96,12 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, typeorm_1.Column)('float'),
     __metadata("design:type", Number)
-], Store.prototype, "lng", void 0);
+], Store.prototype, "lat", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, typeorm_1.Column)('float'),
     __metadata("design:type", Number)
-], Store.prototype, "lat", void 0);
+], Store.prototype, "lng", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => user_entity_1.User, (user) => user.store),
     (0, typeorm_1.JoinColumn)([{ name: 'userId', referencedColumnName: 'id' }]),

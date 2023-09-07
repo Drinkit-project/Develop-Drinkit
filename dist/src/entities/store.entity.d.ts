@@ -8,8 +8,8 @@ export declare class Store extends CommonEntity {
     imgUrls: string;
     userId: number;
     address: string;
-    lng: number;
     lat: number;
+    lng: number;
     user: User;
     productList: Store_Product[];
 }

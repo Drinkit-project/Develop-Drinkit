@@ -28,11 +28,19 @@ __decorate([
     __metadata("design:type", String)
 ], Profile.prototype, "address", void 0);
 __decorate([
-    (0, typeorm_1.Column)('varchar'),
+    (0, typeorm_1.Column)({
+        type: 'varchar',
+        length: 11,
+        unique: true,
+    }),
     __metadata("design:type", String)
 ], Profile.prototype, "phoneNumber", void 0);
 __decorate([
-    (0, typeorm_1.Column)('varchar'),
+    (0, typeorm_1.Column)({
+        type: 'varchar',
+        length: 10,
+        unique: true,
+    }),
     __metadata("design:type", String)
 ], Profile.prototype, "nickname", void 0);
 __decorate([
