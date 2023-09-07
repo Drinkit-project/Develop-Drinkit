@@ -285,7 +285,7 @@ export class StoresController {
   // // store 더미데이터 생성
   // @Post('/seed')
   // async seedStores() {
-  //   for (let i = 0; i < 100; i++) {
+  //   for (let i = 0; i < 30000; i++) {
   //     const randImg = [
   //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_7D596477896F088ACFEC09E8F3CAC1C8.png&type=a340',
   //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_BFF7D8F799122E2F13F9EC63CA4C2ACC.jpg&type=a340',
@@ -294,19 +294,22 @@ export class StoresController {
   //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_9BB3AFEA6C388FA8BDDB626DD69D6D0A.png&type=a340',
   //     ][Math.floor(Math.random() * 5)];
   //     const randString = String(Math.floor(Math.random() * 123456));
-  //     const randLat = 36.8151 + Math.floor(Math.random() * 400) / 10000;
-  //     const randLng = 127.1139 + Math.floor(Math.random() * 400) / 10000;
+  //     const randLat = 37.5582 + Math.floor(Math.random() * 3000) / 10000;
+  //     const randLng = 126.9823 + Math.floor(Math.random() * 3000) / 10000;
   //     const data = {
-  //       address: `천안시 불당동 ${i + 2}번 도로`,
-  //       name: `천안시 ${i + 2}번 가게`,
+  //       address: `서울시 강남구 ${i + 2}번 도로`,
+  //       name: `서울시 ${i + 2}번 가게`,
   //       description: `${i + 2}번 가게 설명`,
   //       businessLicense: randString,
   //       imgUrls: randImg,
-  //       userId: i + 2,
   //       lat: randLat,
   //       lng: randLng,
   //     };
-  //     await this.storeService.createStore(data);
+  //     const userId = i + 2;
+  //     if (i % 1000 == 0) {
+  //       console.log(`${i}번째, 잘 돌아가고 있습니다.`);
+  //     }
+  //     await this.storeService.createStore(data, userId);
   //   }
   //   return '작업완료';
   // }
@@ -314,8 +317,11 @@ export class StoresController {
   // // stroe_product 더미데이터 생성
   // @Post('/seedproducts')
   // async seedStoreProducts() {
-  //   for (let i = 2; i < 101; i++) {
-  //     for (let j = 1; j < 51; j++) {
+  //   for (let i = 2; i < 30002; i++) {
+  //     if (i % 50 == 0) {
+  //       console.log(`${i * 20}번 째`);
+  //     }
+  //     for (let j = 1; j < 21; j++) {
   //       const randStock = Math.floor(Math.random() * 21);
   //       const data = {
   //         productId: j,

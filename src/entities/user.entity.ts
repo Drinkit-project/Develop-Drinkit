@@ -12,7 +12,11 @@ export class User extends CommonEntity {
   @Column('boolean')
   isAdmin: boolean;
 
-  @Column('varchar')
+  @Column({
+    type: 'varchar',
+    length: 35,
+    unique: true,
+  })
   email: string;
 
   @Column('boolean')

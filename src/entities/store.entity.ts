@@ -77,11 +77,11 @@ export class Store extends CommonEntity {
 
   @IsNotEmpty()
   @Column('float')
-  lng: number;
+  lat: number;
 
   @IsNotEmpty()
   @Column('float')
-  lat: number;
+  lng: number;
 
   @OneToOne(() => User, (user) => user.store)
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
