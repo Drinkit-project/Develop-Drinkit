@@ -15,10 +15,18 @@ export class Profile extends PickType(CommonEntity, [
   @Column('varchar')
   address: string;
 
-  @Column('varchar')
+  @Column({
+    type: 'varchar',
+    length: 11,
+    unique: true,
+  })
   phoneNumber: string;
 
-  @Column('varchar')
+  @Column({
+    type: 'varchar',
+    length: 10,
+    unique: true,
+  })
   nickname: string;
 
   @Column('varchar')
