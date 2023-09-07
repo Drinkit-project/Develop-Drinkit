@@ -254,11 +254,11 @@ export class UsersController {
   // // 더미데이터 생성
   // @Post('/seed')
   // async seed() {
-  //   for (let i = 0; i < 100; i++) {
-  //     const a = String(Math.floor(Math.random() * 123456));
-  //     const randLat = 36.8151 + Math.floor(Math.random() * 200) / 10000;
-  //     const randLng = 127.1139 + Math.floor(Math.random() * 200) / 10000;
-  //     const rand = `aaa${a}`;
+  //   for (let i = 0; i < 30000; i++) {
+  //     const randLat = 37.5582 + Math.floor(Math.random() * 1500) / 10000;
+  //     const randLng = 126.9823 + Math.floor(Math.random() * 1500) / 10000;
+  //     const rand = `aaa${i}`;
+  //     const randPhonNum = `010${String(i)}`;
   //     const data = {
   //       email: `${rand}@naver.com`,
   //       password: `${rand}`,
@@ -266,15 +266,18 @@ export class UsersController {
   //       isAdmin: false,
   //       isPersonal: true,
   //       address: {
-  //         address: '천안시',
+  //         address: '서울시',
   //         name: '나의 집',
   //         lat: randLat,
   //         lng: randLng,
   //       },
-  //       phoneNumber: '01012341234',
+  //       phoneNumber: randPhonNum,
   //       nickname: `${rand}`,
   //       name: `${rand}`,
   //     };
+  //     if (i % 1000 == 0) {
+  //       console.log(`${i}번째`);
+  //     }
   //     await this.usersService.signUp(data);
   //   }
   //   return '작업완료';

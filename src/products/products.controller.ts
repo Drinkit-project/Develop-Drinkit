@@ -103,7 +103,7 @@ export class ProductsController {
   // // 더미데이터 생성
   // @Post('/seed')
   // async seed() {
-  //   for (let i = 0; i < 50; i++) {
+  //   for (let i = 0; i < 20; i++) {
   //     const arrRandNum = Math.floor(Math.random() * 5);
   //     const randCategoryArr = [1, 2, 3, 4, 5];
   //     const randNameArr = ['전통주', '와인', '양주', '과실주', '증류주'];
