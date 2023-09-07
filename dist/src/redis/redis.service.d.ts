@@ -1,4 +1,6 @@
+import 'dotenv/config';
 export declare class RedisService {
+    client: any;
     hgetall(key: string): Promise<{
         [key: string]: string;
     }>;

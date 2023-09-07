@@ -9,11 +9,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RedisService = void 0;
 const common_1 = require("@nestjs/common");
 const redis = require('redis');
-const client = redis.createClient();
+require("dotenv/config");
 let RedisService = exports.RedisService = class RedisService {
+    constructor() {
+        this.client = redis.createClient({ url: process.env.REDIS_URL });
+    }
     async hgetall(key) {
         return new Promise((resolve, reject) => {
-            client.hgetall(key, (err, reply) => {
+            this.client.hgetall(key, (err, reply) => {
                 if (err) {
                     console.error(err);
                     throw new common_1.BadRequestException();
@@ -31,14 +34,14 @@ let RedisService = exports.RedisService = class RedisService {
                     const newCount = Number(rank[productIdList[i]]) + countList[i];
                     newRankList.push(productIdList[i], newCount);
                 }
-                await client.hmset('rank', newRankList);
+                await this.client.hmset('rank', newRankList);
             }
             else {
                 const rankList = [];
                 for (let i = 0; i < productIdList.length; i++) {
                     rankList.push(productIdList[i], countList[i]);
                 }
-                await client.hmset('rank', rankList);
+                await this.client.hmset('rank', rankList);
             }
         }
         else {
@@ -48,7 +51,7 @@ let RedisService = exports.RedisService = class RedisService {
                     const newCount = Number(rank[productIdList[i]]) - countList[i];
                     newRankList.push(productIdList[i], newCount);
                 }
-                await client.hmset('rank', newRankList);
+                await this.client.hmset('rank', newRankList);
             }
         }
         return;
