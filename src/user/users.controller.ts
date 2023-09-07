@@ -16,7 +16,7 @@ import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { AuthGuard } from '../auth/security/jwt.guard';
 import { AuthGuard as OriginAuthGuard } from '@nestjs/passport';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { CurrentUser } from 'src/commons/decorators/user.decorators';
 import { UsersService } from './users.service';
 import { ProfilesService } from './profiles.service';

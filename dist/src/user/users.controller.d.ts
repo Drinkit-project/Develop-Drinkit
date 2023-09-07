@@ -1,6 +1,6 @@
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { UsersService } from './users.service';
 import { ProfilesService } from './profiles.service';
 import { ProfileDto } from './dto/Profile.dto';
