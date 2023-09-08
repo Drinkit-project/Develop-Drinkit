@@ -1,13 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const redis = require('redis');
-const client = redis.createClient();
+import 'dotenv/config';
 
 @Injectable()
 export class RedisService {
+  client = redis.createClient({ url: process.env.REDIS_URL });
   async hgetall(key: string): Promise<{ [key: string]: string }> {
     return new Promise<{ [key: string]: string }>((resolve, reject) => {
-      client.hgetall(key, (err, reply) => {
+      this.client.hgetall(key, (err, reply) => {
         if (err) {
           console.error(err);
           throw new BadRequestException();
@@ -31,13 +32,13 @@ export class RedisService {
           const newCount = Number(rank[productIdList[i]]) + countList[i];
           newRankList.push(productIdList[i], newCount);
         }
-        await client.hmset('rank', newRankList);
+        await this.client.hmset('rank', newRankList);
       } else {
         const rankList: Array<string | number> = [];
         for (let i = 0; i < productIdList.length; i++) {
           rankList.push(productIdList[i], countList[i]);
         }
-        await client.hmset('rank', rankList);
+        await this.client.hmset('rank', rankList);
       }
     } else {
       if (rank) {
@@ -46,7 +47,7 @@ export class RedisService {
           const newCount = Number(rank[productIdList[i]]) - countList[i];
           newRankList.push(productIdList[i], newCount);
         }
-        await client.hmset('rank', newRankList);
+        await this.client.hmset('rank', newRankList);
       }
     }
 
