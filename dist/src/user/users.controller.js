@@ -58,12 +58,12 @@ let UsersController = exports.UsersController = class UsersController {
         response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
             secure: true,
             sameSite: 'none',
-            domain: 'othwan.shop',
+            domain: 'drinkit.site',
         });
         response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
             secure: true,
             sameSite: 'none',
-            domain: 'othwan.shop',
+            domain: 'drinkit.site',
         });
         return response.json(tokens);
     }
