@@ -55,6 +55,16 @@ let UsersController = exports.UsersController = class UsersController {
     }
     async signIn(data, response) {
         const tokens = await this.usersService.signIn(data);
+        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
         return response.json(tokens);
     }
     async loginGoogle(request, response) {
