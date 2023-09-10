@@ -90,8 +90,14 @@ export class UsersController {
     const tokens = await this.usersService.signIn(data);
 
     // 액세스 토큰과 리프레시 토큰을 쿠키로 설정하여 클라이언트에게 전달
-    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+      secure: true,
+      sameSite: 'none',
+    });
+    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+      secure: true,
+      sameSite: 'none',
+    });
 
     // 반환값으로 액세스 토큰과 리프레시 토큰을 클라이언트에게 전달
     return response.json(tokens);
