@@ -129,6 +129,7 @@ export class UsersService {
     }); //user를 찾아서
     // 2, 회원가입이 안되어있다면? 자동회원가입
     if (!user) {
+      console.log('ㅇㅇ');
       response.cookie(`email`, request.user.email, {
         secure: true,
         sameSite: 'none',

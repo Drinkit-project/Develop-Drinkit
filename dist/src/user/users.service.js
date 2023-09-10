@@ -94,6 +94,7 @@ let UsersService = exports.UsersService = class UsersService {
             where: { email: request.user.email },
         });
         if (!user) {
+            console.log('ㅇㅇ');
             response.cookie(`email`, request.user.email, {
                 secure: true,
                 sameSite: 'none',
