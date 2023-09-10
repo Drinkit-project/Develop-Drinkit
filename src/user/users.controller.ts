@@ -158,6 +158,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Delete('/signOut')
   async signout(@Res() response: Response) {
+    console.log(response.cookie);
     response.cookie('AccessToken', '', { maxAge: 0 });
     response.cookie('RefreshToken', '', { maxAge: 0 });
     return response.status(200).send('signed out successfully');
