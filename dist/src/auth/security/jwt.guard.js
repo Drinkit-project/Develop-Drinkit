@@ -23,6 +23,7 @@ let AuthGuard = exports.AuthGuard = class AuthGuard extends (0, passport_1.AuthG
         const request = context.switchToHttp().getRequest();
         let accessToken;
         try {
+            console.log(request.cookies);
             accessToken = request.cookies.AccessToken.replace('Bearer ', '');
         }
         catch (error) {

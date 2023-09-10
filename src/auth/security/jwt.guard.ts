@@ -18,6 +18,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
     let accessToken: any;
 
     try {
+      console.log(request.cookies);
       accessToken = request.cookies.AccessToken.replace('Bearer ', '');
     } catch (error) {
       throw new UnauthorizedException('Token not found in the cookie.');
