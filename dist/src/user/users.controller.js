@@ -91,10 +91,19 @@ let UsersController = exports.UsersController = class UsersController {
         response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
         return response.redirect('http://118.67.143.18:3200');
     }
-    async signout(response, request) {
-        console.log(request.cookies.AccessToken);
-        response.cookie(request.cookies.AccessToken, '', { maxAge: 0 });
-        response.cookie(request.cookies.RefreshToken, '', { maxAge: 0 });
+    async signout(request, response) {
+        response.cookie('AccessToken', '', {
+            maxAge: 0,
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', '', {
+            maxAge: 0,
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
         return response.status(200).send('signed out successfully');
     }
     async getUser(userId, data) {
@@ -210,8 +219,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, description: 'OK' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Not Found' }),
     (0, common_1.Delete)('/signOut'),
-    __param(0, (0, common_1.Res)()),
-    __param(1, (0, common_1.Req)()),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

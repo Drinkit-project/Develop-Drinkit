@@ -156,10 +156,19 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
   @Delete('/signOut')
-  async signout(@Res() response: Response, @Req() request: Request) {
-    console.log(request.cookies.AccessToken);
-    response.cookie(request.cookies.AccessToken, '', { maxAge: 0 });
-    response.cookie(request.cookies.RefreshToken, '', { maxAge: 0 });
+  async signout(@Req() request: Request, @Res() response: Response) {
+    response.cookie('AccessToken', '', {
+      maxAge: 0,
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
+    response.cookie('RefreshToken', '', {
+      maxAge: 0,
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
     return response.status(200).send('signed out successfully');
   }
 
