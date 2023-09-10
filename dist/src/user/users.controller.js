@@ -90,7 +90,8 @@ let UsersController = exports.UsersController = class UsersController {
         return response.redirect('http://118.67.143.18:3200');
     }
     async signout(response) {
-        response.clearCookie('Authentication');
+        response.clearCookie('AccessToken');
+        response.clearCookie('RefreshToken');
         return response.status(200).send('signed out successfully');
     }
     async getUser(userId, data) {
