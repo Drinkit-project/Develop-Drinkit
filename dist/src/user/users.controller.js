@@ -58,10 +58,12 @@ let UsersController = exports.UsersController = class UsersController {
         response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
             secure: true,
             sameSite: 'none',
+            httpOnly: true,
         });
         response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
             secure: true,
             sameSite: 'none',
+            httpOnly: true,
         });
         return response.json(tokens);
     }
