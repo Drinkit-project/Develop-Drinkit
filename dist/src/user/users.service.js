@@ -94,7 +94,11 @@ let UsersService = exports.UsersService = class UsersService {
             where: { email: request.user.email },
         });
         if (!user) {
-            response.json(request.user.email);
+            response.cookie(`email`, request.user.email, {
+                secure: true,
+                sameSite: 'none',
+                domain: 'othwan.shop',
+            });
             return false;
         }
         const accessToken = await this.authService.generateAccessToken(user.id, user.nickname);
