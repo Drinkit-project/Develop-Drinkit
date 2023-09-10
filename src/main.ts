@@ -13,7 +13,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.enableCors({
-    origin: ['https://drinkit.site', 'http://loclhost:3200'], // 허용할 도메인
+    origin: ['https://drinkit.site', 'http://localhost:3200'], // 허용할 도메인
     credentials: true, // 요청에 쿠키 정보를 함께 보냄
   });
 

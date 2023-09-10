@@ -12,7 +12,7 @@ async function bootstrap() {
     swagger_document_1.default.swaggerSetUp(app);
     app.use(cookieParser());
     app.enableCors({
-        origin: ['https://drinkit.site', 'http://loclhost:3200'],
+        origin: ['https://drinkit.site', 'http://localhost:3200'],
         credentials: true,
     });
     app.useGlobalPipes(new common_1.ValidationPipe());
