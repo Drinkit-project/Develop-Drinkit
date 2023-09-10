@@ -93,12 +93,12 @@ export class UsersController {
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
       secure: true,
       sameSite: 'none',
-      httpOnly: true,
+      domain: 'othwan.shop',
     });
     response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
       secure: true,
       sameSite: 'none',
-      httpOnly: true,
+      domain: 'othwan.shop',
     });
 
     // 반환값으로 액세스 토큰과 리프레시 토큰을 클라이언트에게 전달
