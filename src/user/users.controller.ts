@@ -155,12 +155,11 @@ export class UsersController {
   @ApiOperation({ summary: 'sign-out' })
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
-  @UseGuards(AuthGuard)
   @Delete('/signOut')
-  async signout(@Res() response: Response) {
-    console.log(response.cookie);
-    response.cookie('AccessToken', '', { maxAge: 0 });
-    response.cookie('RefreshToken', '', { maxAge: 0 });
+  async signout(@Res() response: Response, @Req() request: Request) {
+    console.log(request.cookies.AccessToken);
+    response.cookie(request.cookies.AccessToken, '', { maxAge: 0 });
+    response.cookie(request.cookies.RefreshToken, '', { maxAge: 0 });
     return response.status(200).send('signed out successfully');
   }
 

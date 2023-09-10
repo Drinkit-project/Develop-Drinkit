@@ -91,10 +91,10 @@ let UsersController = exports.UsersController = class UsersController {
         response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
         return response.redirect('http://118.67.143.18:3200');
     }
-    async signout(response) {
-        console.log(response.cookie);
-        response.cookie('AccessToken', '', { maxAge: 0 });
-        response.cookie('RefreshToken', '', { maxAge: 0 });
+    async signout(response, request) {
+        console.log(request.cookies.AccessToken);
+        response.cookie(request.cookies.AccessToken, '', { maxAge: 0 });
+        response.cookie(request.cookies.RefreshToken, '', { maxAge: 0 });
         return response.status(200).send('signed out successfully');
     }
     async getUser(userId, data) {
@@ -209,11 +209,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'sign-out' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'OK' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Not Found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.AuthGuard),
     (0, common_1.Delete)('/signOut'),
     __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "signout", null);
 __decorate([

@@ -22,7 +22,7 @@ export declare class UsersController {
     loginGoogle(request: Request, response: Response): Promise<void>;
     loginKakao(request: Request, response: Response): Promise<void>;
     loginNaver(request: Request, response: Response): Promise<void>;
-    signout(response: Response): Promise<Response<any, Record<string, any>>>;
+    signout(response: Response, request: Request): Promise<Response<any, Record<string, any>>>;
     getUser(userId: number, data: Partial<UserDto>): Promise<boolean>;
     updateUserPassword(userId: number, data: UpdateUserDto): Promise<{
         statusCode: number;
