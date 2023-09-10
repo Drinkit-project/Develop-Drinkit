@@ -129,7 +129,7 @@ export class UsersService {
     }); //user를 찾아서
     // 2, 회원가입이 안되어있다면? 자동회원가입
     if (!user) {
-      response.cookie(`email`, request.user.email);
+      response.json(`email`, request.user.email);
       return false; //user가 없으면 하나 만들고, 있으면 이 if문에 들어오지 않을거기때문에 이러나 저러나 user는 존재하는게 됨.
     }
     // 3. 회원가입이 되어있다면? 로그인(AT, RT를 생성해서 브라우저에 전송)한다

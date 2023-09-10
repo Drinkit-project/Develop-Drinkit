@@ -48,7 +48,7 @@ let UsersController = exports.UsersController = class UsersController {
         const email = await this.usersService.authEmail(emailToken);
         if (email) {
             response.cookie(`email`, email);
-            return response.redirect('http://118.67.143.18:3200/signup');
+            return response.redirect('https://drinkit.site/signup');
         }
         else
             return response.status(400);
@@ -70,26 +70,50 @@ let UsersController = exports.UsersController = class UsersController {
     async loginGoogle(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-            return response.redirect('http://118.67.143.18:3200/signup');
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
-        return response.redirect('http://118.67.143.18:3200');
+            return response.redirect('https://drinkit.site/signup');
+        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        return response.redirect('https://drinkit.site');
     }
     async loginKakao(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-            return response.redirect('http://118.67.143.18:3200/signup');
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
-        return response.redirect('http://118.67.143.18:3200');
+            return response.redirect('https://drinkit.site/signup');
+        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        return response.redirect('https://drinkit.site');
     }
     async loginNaver(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-            return response.redirect('http://118.67.143.18:3200/signup');
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
-        return response.redirect('http://118.67.143.18:3200');
+            return response.redirect('https://drinkit.site/signup');
+        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        return response.redirect('https://drinkit.site');
     }
     async signout(request, response) {
         response.cookie('AccessToken', '', {

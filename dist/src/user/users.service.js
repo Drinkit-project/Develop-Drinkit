@@ -94,7 +94,7 @@ let UsersService = exports.UsersService = class UsersService {
             where: { email: request.user.email },
         });
         if (!user) {
-            response.cookie(`email`, request.user.email);
+            response.json(`email`, request.user.email);
             return false;
         }
         const accessToken = await this.authService.generateAccessToken(user.id, user.nickname);
