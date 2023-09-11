@@ -50,7 +50,7 @@ let OrdersController = exports.OrdersController = class OrdersController {
         return updateOrdersStatusByAdminData;
     }
     async addPoint(user, dto) {
-        const addPointData = await this.ordersService.addPoint(user.id, dto.point, dto.impUid, dto.address);
+        const addPointData = await this.ordersService.addPoint(user.id, dto.point, dto.impUid);
         return addPointData;
     }
     async getPayInfo(imp_uid) {

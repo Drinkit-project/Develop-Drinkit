@@ -20,6 +20,10 @@ export class StoresService {
     return this.storeRepository.findStoreById(id);
   }
 
+  getMystore(userId: number) {
+    return this.storeRepository.find({ where: { userId } });
+  }
+
   getStores(body: Array<StockDTO>) {
     return this.storeRepository.findStoreByStock(body);
   }

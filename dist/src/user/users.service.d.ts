@@ -34,7 +34,7 @@ export declare class UsersService {
         accessToken: string;
         refreshToken: string;
     }>;
-    signUp(data: createUserDto): Promise<void>;
+    signUp(data: createUserDto, email: string): Promise<void>;
     authenticationByPassword(id: number, password: string): Promise<boolean>;
     updateUserPassword(id: number, data: UpdateUserDto): Promise<{
         statusCode: number;

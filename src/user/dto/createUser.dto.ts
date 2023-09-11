@@ -26,10 +26,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   name: string;
 
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
   @IsString()
   @IsNotEmpty()
   @Matches(/(?!.*\s).{8,}/, {

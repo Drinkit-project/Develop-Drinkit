@@ -28,11 +28,28 @@ let UsersController = exports.UsersController = class UsersController {
         this.usersService = usersService;
         this.profilesService = profilesService;
     }
-    async signUp(data) {
-        return await this.usersService.signUp(data);
+    async signUp(data, request, response) {
+        if (!request.cookies.email) {
+            return response.status(302).json({ message: '쿠키가 없어서 가입 실패' });
+        }
+        await this.usersService.signUp(data, request.cookies.email);
+        response.cookie('email', '', {
+            maxAge: 0,
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        return response.status(201).json({ message: '가입 성공' });
     }
     async sendSMS(body) {
-        return await this.usersService.sendSMS(body.phoneNumber);
+        console.log(body);
+        try {
+            return await this.usersService.sendSMS(body.phoneNumber);
+        }
+        catch (error) {
+            console.log(error);
+            return;
+        }
     }
     async authCode(response, body) {
         const isAuth = await this.usersService.authCode(body);
@@ -47,44 +64,91 @@ let UsersController = exports.UsersController = class UsersController {
     async authEmail(emailToken, response) {
         const email = await this.usersService.authEmail(emailToken);
         if (email) {
-            response.cookie(`email`, email);
-            return response.redirect('http://118.67.143.18:3200/signup');
+            response.cookie(`email`, email, {
+                secure: true,
+                sameSite: 'none',
+                domain: 'othwan.shop',
+            });
+            return response.redirect(`${process.env.REDIRECT_URL}/signup`);
         }
         else
             return response.status(400);
     }
     async signIn(data, response) {
         const tokens = await this.usersService.signIn(data);
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
         return response.json(tokens);
     }
     async loginGoogle(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-            return response.redirect('http://118.67.143.18:3200/signup');
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
-        return response.redirect('http://118.67.143.18:3200');
+            return response.redirect(`${process.env.REDIRECT_URL}/signup`);
+        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        return response.redirect(`${process.env.REDIRECT_URL}`);
     }
     async loginKakao(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-            return response.redirect('http://118.67.143.18:3200/signup');
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
-        return response.redirect('http://118.67.143.18:3200');
+            return response.redirect(`${process.env.REDIRECT_URL}/signup`);
+        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        return response.redirect(`${process.env.REDIRECT_URL}`);
     }
     async loginNaver(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-            return response.redirect('http://118.67.143.18:3200/signup');
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
-        return response.redirect('http://118.67.143.18:3200');
+            return response.redirect(`${process.env.REDIRECT_URL}/signup`);
+        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        return response.redirect(`${process.env.REDIRECT_URL}`);
     }
-    async signout(response) {
-        response.clearCookie('Authentication');
+    async signout(request, response) {
+        response.cookie('AccessToken', '', {
+            maxAge: 0,
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        response.cookie('RefreshToken', '', {
+            maxAge: 0,
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
         return response.status(200).send('signed out successfully');
     }
     async getUser(userId, data) {
@@ -123,8 +187,10 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Not Found' }),
     (0, common_1.Post)('/signUp'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [createUser_dto_1.default]),
+    __metadata("design:paramtypes", [createUser_dto_1.default, Object, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "signUp", null);
 __decorate([
@@ -199,11 +265,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'sign-out' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'OK' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Not Found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.AuthGuard),
     (0, common_1.Delete)('/signOut'),
-    __param(0, (0, common_1.Res)()),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "signout", null);
 __decorate([

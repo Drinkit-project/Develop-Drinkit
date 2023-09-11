@@ -137,7 +137,7 @@ export class AuthService {
 
   //메일 전송
   async sendVerificationEmail(email: string) {
-    const baseUrl = 'http://118.67.133.250:3000/user/emailTokenAuth';
+    const baseUrl = 'https://othwan.shop/user/emailTokenAuth';
     const emailToken = await this.generateEmailToken(email);
     const url = `${baseUrl}?emailToken=${emailToken}`;
 
