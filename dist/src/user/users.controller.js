@@ -29,8 +29,6 @@ let UsersController = exports.UsersController = class UsersController {
         this.profilesService = profilesService;
     }
     async signUp(data, request, response) {
-        console.log('ㅇㅇ');
-        console.log(request.cookies);
         if (!request.cookies.email) {
             return response.status(302).json({ message: '쿠키가 없어서 가입 실패' });
         }
@@ -41,10 +39,17 @@ let UsersController = exports.UsersController = class UsersController {
             sameSite: 'none',
             domain: 'othwan.shop',
         });
-        return;
+        return response.status(201).json({ message: '가입 성공' });
     }
     async sendSMS(body) {
-        return await this.usersService.sendSMS(body.phoneNumber);
+        console.log(body);
+        try {
+            return await this.usersService.sendSMS(body.phoneNumber);
+        }
+        catch (error) {
+            console.log(error);
+            return;
+        }
     }
     async authCode(response, body) {
         const isAuth = await this.usersService.authCode(body);
