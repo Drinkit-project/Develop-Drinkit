@@ -77,7 +77,7 @@ export class UsersController {
     const email = await this.usersService.authEmail(emailToken);
     if (email) {
       response.cookie(`email`, email);
-      return response.redirect('http://118.67.143.18:3200/signup');
+      return response.redirect('http://localhost:3200/signup');
     } else return response.status(400);
   }
 
@@ -107,12 +107,12 @@ export class UsersController {
     //프로필을 받아온 다음, 로그인 처리해야하는 곳(auth.service.ts에서 선언해준다)
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
-    if (!tokens) return response.redirect('http://118.67.143.18:3200/signup');
+    if (!tokens) return response.redirect('http://localhost:3200/signup');
 
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
     response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
 
-    return response.redirect('http://118.67.143.18:3200');
+    return response.redirect('http://localhost:3200');
   }
 
   //카카오 로그인
@@ -121,12 +121,12 @@ export class UsersController {
   async loginKakao(@Req() request: Request, @Res() response: Response) {
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
-    if (!tokens) return response.redirect('http://118.67.143.18:3200/signup');
+    if (!tokens) return response.redirect('http://localhost:3200/signup');
 
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
     response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
 
-    return response.redirect('http://118.67.143.18:3200');
+    return response.redirect('http://localhost:3200');
   }
 
   //네이버 로그인
@@ -135,12 +135,12 @@ export class UsersController {
   async loginNaver(@Req() request: Request, @Res() response: Response) {
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
-    if (!tokens) return response.redirect('http://118.67.143.18:3200/signup');
+    if (!tokens) return response.redirect('http://localhost:3200/signup');
 
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
     response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
 
-    return response.redirect('http://118.67.143.18:3200');
+    return response.redirect('http://localhost:3200');
   }
 
   //로그아웃

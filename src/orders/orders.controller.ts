@@ -98,7 +98,6 @@ export class OrdersController {
       user.id,
       dto.point,
       dto.impUid,
-      dto.address,
     );
 
     return addPointData;

@@ -56,7 +56,6 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
     paidPoint: number,
     manager: EntityManager,
     impUid: string,
-    address: string,
     status?: string,
   ) {
     const postPaymentLogData = await manager
@@ -65,12 +64,12 @@ export class PaymentLogRepository extends Repository<PaymentLog> {
       .into(PaymentLog)
       .values({
         userId,
-        status: status || PaymentStatus.ORDER_PENDING,
+        status: status || PaymentStatus.COMPLETE,
         totalPrice,
         storeId,
         paidPoint,
         impUid,
-        address,
+        address: '포인트충전',
       })
       .execute();
 
