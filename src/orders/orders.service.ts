@@ -122,12 +122,7 @@ export class OrdersService {
     return updateOrdersStatusByStoreData;
   }
 
-  async addPoint(
-    userId: number,
-    point: number,
-    impUid: string,
-    address: string,
-  ) {
+  async addPoint(userId: number, point: number, impUid: string) {
     try {
       await this.dataSource.transaction(async (manager) => {
         await this.paymentLogsRepository.postPaymentLog(
@@ -137,8 +132,7 @@ export class OrdersService {
           0,
           manager,
           impUid,
-          address,
-          PaymentStatus.READY_COMPLETE,
+          PaymentStatus.COMPLETE,
         );
 
         const addPointData = await manager
