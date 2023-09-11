@@ -106,7 +106,7 @@ let AuthService = exports.AuthService = class AuthService {
         return code;
     }
     async sendVerificationEmail(email) {
-        const baseUrl = 'https://othwan410/user/emailTokenAuth';
+        const baseUrl = 'https://othwan.shop/user/emailTokenAuth';
         const emailToken = await this.generateEmailToken(email);
         const url = `${baseUrl}?emailToken=${emailToken}`;
         const mailOptions = {
