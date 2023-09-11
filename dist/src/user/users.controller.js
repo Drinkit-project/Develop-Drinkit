@@ -29,6 +29,7 @@ let UsersController = exports.UsersController = class UsersController {
         this.profilesService = profilesService;
     }
     async signUp(data, request, response) {
+        console.log(request.cookies.email);
         if (!request.cookies.email) {
             return response.status(302).json({ message: '쿠키가 없어서 가입 실패' });
         }
