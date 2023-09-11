@@ -37,14 +37,34 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
   @Post('/signUp')
-  async signUp(@Body() data: createUserDto) {
-    return await this.usersService.signUp(data);
+  async signUp(
+    @Body() data: createUserDto,
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    if (!request.cookies.email) {
+      return response.status(302).json({ message: '쿠키가 없어서 가입 실패' });
+    }
+    await this.usersService.signUp(data, request.cookies.email);
+    response.cookie('email', '', {
+      maxAge: 0,
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
+    return response.status(201).json({ message: '가입 성공' });
   }
 
   //휴대폰 인증 SMS 발송
   @Post('/phoneAuth')
   async sendSMS(@Body() body: Partial<ProfileDto>) {
-    return await this.usersService.sendSMS(body.phoneNumber);
+    console.log(body);
+    try {
+      return await this.usersService.sendSMS(body.phoneNumber);
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   }
 
   @Post('/phoneCodeAuth')
@@ -76,8 +96,12 @@ export class UsersController {
   ) {
     const email = await this.usersService.authEmail(emailToken);
     if (email) {
-      response.cookie(`email`, email);
-      return response.redirect('http://localhost:3200/signup');
+      response.cookie(`email`, email, {
+        secure: true,
+        sameSite: 'none',
+        domain: 'othwan.shop',
+      });
+      return response.redirect(`${process.env.REDIRECT_URL}/signup`);
     } else return response.status(400);
   }
 
@@ -90,8 +114,16 @@ export class UsersController {
     const tokens = await this.usersService.signIn(data);
 
     // 액세스 토큰과 리프레시 토큰을 쿠키로 설정하여 클라이언트에게 전달
-    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
+    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
 
     // 반환값으로 액세스 토큰과 리프레시 토큰을 클라이언트에게 전달
     return response.json(tokens);
@@ -107,12 +139,20 @@ export class UsersController {
     //프로필을 받아온 다음, 로그인 처리해야하는 곳(auth.service.ts에서 선언해준다)
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
-    if (!tokens) return response.redirect('http://localhost:3200/signup');
+    if (!tokens) return response.redirect(`${process.env.REDIRECT_URL}/signup`);
 
-    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
+    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
 
-    return response.redirect('http://localhost:3200');
+    return response.redirect(`${process.env.REDIRECT_URL}`);
   }
 
   //카카오 로그인
@@ -121,12 +161,20 @@ export class UsersController {
   async loginKakao(@Req() request: Request, @Res() response: Response) {
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
-    if (!tokens) return response.redirect('http://localhost:3200/signup');
+    if (!tokens) return response.redirect(`${process.env.REDIRECT_URL}/signup`);
 
-    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
+    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
 
-    return response.redirect('http://localhost:3200');
+    return response.redirect(`${process.env.REDIRECT_URL}`);
   }
 
   //네이버 로그인
@@ -135,22 +183,40 @@ export class UsersController {
   async loginNaver(@Req() request: Request, @Res() response: Response) {
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
-    if (!tokens) return response.redirect('http://localhost:3200/signup');
+    if (!tokens) return response.redirect(`${process.env.REDIRECT_URL}/signup`);
 
-    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
+    response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
+    response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken, {
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
 
-    return response.redirect('http://localhost:3200');
+    return response.redirect(`${process.env.REDIRECT_URL}`);
   }
 
   //로그아웃
   @ApiOperation({ summary: 'sign-out' })
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
-  @UseGuards(AuthGuard)
   @Delete('/signOut')
-  async signout(@Res() response: Response) {
-    response.clearCookie('Authentication');
+  async signout(@Req() request: Request, @Res() response: Response) {
+    response.cookie('AccessToken', '', {
+      maxAge: 0,
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
+    response.cookie('RefreshToken', '', {
+      maxAge: 0,
+      secure: true,
+      sameSite: 'none',
+      domain: 'othwan.shop',
+    });
     return response.status(200).send('signed out successfully');
   }
 

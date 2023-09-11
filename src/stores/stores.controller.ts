@@ -19,6 +19,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StoresService } from './stores.service';
 import {
   AdminUser,
+  CurrentUser,
   PersonalUser,
 } from 'src/commons/decorators/user.decorators';
 import { AuthGuard } from 'src/auth/security/jwt.guard';
@@ -57,6 +58,21 @@ export class StoresController {
   async getStoreDetail(@Param('storeId', ParseIntPipe) id: number) {
     try {
       const result = await this.storeService.getStoreDetail(id);
+      return result;
+    } catch (e) {
+      throw new NotFoundException('There is no Store in DB');
+    }
+  }
+
+  // isPersonal 유저 가게 조회
+  @ApiOperation({
+    summary: 'Get Store detail by storeId',
+    parameters: [{ name: 'storeId', in: 'path' }],
+  })
+  @Get('/user/mystore')
+  async getMystore(@CurrentUser() userId: number) {
+    try {
+      const result = await this.storeService.getMystore(userId);
       return result;
     } catch (e) {
       throw new NotFoundException('There is no Store in DB');

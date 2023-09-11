@@ -10,7 +10,7 @@ export declare class UsersController {
     private readonly usersService;
     private profilesService;
     constructor(usersService: UsersService, profilesService: ProfilesService);
-    signUp(data: createUserDto): Promise<void>;
+    signUp(data: createUserDto, request: Request, response: Response): Promise<Response<any, Record<string, any>>>;
     sendSMS(body: Partial<ProfileDto>): Promise<string>;
     authCode(response: Response, body: {
         phoneNumber: string;
@@ -22,7 +22,7 @@ export declare class UsersController {
     loginGoogle(request: Request, response: Response): Promise<void>;
     loginKakao(request: Request, response: Response): Promise<void>;
     loginNaver(request: Request, response: Response): Promise<void>;
-    signout(response: Response): Promise<Response<any, Record<string, any>>>;
+    signout(request: Request, response: Response): Promise<Response<any, Record<string, any>>>;
     getUser(userId: number, data: Partial<UserDto>): Promise<boolean>;
     updateUserPassword(userId: number, data: UpdateUserDto): Promise<{
         statusCode: number;

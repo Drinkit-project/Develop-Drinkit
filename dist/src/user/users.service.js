@@ -94,15 +94,19 @@ let UsersService = exports.UsersService = class UsersService {
             where: { email: request.user.email },
         });
         if (!user) {
-            response.cookie(`email`, request.user.email);
+            response.cookie(`email`, request.user.email, {
+                secure: true,
+                sameSite: 'none',
+                domain: 'othwan.shop',
+            });
             return false;
         }
         const accessToken = await this.authService.generateAccessToken(user.id, user.nickname);
         const refreshToken = await this.authService.generateRefreshToken(user.id, user.nickname);
         return { accessToken, refreshToken };
     }
-    async signUp(data) {
-        const { email, password, confirm, isAdmin, isPersonal, address, phoneNumber, nickname, name, } = data;
+    async signUp(data, email) {
+        const { password, confirm, isAdmin, isPersonal, address, phoneNumber, nickname, name, } = data;
         if (password !== confirm) {
             throw new common_1.UnauthorizedException('비밀번호가 일치하지 않습니다.');
         }

@@ -4,7 +4,6 @@ export declare class CreateUserDto {
     phoneNumber: string;
     nickname: string;
     name: string;
-    email: string;
     password: string;
     confirm: string;
     isAdmin: boolean;

@@ -23,6 +23,9 @@ let StoresService = exports.StoresService = class StoresService {
     getStoreDetail(id) {
         return this.storeRepository.findStoreById(id);
     }
+    getMystore(userId) {
+        return this.storeRepository.find({ where: { userId } });
+    }
     getStores(body) {
         return this.storeRepository.findStoreByStock(body);
     }
