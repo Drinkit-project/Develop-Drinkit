@@ -52,19 +52,19 @@ let PaymentLogRepository = exports.PaymentLogRepository = class PaymentLogReposi
             .execute();
         return updateOrdersStatusData;
     }
-    async postPaymentLog(userId, totalPrice, storeId, paidPoint, manager, impUid, address, status) {
+    async postPaymentLog(userId, totalPrice, storeId, paidPoint, manager, impUid, status) {
         const postPaymentLogData = await manager
             .createQueryBuilder()
             .insert()
             .into(paymentLog_entity_1.PaymentLog)
             .values({
             userId,
-            status: status || paymentLog_entity_2.PaymentStatus.ORDER_PENDING,
+            status: status || paymentLog_entity_2.PaymentStatus.COMPLETE,
             totalPrice,
             storeId,
             paidPoint,
             impUid,
-            address,
+            address: '포인트충전',
         })
             .execute();
         return postPaymentLogData;

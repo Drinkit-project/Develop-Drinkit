@@ -25,7 +25,7 @@ export declare class OrdersService {
     getAdminOrders(): Promise<import("src/entities/paymentLog.entity").PaymentLog[]>;
     updateOrdersStatusByStore(userId: number, paymentLogId: number): Promise<import("typeorm").UpdateResult>;
     updateOrdersStatusByAdmin(paymentLogId: number): Promise<import("typeorm").UpdateResult>;
-    addPoint(userId: number, point: number, impUid: string, address: string): Promise<string>;
+    addPoint(userId: number, point: number, impUid: string): Promise<string>;
     refund(imp_uid: string): Promise<any>;
     checkOrderList(orderList: Array<{
         productId: number;

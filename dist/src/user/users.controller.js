@@ -64,17 +64,12 @@ let UsersController = exports.UsersController = class UsersController {
     async authEmail(emailToken, response) {
         const email = await this.usersService.authEmail(emailToken);
         if (email) {
-<<<<<<< HEAD
-            response.cookie(`email`, email);
-            return response.redirect('http://localhost:3200/signup');
-=======
             response.cookie(`email`, email, {
                 secure: true,
                 sameSite: 'none',
                 domain: 'othwan.shop',
             });
             return response.redirect(`${process.env.REDIRECT_URL}/signup`);
->>>>>>> c369a1457e954d20073e239612b4c3c4536063a9
         }
         else
             return response.status(400);
@@ -96,12 +91,6 @@ let UsersController = exports.UsersController = class UsersController {
     async loginGoogle(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-<<<<<<< HEAD
-            return response.redirect('http://localhost:3200/signup');
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
-        return response.redirect('http://localhost:3200');
-=======
             return response.redirect(`${process.env.REDIRECT_URL}/signup`);
         response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
             secure: true,
@@ -114,17 +103,10 @@ let UsersController = exports.UsersController = class UsersController {
             domain: 'othwan.shop',
         });
         return response.redirect(`${process.env.REDIRECT_URL}`);
->>>>>>> c369a1457e954d20073e239612b4c3c4536063a9
     }
     async loginKakao(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-<<<<<<< HEAD
-            return response.redirect('http://localhost:3200/signup');
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
-        return response.redirect('http://localhost:3200');
-=======
             return response.redirect(`${process.env.REDIRECT_URL}/signup`);
         response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
             secure: true,
@@ -137,17 +119,10 @@ let UsersController = exports.UsersController = class UsersController {
             domain: 'othwan.shop',
         });
         return response.redirect(`${process.env.REDIRECT_URL}`);
->>>>>>> c369a1457e954d20073e239612b4c3c4536063a9
     }
     async loginNaver(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-<<<<<<< HEAD
-            return response.redirect('http://localhost:3200/signup');
-        response.cookie('AccessToken', 'Bearer ' + tokens.accessToken);
-        response.cookie('RefreshToken', 'Bearer ' + tokens.refreshToken);
-        return response.redirect('http://localhost:3200');
-=======
             return response.redirect(`${process.env.REDIRECT_URL}/signup`);
         response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
             secure: true,
@@ -160,7 +135,6 @@ let UsersController = exports.UsersController = class UsersController {
             domain: 'othwan.shop',
         });
         return response.redirect(`${process.env.REDIRECT_URL}`);
->>>>>>> c369a1457e954d20073e239612b4c3c4536063a9
     }
     async signout(request, response) {
         response.cookie('AccessToken', '', {

@@ -8,7 +8,7 @@ export declare class PaymentLogRepository extends Repository<PaymentLog> {
     getStoreOrders(storeId: number): Promise<PaymentLog[]>;
     getAdminOrders(): Promise<PaymentLog[]>;
     updateOrdersStatus(paymentLogId: number, status: string): Promise<import("typeorm").UpdateResult>;
-    postPaymentLog(userId: number, totalPrice: number, storeId: number, paidPoint: number, manager: EntityManager, impUid: string, address: string, status?: string): Promise<import("typeorm").InsertResult>;
+    postPaymentLog(userId: number, totalPrice: number, storeId: number, paidPoint: number, manager: EntityManager, impUid: string, status?: string): Promise<import("typeorm").InsertResult>;
     postPaymentLogBySubscribe(userId: number, totalPrice: number, storeId: number, paidPoint: number, manager: EntityManager, impUid: string, address: string, status?: string): Promise<void>;
     findPaymentLog(userId: number): Promise<PaymentLog>;
     deletePaymentLog(paymentLogId: number, manager: EntityManager): Promise<import("typeorm").DeleteResult>;

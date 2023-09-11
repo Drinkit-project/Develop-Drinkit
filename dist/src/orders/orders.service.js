@@ -110,10 +110,10 @@ let OrdersService = exports.OrdersService = class OrdersService {
         const updateOrdersStatusByStoreData = await this.paymentLogsRepository.updateOrdersStatus(paymentLogId, status);
         return updateOrdersStatusByStoreData;
     }
-    async addPoint(userId, point, impUid, address) {
+    async addPoint(userId, point, impUid) {
         try {
             await this.dataSource.transaction(async (manager) => {
-                await this.paymentLogsRepository.postPaymentLog(userId, point, 1, 0, manager, impUid, address, paymentLog_entity_1.PaymentStatus.READY_COMPLETE);
+                await this.paymentLogsRepository.postPaymentLog(userId, point, 1, 0, manager, impUid, paymentLog_entity_1.PaymentStatus.COMPLETE);
                 const addPointData = await manager
                     .createQueryBuilder()
                     .update(user_entity_1.User)
