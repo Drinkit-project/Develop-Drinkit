@@ -32,7 +32,14 @@ let UsersController = exports.UsersController = class UsersController {
         if (!request.cookies.email) {
             return response.status(302).json({ message: '쿠키가 없어서 가입 실패' });
         }
-        return await this.usersService.signUp(data, request.cookies.email);
+        await this.usersService.signUp(data, request.cookies.email);
+        response.cookie('email', '', {
+            maxAge: 0,
+            secure: true,
+            sameSite: 'none',
+            domain: 'othwan.shop',
+        });
+        return;
     }
     async sendSMS(body) {
         return await this.usersService.sendSMS(body.phoneNumber);
@@ -50,7 +57,11 @@ let UsersController = exports.UsersController = class UsersController {
     async authEmail(emailToken, response) {
         const email = await this.usersService.authEmail(emailToken);
         if (email) {
-            response.cookie(`email`, email);
+            response.cookie(`email`, email, {
+                secure: true,
+                sameSite: 'none',
+                domain: 'othwan.shop',
+            });
             return response.redirect(`${process.env.REDIRECT_URL}/signup`);
         }
         else
