@@ -9,6 +9,7 @@ export declare class StoresController {
     constructor(storeService: StoresService);
     getStores(data: Array<StockDTO>): Promise<any>;
     getStoreDetail(id: number): Promise<import("../entities/store.entity").Store>;
+    getMystore(userId: number): Promise<import("../entities/store.entity").Store[]>;
     createStore(file: Express.Multer.File, user: User, body: CreateStoreDTO): Promise<import("typeorm").InsertResult>;
     updateStroe(id: number, user: User, body: UpdateStoreDTO): {
         message: string;

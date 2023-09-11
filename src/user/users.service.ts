@@ -151,9 +151,8 @@ export class UsersService {
   }
 
   //회원가입
-  async signUp(data: createUserDto) {
+  async signUp(data: createUserDto, email: string) {
     const {
-      email,
       password,
       confirm,
       isAdmin,

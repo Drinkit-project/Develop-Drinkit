@@ -69,7 +69,7 @@ export class StoresController {
     summary: 'Get Store detail by storeId',
     parameters: [{ name: 'storeId', in: 'path' }],
   })
-  @Get('/mystore')
+  @Get('/user/mystore')
   async getMystore(@CurrentUser() userId: number) {
     try {
       const result = await this.storeService.getMystore(userId);

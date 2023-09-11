@@ -45,6 +45,15 @@ let StoresController = exports.StoresController = class StoresController {
             throw new common_1.NotFoundException('There is no Store in DB');
         }
     }
+    async getMystore(userId) {
+        try {
+            const result = await this.storeService.getMystore(userId);
+            return result;
+        }
+        catch (e) {
+            throw new common_1.NotFoundException('There is no Store in DB');
+        }
+    }
     async createStore(file, user, body) {
         try {
             const result = await this.storeService.createStore(body, user.id);
@@ -151,6 +160,17 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], StoresController.prototype, "getStoreDetail", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get Store detail by storeId',
+        parameters: [{ name: 'storeId', in: 'path' }],
+    }),
+    (0, common_1.Get)('/user/mystore'),
+    __param(0, (0, user_decorators_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], StoresController.prototype, "getMystore", null);
 __decorate([
     (0, swagger_1.ApiOperation)({
         summary: 'Create Store',

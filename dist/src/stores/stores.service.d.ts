@@ -11,6 +11,7 @@ export declare class StoresService {
     private readonly storeProductRepository;
     constructor(storeRepository: StoresRepository, storeProductRepository: Store_ProductRepository);
     getStoreDetail(id: number): Promise<Store>;
+    getMystore(userId: number): Promise<Store[]>;
     getStores(body: Array<StockDTO>): Promise<any>;
     createStore(data: CreateStoreDTO, userId: number): Promise<import("typeorm").InsertResult>;
     updateStore(storeId: number, user: User, data: UpdateStoreDTO): Promise<boolean>;

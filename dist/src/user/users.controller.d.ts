@@ -10,7 +10,7 @@ export declare class UsersController {
     private readonly usersService;
     private profilesService;
     constructor(usersService: UsersService, profilesService: ProfilesService);
-    signUp(data: createUserDto): Promise<void>;
+    signUp(data: createUserDto, request: Request, response: Response): Promise<void | Response<any, Record<string, any>>>;
     sendSMS(body: Partial<ProfileDto>): Promise<string>;
     authCode(response: Response, body: {
         phoneNumber: string;

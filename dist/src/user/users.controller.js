@@ -28,8 +28,11 @@ let UsersController = exports.UsersController = class UsersController {
         this.usersService = usersService;
         this.profilesService = profilesService;
     }
-    async signUp(data) {
-        return await this.usersService.signUp(data);
+    async signUp(data, request, response) {
+        if (!request.cookies.email) {
+            return response.status(302).json({ message: '쿠키가 없어서 가입 실패' });
+        }
+        return await this.usersService.signUp(data, request.cookies.email);
     }
     async sendSMS(body) {
         return await this.usersService.sendSMS(body.phoneNumber);
@@ -48,7 +51,7 @@ let UsersController = exports.UsersController = class UsersController {
         const email = await this.usersService.authEmail(emailToken);
         if (email) {
             response.cookie(`email`, email);
-            return response.redirect('https://drinkit.site/signup');
+            return response.redirect(`${process.env.REDIRECT_URL}/signup`);
         }
         else
             return response.status(400);
@@ -70,7 +73,7 @@ let UsersController = exports.UsersController = class UsersController {
     async loginGoogle(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-            return response.redirect('https://drinkit.site/signup');
+            return response.redirect(`${process.env.REDIRECT_URL}/signup`);
         response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
             secure: true,
             sameSite: 'none',
@@ -81,12 +84,12 @@ let UsersController = exports.UsersController = class UsersController {
             sameSite: 'none',
             domain: 'othwan.shop',
         });
-        return response.redirect('https://drinkit.site');
+        return response.redirect(`${process.env.REDIRECT_URL}`);
     }
     async loginKakao(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-            return response.redirect('https://drinkit.site/signup');
+            return response.redirect(`${process.env.REDIRECT_URL}/signup`);
         response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
             secure: true,
             sameSite: 'none',
@@ -97,12 +100,12 @@ let UsersController = exports.UsersController = class UsersController {
             sameSite: 'none',
             domain: 'othwan.shop',
         });
-        return response.redirect('https://drinkit.site');
+        return response.redirect(`${process.env.REDIRECT_URL}`);
     }
     async loginNaver(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
         if (!tokens)
-            return response.redirect('https://drinkit.site/signup');
+            return response.redirect(`${process.env.REDIRECT_URL}/signup`);
         response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
             secure: true,
             sameSite: 'none',
@@ -113,7 +116,7 @@ let UsersController = exports.UsersController = class UsersController {
             sameSite: 'none',
             domain: 'othwan.shop',
         });
-        return response.redirect('https://drinkit.site');
+        return response.redirect(`${process.env.REDIRECT_URL}`);
     }
     async signout(request, response) {
         response.cookie('AccessToken', '', {
@@ -166,8 +169,10 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Not Found' }),
     (0, common_1.Post)('/signUp'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [createUser_dto_1.default]),
+    __metadata("design:paramtypes", [createUser_dto_1.default, Object, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "signUp", null);
 __decorate([

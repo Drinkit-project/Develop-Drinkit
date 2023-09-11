@@ -106,8 +106,8 @@ let UsersService = exports.UsersService = class UsersService {
         const refreshToken = await this.authService.generateRefreshToken(user.id, user.nickname);
         return { accessToken, refreshToken };
     }
-    async signUp(data) {
-        const { email, password, confirm, isAdmin, isPersonal, address, phoneNumber, nickname, name, } = data;
+    async signUp(data, email) {
+        const { password, confirm, isAdmin, isPersonal, address, phoneNumber, nickname, name, } = data;
         if (password !== confirm) {
             throw new common_1.UnauthorizedException('비밀번호가 일치하지 않습니다.');
         }

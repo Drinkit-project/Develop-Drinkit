@@ -37,8 +37,15 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
   @Post('/signUp')
-  async signUp(@Body() data: createUserDto) {
-    return await this.usersService.signUp(data);
+  async signUp(
+    @Body() data: createUserDto,
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    if (!request.cookies.email) {
+      return response.status(302).json({ message: '쿠키가 없어서 가입 실패' });
+    }
+    return await this.usersService.signUp(data, request.cookies.email);
   }
 
   //휴대폰 인증 SMS 발송
@@ -77,7 +84,7 @@ export class UsersController {
     const email = await this.usersService.authEmail(emailToken);
     if (email) {
       response.cookie(`email`, email);
-      return response.redirect('https://drinkit.site/signup');
+      return response.redirect(`${process.env.REDIRECT_URL}/signup`);
     } else return response.status(400);
   }
 
@@ -115,7 +122,7 @@ export class UsersController {
     //프로필을 받아온 다음, 로그인 처리해야하는 곳(auth.service.ts에서 선언해준다)
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
-    if (!tokens) return response.redirect('https://drinkit.site/signup');
+    if (!tokens) return response.redirect(`${process.env.REDIRECT_URL}/signup`);
 
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
       secure: true,
@@ -128,7 +135,7 @@ export class UsersController {
       domain: 'othwan.shop',
     });
 
-    return response.redirect('https://drinkit.site');
+    return response.redirect(`${process.env.REDIRECT_URL}`);
   }
 
   //카카오 로그인
@@ -137,7 +144,7 @@ export class UsersController {
   async loginKakao(@Req() request: Request, @Res() response: Response) {
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
-    if (!tokens) return response.redirect('https://drinkit.site/signup');
+    if (!tokens) return response.redirect(`${process.env.REDIRECT_URL}/signup`);
 
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
       secure: true,
@@ -150,7 +157,7 @@ export class UsersController {
       domain: 'othwan.shop',
     });
 
-    return response.redirect('https://drinkit.site');
+    return response.redirect(`${process.env.REDIRECT_URL}`);
   }
 
   //네이버 로그인
@@ -159,7 +166,7 @@ export class UsersController {
   async loginNaver(@Req() request: Request, @Res() response: Response) {
     const tokens = await this.usersService.oAuthSignIn({ request, response });
 
-    if (!tokens) return response.redirect('https://drinkit.site/signup');
+    if (!tokens) return response.redirect(`${process.env.REDIRECT_URL}/signup`);
 
     response.cookie('AccessToken', 'Bearer ' + tokens.accessToken, {
       secure: true,
@@ -172,7 +179,7 @@ export class UsersController {
       domain: 'othwan.shop',
     });
 
-    return response.redirect('https://drinkit.site');
+    return response.redirect(`${process.env.REDIRECT_URL}`);
   }
 
   //로그아웃
