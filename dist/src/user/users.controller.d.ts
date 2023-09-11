@@ -11,7 +11,7 @@ export declare class UsersController {
     private profilesService;
     constructor(usersService: UsersService, profilesService: ProfilesService);
     signUp(data: createUserDto, request: Request, response: Response): Promise<Response<any, Record<string, any>>>;
-    sendSMS(body: Partial<ProfileDto>): Promise<string>;
+    sendSMS(body: Partial<ProfileDto>, response: Response): Promise<string | Response<any, Record<string, any>>>;
     authCode(response: Response, body: {
         phoneNumber: string;
         code: string;

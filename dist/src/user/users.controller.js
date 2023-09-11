@@ -41,14 +41,13 @@ let UsersController = exports.UsersController = class UsersController {
         });
         return response.status(201).json({ message: '가입 성공' });
     }
-    async sendSMS(body) {
+    async sendSMS(body, response) {
         console.log(body);
         try {
             return await this.usersService.sendSMS(body.phoneNumber);
         }
         catch (error) {
-            console.log(error);
-            return;
+            return response.status(401).json({ message: '인증 실패' });
         }
     }
     async authCode(response, body) {
@@ -196,8 +195,9 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/phoneAuth'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "sendSMS", null);
 __decorate([
