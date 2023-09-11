@@ -42,6 +42,7 @@ export class UsersController {
     @Req() request: Request,
     @Res() response: Response,
   ) {
+    console.log('ㅇㅇ');
     console.log(request.cookies);
     if (!request.cookies.email) {
       return response.status(302).json({ message: '쿠키가 없어서 가입 실패' });
