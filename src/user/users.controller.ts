@@ -57,13 +57,12 @@ export class UsersController {
 
   //휴대폰 인증 SMS 발송
   @Post('/phoneAuth')
-  async sendSMS(@Body() body: Partial<ProfileDto>) {
+  async sendSMS(@Body() body: Partial<ProfileDto>, @Res() response: Response) {
     console.log(body);
     try {
       return await this.usersService.sendSMS(body.phoneNumber);
     } catch (error) {
-      console.log(error);
-      return;
+      return response.status(401).json({ message: '인증 실패' });
     }
   }
 
