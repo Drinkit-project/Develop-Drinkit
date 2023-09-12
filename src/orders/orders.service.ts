@@ -1,6 +1,5 @@
 'use strict';
 import {
-  Inject,
   Injectable,
   NotFoundException,
   PreconditionFailedException,
@@ -8,7 +7,6 @@ import {
 import { PaymentLogRepository } from './paymentLogs.repository';
 import { PaymentDetailRepository } from './paymentDetails.repository';
 import { Store_ProductRepository } from 'src/stores/store_product.repository';
-import { UsersRepository } from 'src/user/users.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
 import { ProductsRepository } from 'src/products/products.repository';
 import { Product } from 'src/entities/product.entity';
@@ -16,9 +14,6 @@ import { User } from 'src/entities/user.entity';
 import { Store_Product } from 'src/entities/store_product.entity';
 import { PaymentStatus } from 'src/entities/paymentLog.entity';
 import { DataSource } from 'typeorm';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import { RedisService } from 'src/redis/redis.service';
 import axios from 'axios';
 
 @Injectable()
@@ -30,9 +25,6 @@ export class OrdersService {
     private store_ProductsRepository: Store_ProductRepository,
     private storesRepository: StoresRepository,
     private productsRepository: ProductsRepository,
-    private redisService: RedisService,
-    private usersRepository: UsersRepository,
-    @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
   async getOrders(userId: number) {
@@ -220,7 +212,6 @@ export class OrdersService {
     if (paidPoint < point) {
       return '포인트 보유량이 사용 포인트보다 적습니다.';
     }
-    await this.redisService.getRanking();
 
     return true;
   }
@@ -321,16 +312,6 @@ export class OrdersService {
           .execute();
 
         if (storeId != 1) {
-          //store_product 재고 업데이트
-          // for (let i = 0; i < countList.length; i++) {
-          //   await manager
-          //     .createQueryBuilder()
-          //     .update(Store_Product)
-          //     .set({ storeStock: () => `storeStock - ${countList[i]}` })
-          //     .where('productId = :productId', { productId: productIdList[i] })
-          //     .execute();
-          // }
-
           const getStoreProductsData = await this.store_ProductsRepository
             .createQueryBuilder('store_product')
             .where('store_product.storeId = :storeId', { storeId })
@@ -354,17 +335,6 @@ export class OrdersService {
             })
             .execute();
         } else {
-          // for (let i = 0; i < countList.length; i++) {
-          //   await manager
-          //     .createQueryBuilder()
-          //     .update(Product)
-          //     .set({
-          //       totalStock: () => `totalStock - ${countList[i]}`,
-          //     })
-          //     .where('id = :productId', { productId: productIdList[i] })
-          //     .execute();
-          // }
-
           const getProductsData = await this.productsRepository
             .createQueryBuilder('product')
             .where('product.id IN (:...ids)', { ids: productIdList })
@@ -393,8 +363,6 @@ export class OrdersService {
             })
             .execute();
         }
-        //레디스 판매량 기록
-        await this.redisService.updateRanking(productIdList, countList, true);
 
         return '결제 완료';
       });
@@ -543,9 +511,6 @@ export class OrdersService {
 
       await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
 
-      //레디스 판매량 기록
-      await this.redisService.updateRanking(productIdList, countList, false);
-
       const refundData = await this.refund(getPaymentLogData.impUid);
 
       console.log('결제 취소!!', refundData);
@@ -626,9 +591,6 @@ export class OrdersService {
 
       await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
 
-      //레디스 판매량 기록
-      await this.redisService.updateRanking(productIdList, countList, true);
-
       const refundData = await this.refund(getPaymentLogData.impUid);
 
       console.log('결제 취소!!', refundData);
@@ -702,9 +664,6 @@ export class OrdersService {
       );
 
       await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
-
-      //레디스 판매량 기록
-      await this.redisService.updateRanking(productIdList, countList, true);
 
       const refundData = await this.refund(getPaymentLogData.impUid);
 
