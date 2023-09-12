@@ -100,7 +100,7 @@ export class ProductsController {
     return '상품 삭제 완료!';
   }
 
-  // // 더미데이터 생성
+  // 더미데이터 생성
   // @Post('/seed')
   // async seed() {
   //   for (let i = 0; i < 20; i++) {

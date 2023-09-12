@@ -41,4 +41,5 @@ export declare class UsersController {
     addAddress(user: User, data: Partial<ProfileDto>): Promise<import("typeorm").UpdateResult>;
     updateAddress(user: User, addressIdx: number, data: Partial<ProfileDto>): Promise<import("typeorm").UpdateResult>;
     delteAddress(user: User, addressIdx: number): Promise<import("typeorm").UpdateResult>;
+    seed(): Promise<string>;
 }

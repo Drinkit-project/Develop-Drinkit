@@ -41,7 +41,6 @@ export class ReviewsService {
       .getOne();
 
     if (!myReview) {
-      console.log(myReview);
       throw new NotFoundException('구매내역을 확인해주세요');
     }
     if (myReview.userId !== userId) {
