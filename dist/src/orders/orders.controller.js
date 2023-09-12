@@ -62,7 +62,6 @@ let OrdersController = exports.OrdersController = class OrdersController {
         return checkOrderListData;
     }
     async postOrder(user, dto) {
-        console.log(dto);
         const postOrderData = await this.ordersService.postOrder(user.id, dto.paidPoint, dto.totalPrice, dto.orderList, dto.storeId, dto.impUid, dto.address);
         return postOrderData;
     }

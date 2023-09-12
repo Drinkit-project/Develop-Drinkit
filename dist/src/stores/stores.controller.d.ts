@@ -25,5 +25,6 @@ export declare class StoresController {
     deleteProductInList(storeId: number, productId: number): Promise<{
         message: string;
     }>;
+    seedStores(): Promise<string>;
     seedStoreProducts(): Promise<string>;
 }

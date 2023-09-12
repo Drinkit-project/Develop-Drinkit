@@ -42,7 +42,6 @@ let UsersController = exports.UsersController = class UsersController {
         return response.status(201).json({ message: '가입 성공' });
     }
     async sendSMS(body, response) {
-        console.log(body);
         try {
             return await this.usersService.sendSMS(body.phoneNumber);
         }
@@ -181,8 +180,8 @@ let UsersController = exports.UsersController = class UsersController {
     }
     async seed() {
         for (let i = 0; i < 1000; i++) {
-            const randLat = 36.6448 + Math.floor(Math.random() * 24000) / 10000;
-            const randLng = 127.9468 + Math.floor(Math.random() * 32000) / 10000;
+            const randLat = 35.2696 + Math.floor(Math.random() * 28000) / 10000;
+            const randLng = 126.5503 + Math.floor(Math.random() * 32000) / 10000;
             const rand = `aaa${i}`;
             const randPhonNum = `010${String(i)}`;
             const email = `${rand}@naver.com`;
