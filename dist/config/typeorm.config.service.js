@@ -50,6 +50,9 @@ let TypeOrmConfigService = exports.TypeOrmConfigService = class TypeOrmConfigSer
             ],
             logging: false,
             synchronize: this.configService.get('DATABASE_SYNCHRONIZE'),
+            extra: {
+                ssl: { rejectUnauthorized: false },
+            },
         };
     }
 };
