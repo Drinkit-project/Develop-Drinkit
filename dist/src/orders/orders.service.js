@@ -8,16 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const paymentLogs_repository_1 = require("./paymentLogs.repository");
 const paymentDetails_repository_1 = require("./paymentDetails.repository");
 const store_product_repository_1 = require("../stores/store_product.repository");
-const users_repository_1 = require("../user/users.repository");
 const stores_repository_1 = require("../stores/stores.repository");
 const products_repository_1 = require("../products/products.repository");
 const product_entity_1 = require("../entities/product.entity");
@@ -25,20 +21,15 @@ const user_entity_1 = require("../entities/user.entity");
 const store_product_entity_1 = require("../entities/store_product.entity");
 const paymentLog_entity_1 = require("../entities/paymentLog.entity");
 const typeorm_1 = require("typeorm");
-const cache_manager_1 = require("@nestjs/cache-manager");
-const redis_service_1 = require("../redis/redis.service");
 const axios_1 = require("axios");
 let OrdersService = exports.OrdersService = class OrdersService {
-    constructor(dataSource, paymentLogsRepository, paymentDetailsRepository, store_ProductsRepository, storesRepository, productsRepository, redisService, usersRepository, cache) {
+    constructor(dataSource, paymentLogsRepository, paymentDetailsRepository, store_ProductsRepository, storesRepository, productsRepository) {
         this.dataSource = dataSource;
         this.paymentLogsRepository = paymentLogsRepository;
         this.paymentDetailsRepository = paymentDetailsRepository;
         this.store_ProductsRepository = store_ProductsRepository;
         this.storesRepository = storesRepository;
         this.productsRepository = productsRepository;
-        this.redisService = redisService;
-        this.usersRepository = usersRepository;
-        this.cache = cache;
     }
     async getOrders(userId) {
         const getOrdersData = await this.paymentLogsRepository.getOrders(userId);
@@ -183,7 +174,6 @@ let OrdersService = exports.OrdersService = class OrdersService {
         if (paidPoint < point) {
             return '포인트 보유량이 사용 포인트보다 적습니다.';
         }
-        await this.redisService.getRanking();
         return true;
     }
     async postOrder(userId, paidPoint, totalPrice, orderList, storeId, impUid, address) {
@@ -291,7 +281,6 @@ let OrdersService = exports.OrdersService = class OrdersService {
                     })
                         .execute();
                 }
-                await this.redisService.updateRanking(productIdList, countList, true);
                 return '결제 완료';
             });
         }
@@ -399,7 +388,6 @@ let OrdersService = exports.OrdersService = class OrdersService {
                 .execute();
             await this.paymentDetailsRepository.deletePaymentDetails(paymentLogId, manager);
             await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
-            await this.redisService.updateRanking(productIdList, countList, false);
             const refundData = await this.refund(getPaymentLogData.impUid);
             console.log('결제 취소!!', refundData);
             return '환불 / 반품 요청이 완료되었습니다.';
@@ -452,7 +440,6 @@ let OrdersService = exports.OrdersService = class OrdersService {
                 .execute();
             await this.paymentDetailsRepository.deletePaymentDetails(paymentLogId, manager);
             await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
-            await this.redisService.updateRanking(productIdList, countList, true);
             const refundData = await this.refund(getPaymentLogData.impUid);
             console.log('결제 취소!!', refundData);
             return '주문이 취소되었습니다.';
@@ -505,7 +492,6 @@ let OrdersService = exports.OrdersService = class OrdersService {
                 .execute();
             await this.paymentDetailsRepository.deletePaymentDetails(paymentLogId, manager);
             await this.paymentLogsRepository.deletePaymentLog(paymentLogId, manager);
-            await this.redisService.updateRanking(productIdList, countList, true);
             const refundData = await this.refund(getPaymentLogData.impUid);
             console.log('결제 취소!!', refundData);
             return '주문이 취소되었습니다.';
@@ -515,14 +501,11 @@ let OrdersService = exports.OrdersService = class OrdersService {
 };
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
-    __param(8, (0, common_1.Inject)(cache_manager_1.CACHE_MANAGER)),
     __metadata("design:paramtypes", [typeorm_1.DataSource,
         paymentLogs_repository_1.PaymentLogRepository,
         paymentDetails_repository_1.PaymentDetailRepository,
         store_product_repository_1.Store_ProductRepository,
         stores_repository_1.StoresRepository,
-        products_repository_1.ProductsRepository,
-        redis_service_1.RedisService,
-        users_repository_1.UsersRepository, Object])
+        products_repository_1.ProductsRepository])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

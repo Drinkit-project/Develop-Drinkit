@@ -1,12 +1,9 @@
 import { PaymentLogRepository } from './paymentLogs.repository';
 import { PaymentDetailRepository } from './paymentDetails.repository';
 import { Store_ProductRepository } from 'src/stores/store_product.repository';
-import { UsersRepository } from 'src/user/users.repository';
 import { StoresRepository } from 'src/stores/stores.repository';
 import { ProductsRepository } from 'src/products/products.repository';
 import { DataSource } from 'typeorm';
-import { Cache } from 'cache-manager';
-import { RedisService } from 'src/redis/redis.service';
 export declare class OrdersService {
     private dataSource;
     private paymentLogsRepository;
@@ -14,10 +11,7 @@ export declare class OrdersService {
     private store_ProductsRepository;
     private storesRepository;
     private productsRepository;
-    private redisService;
-    private usersRepository;
-    private cache;
-    constructor(dataSource: DataSource, paymentLogsRepository: PaymentLogRepository, paymentDetailsRepository: PaymentDetailRepository, store_ProductsRepository: Store_ProductRepository, storesRepository: StoresRepository, productsRepository: ProductsRepository, redisService: RedisService, usersRepository: UsersRepository, cache: Cache);
+    constructor(dataSource: DataSource, paymentLogsRepository: PaymentLogRepository, paymentDetailsRepository: PaymentDetailRepository, store_ProductsRepository: Store_ProductRepository, storesRepository: StoresRepository, productsRepository: ProductsRepository);
     getOrders(userId: number): Promise<import("src/entities/paymentLog.entity").PaymentLog[]>;
     getOrdersDetail(paymentLogId: number): Promise<any[]>;
     getStore(storeId: number): Promise<import("../entities/store.entity").Store>;

@@ -21,6 +21,8 @@ let PaymentLogRepository = exports.PaymentLogRepository = class PaymentLogReposi
     }
     async getOrders(userId) {
         const getOrdersData = await this.createQueryBuilder('paymentLog')
+            .leftJoinAndSelect('paymentLog.paymentDetail', 'paymentDetail')
+            .leftJoinAndSelect('paymentDetail.product', 'product')
             .where('paymentLog.userId = :userId', { userId })
             .orderBy('paymentLog.id', 'ASC')
             .getMany();
@@ -34,13 +36,19 @@ let PaymentLogRepository = exports.PaymentLogRepository = class PaymentLogReposi
     }
     async getStoreOrders(storeId) {
         const getStoreOrdersData = await this.createQueryBuilder('paymentLog')
+            .leftJoinAndSelect('paymentLog.paymentDetail', 'paymentDetail')
+            .leftJoinAndSelect('paymentDetail.product', 'product')
             .where('paymentLog.storeId = :storeId', { storeId })
+            .orderBy('paymentLog.id', 'ASC')
             .getMany();
         return getStoreOrdersData;
     }
     async getAdminOrders() {
         const getAdminOrdersData = await this.createQueryBuilder('paymentLog')
+            .leftJoinAndSelect('paymentLog.paymentDetail', 'paymentDetail')
+            .leftJoinAndSelect('paymentDetail.product', 'product')
             .where('paymentLog.storeId = :storeId', { storeId: 1 })
+            .orderBy('paymentLog.id', 'ASC')
             .getMany();
         return getAdminOrdersData;
     }
