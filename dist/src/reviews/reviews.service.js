@@ -43,7 +43,6 @@ let ReviewsService = exports.ReviewsService = class ReviewsService {
             .where('review.id = :reviewId', { reviewId })
             .getOne();
         if (!myReview) {
-            console.log(myReview);
             throw new common_1.NotFoundException('구매내역을 확인해주세요');
         }
         if (myReview.userId !== userId) {

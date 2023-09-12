@@ -102,7 +102,6 @@ let StoresController = exports.StoresController = class StoresController {
     }
     async addProductOnStore(user, body) {
         try {
-            console.log(body);
             const result = await this.storeService.addProductOnStore(user, body);
             return result;
         }
@@ -138,8 +137,37 @@ let StoresController = exports.StoresController = class StoresController {
             throw new common_1.BadRequestException('delete to fail..');
         }
     }
+    async seedStores() {
+        for (let i = 0; i < 1000; i++) {
+            const randImg = [
+                'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_7D596477896F088ACFEC09E8F3CAC1C8.png&type=a340',
+                'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_BFF7D8F799122E2F13F9EC63CA4C2ACC.jpg&type=a340',
+                'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_5BB99A4B14C6640EAA3351E27D29E6E4.png&type=a340',
+                'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_EABAEE47E7178357C7C840AC75C2BC42.png&type=a340',
+                'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_9BB3AFEA6C388FA8BDDB626DD69D6D0A.png&type=a340',
+            ][Math.floor(Math.random() * 5)];
+            const randString = String(Math.floor(Math.random() * 123456));
+            const randLat = 35.2696 + Math.floor(Math.random() * 28000) / 10000;
+            const randLng = 126.5503 + Math.floor(Math.random() * 32000) / 10000;
+            const data = {
+                address: `OO시 OO동 OO로 OO길 O`,
+                name: `${i + 1}번 가게`,
+                description: `${i + 1}번 가게 설명`,
+                businessLicense: randString,
+                imgUrls: randImg,
+                lat: randLat,
+                lng: randLng,
+            };
+            const userId = i + 3;
+            if (i % 500 == 0) {
+                console.log(`${i}번째, 잘 돌아가고 있습니다.`);
+            }
+            await this.storeService.createStore(data, userId);
+        }
+        return '작업완료';
+    }
     async seedStoreProducts() {
-        for (let i = 2; i < 5002; i++) {
+        for (let i = 2; i < 1002; i++) {
             if (i % 50 == 0) {
                 console.log(`${i * 20}번 째`);
             }
@@ -339,6 +367,12 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", Promise)
 ], StoresController.prototype, "deleteProductInList", null);
+__decorate([
+    (0, common_1.Post)('/seed'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StoresController.prototype, "seedStores", null);
 __decorate([
     (0, common_1.Post)('/seedproducts'),
     __metadata("design:type", Function),

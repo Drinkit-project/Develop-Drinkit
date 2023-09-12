@@ -300,7 +300,7 @@ export class StoresController {
   // store 더미데이터 생성
   // @Post('/seed')
   // async seedStores() {
-  //   for (let i = 0; i < 5000; i++) {
+  //   for (let i = 0; i < 1000; i++) {
   //     const randImg = [
   //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_7D596477896F088ACFEC09E8F3CAC1C8.png&type=a340',
   //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_BFF7D8F799122E2F13F9EC63CA4C2ACC.jpg&type=a340',
@@ -309,8 +309,8 @@ export class StoresController {
   //       'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.crowdpic.net%2Fdetail-thumb%2Fthumb_d_9BB3AFEA6C388FA8BDDB626DD69D6D0A.png&type=a340',
   //     ][Math.floor(Math.random() * 5)];
   //     const randString = String(Math.floor(Math.random() * 123456));
-  //     const randLat = 37.5582 + Math.floor(Math.random() * 12000) / 10000;
-  //     const randLng = 126.9823 + Math.floor(Math.random() * 16000) / 10000;
+  //     const randLat = 35.2696 + Math.floor(Math.random() * 28000) / 10000;
+  //     const randLng = 126.5503 + Math.floor(Math.random() * 32000) / 10000;
   //     const data = {
   //       address: `OO시 OO동 OO로 OO길 O`,
   //       name: `${i + 1}번 가게`,
@@ -320,7 +320,7 @@ export class StoresController {
   //       lat: randLat,
   //       lng: randLng,
   //     };
-  //     const userId = i + 2;
+  //     const userId = i + 3;
   //     if (i % 500 == 0) {
   //       console.log(`${i}번째, 잘 돌아가고 있습니다.`);
   //     }
@@ -332,7 +332,7 @@ export class StoresController {
   // // stroe_product 더미데이터 생성
   // @Post('/seedproducts')
   // async seedStoreProducts() {
-  //   for (let i = 2; i < 5002; i++) {
+  //   for (let i = 2; i < 1002; i++) {
   //     if (i % 50 == 0) {
   //       console.log(`${i * 20}번 째`);
   //     }
