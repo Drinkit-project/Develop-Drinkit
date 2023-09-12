@@ -104,7 +104,7 @@ let OrdersService = exports.OrdersService = class OrdersService {
     async addPoint(userId, point, impUid) {
         try {
             await this.dataSource.transaction(async (manager) => {
-                await this.paymentLogsRepository.postPaymentLog(userId, point, 1, 0, manager, impUid, paymentLog_entity_1.PaymentStatus.COMPLETE);
+                await this.paymentLogsRepository.postPaymentLog(userId, point, 1, 0, manager, impUid, '지급완료', paymentLog_entity_1.PaymentStatus.COMPLETE);
                 const addPointData = await manager
                     .createQueryBuilder()
                     .update(user_entity_1.User)
@@ -214,7 +214,7 @@ let OrdersService = exports.OrdersService = class OrdersService {
                 });
             }
             await this.dataSource.transaction(async (manager) => {
-                const postPaymentLogData = await this.paymentLogsRepository.postPaymentLog(userId, totalPrice, storeId, paidPoint, manager, impUid, address);
+                const postPaymentLogData = await this.paymentLogsRepository.postPaymentLog(userId, totalPrice, storeId, paidPoint, manager, impUid, address, paymentLog_entity_1.PaymentStatus.ORDER_PENDING);
                 const paymentLogId = postPaymentLogData.identifiers[0].id;
                 const paymentDetailArray = [];
                 orderList.forEach((v) => {

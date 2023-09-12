@@ -179,6 +179,35 @@ let UsersController = exports.UsersController = class UsersController {
     delteAddress(user, addressIdx) {
         return this.profilesService.delteAddress(user.id, addressIdx);
     }
+    async seed() {
+        for (let i = 0; i < 1000; i++) {
+            const randLat = 36.6448 + Math.floor(Math.random() * 24000) / 10000;
+            const randLng = 127.9468 + Math.floor(Math.random() * 32000) / 10000;
+            const rand = `aaa${i}`;
+            const randPhonNum = `010${String(i)}`;
+            const email = `${rand}@naver.com`;
+            const data = {
+                password: `${rand}`,
+                confirm: `${rand}`,
+                isAdmin: false,
+                isPersonal: true,
+                address: {
+                    address: '제주시',
+                    name: '나의 집',
+                    lat: randLat,
+                    lng: randLng,
+                },
+                phoneNumber: randPhonNum,
+                nickname: `${rand}`,
+                name: `${rand}`,
+            };
+            if (i % 1000 == 0) {
+                console.log(`${i}번째`);
+            }
+            await this.usersService.signUp(data, email);
+        }
+        return '작업완료';
+    }
 };
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'sign-up' }),
@@ -370,6 +399,12 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, Number]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "delteAddress", null);
+__decorate([
+    (0, common_1.Post)('/seed'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "seed", null);
 exports.UsersController = UsersController = __decorate([
     (0, swagger_1.ApiTags)('users'),
     (0, common_1.Controller)('user'),

@@ -58,7 +58,6 @@ export class UsersController {
   //휴대폰 인증 SMS 발송
   @Post('/phoneAuth')
   async sendSMS(@Body() body: Partial<ProfileDto>, @Res() response: Response) {
-    console.log(body);
     try {
       return await this.usersService.sendSMS(body.phoneNumber);
     } catch (error) {
@@ -316,22 +315,22 @@ export class UsersController {
     return this.profilesService.delteAddress(user.id, addressIdx);
   }
 
-  // // 더미데이터 생성
+  // 더미데이터 생성
   // @Post('/seed')
   // async seed() {
-  //   for (let i = 0; i < 30000; i++) {
-  //     const randLat = 37.5582 + Math.floor(Math.random() * 1500) / 10000;
-  //     const randLng = 126.9823 + Math.floor(Math.random() * 1500) / 10000;
+  //   for (let i = 0; i < 1000; i++) {
+  //     const randLat = 36.6448 + Math.floor(Math.random() * 24000) / 10000;
+  //     const randLng = 127.9468 + Math.floor(Math.random() * 32000) / 10000;
   //     const rand = `aaa${i}`;
   //     const randPhonNum = `010${String(i)}`;
+  //     const email = `${rand}@naver.com`;
   //     const data = {
-  //       email: `${rand}@naver.com`,
   //       password: `${rand}`,
   //       confirm: `${rand}`,
   //       isAdmin: false,
   //       isPersonal: true,
   //       address: {
-  //         address: '서울시',
+  //         address: '제주시',
   //         name: '나의 집',
   //         lat: randLat,
   //         lng: randLng,
@@ -343,7 +342,7 @@ export class UsersController {
   //     if (i % 1000 == 0) {
   //       console.log(`${i}번째`);
   //     }
-  //     await this.usersService.signUp(data);
+  //     await this.usersService.signUp(data, email);
   //   }
   //   return '작업완료';
   // }

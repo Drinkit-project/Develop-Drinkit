@@ -124,6 +124,7 @@ export class OrdersService {
           0,
           manager,
           impUid,
+          '지급완료',
           PaymentStatus.COMPLETE,
         );
 
@@ -278,6 +279,7 @@ export class OrdersService {
             manager,
             impUid,
             address,
+            PaymentStatus.ORDER_PENDING,
           );
 
         const paymentLogId = postPaymentLogData.identifiers[0].id;

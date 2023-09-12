@@ -138,6 +138,23 @@ let StoresController = exports.StoresController = class StoresController {
             throw new common_1.BadRequestException('delete to fail..');
         }
     }
+    async seedStoreProducts() {
+        for (let i = 2; i < 5002; i++) {
+            if (i % 50 == 0) {
+                console.log(`${i * 20}번 째`);
+            }
+            for (let j = 1; j < 41; j++) {
+                const randStock = Math.floor(Math.random() * 16);
+                const data = {
+                    productId: j,
+                    storeId: i,
+                    storeStock: randStock,
+                };
+                await this.storeService.seedProductOnStore(data);
+            }
+        }
+        return '작업완료';
+    }
 };
 __decorate([
     (0, swagger_1.ApiOperation)({
@@ -322,6 +339,12 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", Promise)
 ], StoresController.prototype, "deleteProductInList", null);
+__decorate([
+    (0, common_1.Post)('/seedproducts'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StoresController.prototype, "seedStoreProducts", null);
 exports.StoresController = StoresController = __decorate([
     (0, swagger_1.ApiTags)('Store'),
     (0, common_1.Controller)('stores'),
