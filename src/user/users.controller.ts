@@ -150,7 +150,6 @@ export class UsersController {
       domain: 'othwan.shop',
     });
 
-    response.json(tokens);
     return response.redirect(`${process.env.REDIRECT_URL}`);
   }
 

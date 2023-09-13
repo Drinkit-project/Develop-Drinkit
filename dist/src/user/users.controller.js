@@ -100,7 +100,6 @@ let UsersController = exports.UsersController = class UsersController {
             sameSite: 'none',
             domain: 'othwan.shop',
         });
-        response.json(tokens);
         return response.redirect(`${process.env.REDIRECT_URL}`);
     }
     async loginKakao(request, response) {
