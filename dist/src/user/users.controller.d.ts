@@ -19,7 +19,7 @@ export declare class UsersController {
     sendEmail(body: Partial<UserDto>): Promise<void>;
     authEmail(emailToken: string, response: Response): Promise<void | Response<any, Record<string, any>>>;
     signIn(data: Partial<UserDto>, response: Response): Promise<Response<any, Record<string, any>>>;
-    loginGoogle(request: Request, response: Response): Promise<void | Response<any, Record<string, any>>>;
+    loginGoogle(request: Request, response: Response): Promise<void>;
     loginKakao(request: Request, response: Response): Promise<void>;
     loginNaver(request: Request, response: Response): Promise<void>;
     signout(request: Request, response: Response): Promise<Response<any, Record<string, any>>>;
