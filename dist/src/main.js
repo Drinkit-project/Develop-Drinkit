@@ -14,6 +14,7 @@ async function bootstrap() {
     app.enableCors({
         origin: ['https://drinkit.site', 'http://localhost:3200'],
         credentials: true,
+        optionsSuccessStatus: 204,
     });
     app.useGlobalPipes(new common_1.ValidationPipe());
     app.useGlobalFilters(new httpException_filter_1.HttpExceptionFilter());
