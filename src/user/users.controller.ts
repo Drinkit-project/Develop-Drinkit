@@ -150,7 +150,8 @@ export class UsersController {
       domain: 'othwan.shop',
     });
 
-    return response.json(tokens);
+    response.json(tokens);
+    return response.redirect(`${process.env.REDIRECT_URL}`);
   }
 
   //카카오 로그인
