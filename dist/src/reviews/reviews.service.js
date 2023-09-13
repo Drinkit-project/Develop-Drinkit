@@ -57,6 +57,12 @@ let ReviewsService = exports.ReviewsService = class ReviewsService {
     async createReview(userId, paymentDetailId, content, rating) {
         const productId = await this.checkPaymentAutherization(userId, paymentDetailId);
         try {
+            await this.paymentDetailRepository
+                .createQueryBuilder('paymentDetail')
+                .update(paymentDetail_entity_1.PaymentDetail)
+                .set({ isComplete: true })
+                .where('id = :paymentDetailId', { paymentDetailId })
+                .execute();
             const createdReview = await this.reviewsRepository
                 .createQueryBuilder('review')
                 .insert()

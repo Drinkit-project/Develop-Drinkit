@@ -30,6 +30,10 @@ __decorate([
     __metadata("design:type", Number)
 ], PaymentDetail.prototype, "count", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], PaymentDetail.prototype, "isComplete", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => product_entity_1.Product, (product) => product.paymentDetail),
     (0, typeorm_1.JoinColumn)([{ name: 'productId', referencedColumnName: 'id' }]),
     __metadata("design:type", product_entity_1.Product)
