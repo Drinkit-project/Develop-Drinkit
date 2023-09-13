@@ -38,50 +38,6 @@ let CronService = exports.CronService = class CronService {
             },
         });
     }
-    async syncSearch() {
-        const getSearchAllData = await this.openSearchService.getSearchAll();
-        const getProductsAllData = await this.productService.getProducts();
-        const sortSearchData = getSearchAllData.sort((a, b) => a._id - b._id);
-        const sortProductsData = getProductsAllData.sort((a, b) => a.id - b.id);
-        const searchLength = sortSearchData.length;
-        const productsLength = sortProductsData.length;
-        let i = 0;
-        let j = 0;
-        const uploadArr = [];
-        const deleteArr = [];
-        while (i < searchLength && j < productsLength) {
-            if (sortSearchData[i]._id == sortProductsData[j].id) {
-                i++;
-                j++;
-                continue;
-            }
-            if (sortSearchData[i]._id < sortProductsData[j].id) {
-                deleteArr.push({ id: sortSearchData[i++]._id });
-            }
-            else {
-                uploadArr.push({
-                    id: sortProductsData[j].id,
-                    productName: sortProductsData[j++].productName,
-                });
-            }
-        }
-        if (i == searchLength) {
-            for (let k = j; k < productsLength; k++) {
-                uploadArr.push({
-                    id: sortProductsData[k].id,
-                    productName: sortProductsData[k].productName,
-                });
-            }
-        }
-        else {
-            for (let k = i; k < searchLength; k++) {
-                deleteArr.push({ id: sortSearchData[k]._id });
-            }
-        }
-        await this.openSearchService.uploadBulkSearch(uploadArr);
-        await this.openSearchService.deleteBulkSearch(deleteArr);
-        return;
-    }
     async sendAllMail() {
         const date = new Date();
         const month = date.getMonth() + 1;
@@ -194,12 +150,6 @@ let CronService = exports.CronService = class CronService {
         }
     }
 };
-__decorate([
-    (0, dist_1.Cron)('0 0 */1 * * *'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CronService.prototype, "syncSearch", null);
 __decorate([
     (0, dist_1.Cron)('0 0 0 20 */1 *'),
     __metadata("design:type", Function),

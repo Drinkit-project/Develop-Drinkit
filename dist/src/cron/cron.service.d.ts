@@ -11,7 +11,6 @@ export declare class CronService {
     private readonly usersRepository;
     private transporter;
     constructor(dataSource: DataSource, openSearchService: OpenSearchService, productService: ProductsService, subscribesRepository: SubscribesRepository, usersRepository: UsersRepository);
-    syncSearch(): Promise<void>;
     sendAllMail(): Promise<void>;
     sendSelectMail(): Promise<void>;
     subscribes(): Promise<void>;
