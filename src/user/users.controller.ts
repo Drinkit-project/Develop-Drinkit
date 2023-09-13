@@ -261,14 +261,23 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
   @UseGuards(AuthGuard)
-  async getProfile(@CurrentUser() user: User, @Req() request: Request) {
+  async getProfile(@CurrentUser() user: User) {
     const profile = await this.profilesService.getProfile(user.id);
+
+    return profile;
+  }
+
+  @Get('/token')
+  @ApiOperation({ summary: 'Get token' })
+  @ApiResponse({ status: 200, description: 'OK' })
+  @ApiResponse({ status: 404, description: 'Not Found' })
+  async getToken(@Req() request: Request) {
     const tokens = {
       accessToken: request.cookies.AccessToken,
       refreshToken: request.cookies.RefreshToken,
     };
 
-    return { profile, tokens };
+    return tokens;
   }
 
   // 주소 조회

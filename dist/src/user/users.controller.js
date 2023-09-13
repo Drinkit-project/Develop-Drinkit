@@ -159,13 +159,16 @@ let UsersController = exports.UsersController = class UsersController {
     async deleteUser(userId) {
         return await this.usersService.deleteUser(userId);
     }
-    async getProfile(user, request) {
+    async getProfile(user) {
         const profile = await this.profilesService.getProfile(user.id);
+        return profile;
+    }
+    async getToken(request) {
         const tokens = {
             accessToken: request.cookies.AccessToken,
             refreshToken: request.cookies.RefreshToken,
         };
-        return { profile, tokens };
+        return tokens;
     }
     async getAddress(user) {
         return await this.profilesService.getAddress(user.id);
@@ -317,11 +320,20 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Not Found' }),
     (0, common_1.UseGuards)(jwt_guard_1.AuthGuard),
     __param(0, (0, user_decorators_1.CurrentUser)()),
-    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, Object]),
+    __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.Get)('/token'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get token' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'OK' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Not Found' }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getToken", null);
 __decorate([
     (0, common_1.Get)('/address'),
     (0, swagger_1.ApiOperation)({ summary: 'Get profile' }),
