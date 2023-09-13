@@ -100,7 +100,7 @@ let UsersController = exports.UsersController = class UsersController {
             sameSite: 'none',
             domain: 'othwan.shop',
         });
-        return response.redirect(`${process.env.REDIRECT_URL}`);
+        return response.json(tokens);
     }
     async loginKakao(request, response) {
         const tokens = await this.usersService.oAuthSignIn({ request, response });
