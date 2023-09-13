@@ -261,9 +261,14 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'OK' })
   @ApiResponse({ status: 404, description: 'Not Found' })
   @UseGuards(AuthGuard)
-  async getProfile(@CurrentUser() user: User) {
+  async getProfile(@CurrentUser() user: User, @Req() request: Request) {
     const profile = await this.profilesService.getProfile(user.id);
-    return profile;
+    const tokens = {
+      accessToken: request.cookies.AccessToken,
+      refreshToken: request.cookies.RefreshToken,
+    };
+
+    return { profile, tokens };
   }
 
   // 주소 조회

@@ -32,7 +32,13 @@ export declare class UsersController {
         statusCode: number;
         message: string;
     }>;
-    getProfile(user: User): Promise<any>;
+    getProfile(user: User, request: Request): Promise<{
+        profile: any;
+        tokens: {
+            accessToken: any;
+            refreshToken: any;
+        };
+    }>;
     getAddress(user: User): Promise<{
         address: string;
         name: string;

@@ -159,9 +159,13 @@ let UsersController = exports.UsersController = class UsersController {
     async deleteUser(userId) {
         return await this.usersService.deleteUser(userId);
     }
-    async getProfile(user) {
+    async getProfile(user, request) {
         const profile = await this.profilesService.getProfile(user.id);
-        return profile;
+        const tokens = {
+            accessToken: request.cookies.AccessToken,
+            refreshToken: request.cookies.RefreshToken,
+        };
+        return { profile, tokens };
     }
     async getAddress(user) {
         return await this.profilesService.getAddress(user.id);
@@ -313,8 +317,9 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Not Found' }),
     (0, common_1.UseGuards)(jwt_guard_1.AuthGuard),
     __param(0, (0, user_decorators_1.CurrentUser)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User]),
+    __metadata("design:paramtypes", [user_entity_1.User, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getProfile", null);
 __decorate([
