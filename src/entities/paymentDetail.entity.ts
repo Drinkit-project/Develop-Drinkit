@@ -16,6 +16,9 @@ export class PaymentDetail extends CommonEntity {
   @Column('bigint')
   count: number;
 
+  @Column({ type: 'boolean', default: false })
+  isComplete: boolean;
+
   @ManyToOne(() => Product, (product) => product.paymentDetail)
   @JoinColumn([{ name: 'productId', referencedColumnName: 'id' }])
   product: Product;

@@ -6,6 +6,7 @@ export declare class PaymentDetail extends CommonEntity {
     productId: number;
     paymentLogId: number;
     count: number;
+    isComplete: boolean;
     product: Product;
     paymentLog: PaymentLog;
     review: Review;

@@ -62,6 +62,13 @@ export class ReviewsService {
     );
 
     try {
+      await this.paymentDetailRepository
+        .createQueryBuilder('paymentDetail')
+        .update(PaymentDetail)
+        .set({ isComplete: true })
+        .where('id = :paymentDetailId', { paymentDetailId })
+        .execute();
+
       const createdReview = await this.reviewsRepository
         .createQueryBuilder('review')
         .insert()

@@ -10,7 +10,6 @@ exports.AdminUser = (0, common_1.createParamDecorator)((data, ctx) => {
     const request = ctx.switchToHttp().getRequest();
     if (!request.myUser.isAdmin)
         throw new common_1.BadRequestException('권한 없음');
-    console.log(request.myUser);
     return request.myUser;
 });
 exports.PersonalUser = (0, common_1.createParamDecorator)((data, ctx) => {
