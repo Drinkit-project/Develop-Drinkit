@@ -58,7 +58,9 @@ export class UsersController {
   //휴대폰 인증 SMS 발송
   @Post('/phoneAuth')
   async sendSMS(@Body() body: Partial<ProfileDto>, @Res() response: Response) {
-    return await this.usersService.sendSMS(body.phoneNumber);
+    await this.usersService.sendSMS(body.phoneNumber);
+
+    return response.status(201).json({ message: 'SMS 발송 성공' });
   }
 
   @Post('/phoneCodeAuth')
@@ -78,8 +80,10 @@ export class UsersController {
 
   //이메일 인증 전송
   @Post('/emailAuth')
-  async sendEmail(@Body() body: Partial<UserDto>) {
-    return await this.usersService.sendEmail(body.email);
+  async sendEmail(@Body() body: Partial<UserDto>, @Res() response: Response) {
+    await this.usersService.sendEmail(body.email);
+
+    return response.status(201).json({ message: '이메일 발송 성공' });
   }
 
   //이메일 인증

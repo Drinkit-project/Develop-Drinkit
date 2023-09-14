@@ -11,12 +11,12 @@ export declare class UsersController {
     private profilesService;
     constructor(usersService: UsersService, profilesService: ProfilesService);
     signUp(data: createUserDto, request: Request, response: Response): Promise<Response<any, Record<string, any>>>;
-    sendSMS(body: Partial<ProfileDto>, response: Response): Promise<string>;
+    sendSMS(body: Partial<ProfileDto>, response: Response): Promise<Response<any, Record<string, any>>>;
     authCode(response: Response, body: {
         phoneNumber: string;
         code: string;
     }): Promise<Response<any, Record<string, any>>>;
-    sendEmail(body: Partial<UserDto>): Promise<void>;
+    sendEmail(body: Partial<UserDto>, response: Response): Promise<Response<any, Record<string, any>>>;
     authEmail(emailToken: string, response: Response): Promise<void | Response<any, Record<string, any>>>;
     signIn(data: Partial<UserDto>, response: Response): Promise<Response<any, Record<string, any>>>;
     loginGoogle(request: Request, response: Response): Promise<void>;

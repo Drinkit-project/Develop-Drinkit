@@ -42,7 +42,8 @@ let UsersController = exports.UsersController = class UsersController {
         return response.status(201).json({ message: '가입 성공' });
     }
     async sendSMS(body, response) {
-        return await this.usersService.sendSMS(body.phoneNumber);
+        await this.usersService.sendSMS(body.phoneNumber);
+        return response.status(201).json({ message: 'SMS 발송 성공' });
     }
     async authCode(response, body) {
         const isAuth = await this.usersService.authCode(body);
@@ -51,8 +52,9 @@ let UsersController = exports.UsersController = class UsersController {
         }
         return response.status(401).json({ message: '인증 실패' });
     }
-    async sendEmail(body) {
-        return await this.usersService.sendEmail(body.email);
+    async sendEmail(body, response) {
+        await this.usersService.sendEmail(body.email);
+        return response.status(201).json({ message: '이메일 발송 성공' });
     }
     async authEmail(emailToken, response) {
         const email = await this.usersService.authEmail(emailToken);
@@ -212,8 +214,9 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/emailAuth'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "sendEmail", null);
 __decorate([
