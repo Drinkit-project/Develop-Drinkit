@@ -86,11 +86,10 @@ let AuthService = exports.AuthService = class AuthService {
             'x-ncp-apigw-signature-v2': this.makeSignitureForSMS(),
         };
         try {
-            axios_1.default
+            await axios_1.default
                 .post(`https://sens.apigw.ntruss.com/sms/v2/services/${this.SMS_SERVICE_ID}/messages`, body, { headers })
                 .catch((error) => {
-                console.log(error.response.data);
-                throw new common_1.InternalServerErrorException();
+                throw new common_1.InternalServerErrorException(error.response.data.message);
             });
             await this.cache.set(phoneNumber, checkNumber);
             return '전송 완료';

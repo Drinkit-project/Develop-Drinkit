@@ -1,6 +1,8 @@
 import {
+  HttpException,
   Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
   forwardRef,
@@ -63,7 +65,11 @@ export class UsersService {
       throw new UnauthorizedException('이미 존재하는 사용자 입니다.');
     }
 
-    return await this.authService.sendSMS(phoneNumber);
+    try {
+      return await this.authService.sendSMS(phoneNumber);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   async authEmail(emailToken: string): Promise<any> {

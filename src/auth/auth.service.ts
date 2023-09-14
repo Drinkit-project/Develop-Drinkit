@@ -109,16 +109,14 @@ export class AuthService {
 
     try {
       // 문자 보내기 (url)
-      axios
+      await axios
         .post(
           `https://sens.apigw.ntruss.com/sms/v2/services/${this.SMS_SERVICE_ID}/messages`,
           body,
           { headers },
         )
         .catch((error) => {
-          // 에러일 경우 반환값
-          console.log(error.response.data);
-          throw new InternalServerErrorException();
+          throw new InternalServerErrorException(error.response.data.message);
         });
       // 캐시 추가하기
       await this.cache.set(phoneNumber, checkNumber);

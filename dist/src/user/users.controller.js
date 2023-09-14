@@ -42,12 +42,7 @@ let UsersController = exports.UsersController = class UsersController {
         return response.status(201).json({ message: '가입 성공' });
     }
     async sendSMS(body, response) {
-        try {
-            return await this.usersService.sendSMS(body.phoneNumber);
-        }
-        catch (error) {
-            return response.status(401).json({ message: '인증 실패' });
-        }
+        return await this.usersService.sendSMS(body.phoneNumber);
     }
     async authCode(response, body) {
         const isAuth = await this.usersService.authCode(body);

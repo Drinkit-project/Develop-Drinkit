@@ -58,11 +58,7 @@ export class UsersController {
   //휴대폰 인증 SMS 발송
   @Post('/phoneAuth')
   async sendSMS(@Body() body: Partial<ProfileDto>, @Res() response: Response) {
-    try {
-      return await this.usersService.sendSMS(body.phoneNumber);
-    } catch (error) {
-      return response.status(401).json({ message: '인증 실패' });
-    }
+    return await this.usersService.sendSMS(body.phoneNumber);
   }
 
   @Post('/phoneCodeAuth')
