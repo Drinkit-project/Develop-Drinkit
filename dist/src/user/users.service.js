@@ -45,7 +45,12 @@ let UsersService = exports.UsersService = class UsersService {
         if (isUserExist) {
             throw new common_1.UnauthorizedException('이미 존재하는 사용자 입니다.');
         }
-        return await this.authService.sendVerificationEmail(email);
+        try {
+            return await this.authService.sendVerificationEmail(email);
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException(error.message);
+        }
     }
     async sendSMS(phoneNumber) {
         const isUserExist = await this.profilesService.findByFields({

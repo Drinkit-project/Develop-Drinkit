@@ -53,7 +53,11 @@ export class UsersService {
       throw new UnauthorizedException('이미 존재하는 사용자 입니다.');
     }
 
-    return await this.authService.sendVerificationEmail(email);
+    try {
+      return await this.authService.sendVerificationEmail(email);
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
   }
 
   async sendSMS(phoneNumber: string) {
