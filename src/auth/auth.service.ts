@@ -117,7 +117,7 @@ export class AuthService {
         )
         .catch((error) => {
           console.log(1);
-          console.log(error.data);
+          console.log(error.response.data);
           throw new InternalServerErrorException(error.response.data.message);
         });
       // 캐시 추가하기
