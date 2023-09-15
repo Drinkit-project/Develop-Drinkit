@@ -116,6 +116,7 @@ export class AuthService {
           { headers },
         )
         .catch((error) => {
+          console.log(1);
           console.log(error.data);
           throw new InternalServerErrorException(error.response.data.message);
         });
@@ -123,6 +124,7 @@ export class AuthService {
       await this.cache.set(phoneNumber, checkNumber);
       return '전송 완료';
     } catch (error) {
+      console.log(2);
       console.log(error.data);
       throw new InternalServerErrorException();
     }

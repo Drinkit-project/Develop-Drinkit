@@ -89,6 +89,7 @@ let AuthService = exports.AuthService = class AuthService {
             await axios_1.default
                 .post(`https://sens.apigw.ntruss.com/sms/v2/services/${this.SMS_SERVICE_ID}/messages`, body, { headers })
                 .catch((error) => {
+                console.log(1);
                 console.log(error.data);
                 throw new common_1.InternalServerErrorException(error.response.data.message);
             });
@@ -96,6 +97,7 @@ let AuthService = exports.AuthService = class AuthService {
             return '전송 완료';
         }
         catch (error) {
+            console.log(2);
             console.log(error.data);
             throw new common_1.InternalServerErrorException();
         }
