@@ -89,7 +89,7 @@ let AuthService = exports.AuthService = class AuthService {
             await axios_1.default
                 .post(`https://sens.apigw.ntruss.com/sms/v2/services/${this.SMS_SERVICE_ID}/messages`, body, { headers })
                 .catch((error) => {
-                console.log(error);
+                console.log(error.data);
                 throw new common_1.InternalServerErrorException(error.response.data.message);
             });
             await this.cache.set(phoneNumber, checkNumber);
