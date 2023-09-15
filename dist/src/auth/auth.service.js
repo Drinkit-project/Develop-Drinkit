@@ -96,7 +96,7 @@ let AuthService = exports.AuthService = class AuthService {
             return '전송 완료';
         }
         catch (error) {
-            console.log(error);
+            console.log(error.data);
             throw new common_1.InternalServerErrorException();
         }
     }

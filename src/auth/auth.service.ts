@@ -123,7 +123,7 @@ export class AuthService {
       await this.cache.set(phoneNumber, checkNumber);
       return '전송 완료';
     } catch (error) {
-      console.log(error);
+      console.log(error.data);
       throw new InternalServerErrorException();
     }
   }
